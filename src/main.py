@@ -16,6 +16,7 @@ AIS = {
     "mcts_15_inf": MCTS(search_time_limit=15.0, search_steps_limit=np.inf),
     "mcts_cuda_20_inf_1_32_scpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=20.0, search_steps_limit=np.inf, n_trees=1, n_playouts=32, kind="scpo", action_to_name_function=Gomoku.move_index_to_name),
     "mcts_cuda_20_inf_1_32_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=20.0, search_steps_limit=np.inf, n_trees=1, n_playouts=32, kind="acpo", action_to_name_function=Gomoku.move_index_to_name),
+    "mcts_cuda_20_inf_1_512_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=20.0, search_steps_limit=np.inf, n_trees=1, n_playouts=512, kind="acpo", action_to_name_function=Gomoku.move_index_to_name),
     "mcts_cuda_3_inf_1_512_scpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=1, n_playouts=512, kind="scpo"),    
     "mcts_cuda_3_inf_2_512_scpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=2, n_playouts=512, kind="scpo"),
     "mcts_cuda_3_inf_4_512_scpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=4, n_playouts=512, kind="scpo"),
@@ -35,7 +36,7 @@ if __name__ == "__main__":
     n_games = 1
     outcomes = np.zeros(n_games, dtype=np.int8)
     ai_A = None
-    ai_B = AIS["mcts_cuda_20_inf_1_32_acpo"]
+    ai_B = AIS["mcts_cuda_20_inf_1_512_acpo"]
     print(LINE_SEPARATOR)
     print("MATCH-UP:")
     print(f"A: {ai_A if ai_A else 'HUMAN'}")

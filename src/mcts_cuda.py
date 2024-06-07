@@ -458,12 +458,21 @@ class MCTSCuda:
         if self.VERBOSE_DEBUG:
             print(f"[MCTSCuda._reduce_over_trees() done; time: {t2_reduce_over_trees - t1_reduce_over_trees} s]")                
         t2 = time.time()
-        qs = -np.ones(self.state_max_actions)
+        qs = -np.ones(self.state_max_actions)                
+        if self.VERBOSE_INFO:
+            print("[action values:")
         for i in range(n_root_actions):
             q = actions_ns_wins[i] / actions_ns[i] if actions_ns[i] > 0 else np.nan
             ucb1 = q + self.ucb1_c * np.sqrt(np.log(root_ns[i]) / actions_ns[i]) if actions_ns[i] > 0 else np.nan
             qs[root_actions_expanded[i]] = q
-            print(f"action: {root_actions_expanded[i]}, root_n: {root_ns[i]}, n: {actions_ns[i]}, n_wins: {actions_ns_wins[i]}, q: {q}, ucb1: {ucb1}")
+            if self.VERBOSE_INFO:
+                action_str = f"action: {root_actions_expanded[i]}, "
+                if self.action_to_name_function:
+                    action_str += f"name: {self.action_to_name_function(root_actions_expanded[i])}, "
+                action_str += f"root_n: {root_ns[i]}, n: {actions_ns[i]}, n_wins: {actions_ns_wins[i]}, q: {q}, ucb1: {ucb1}"
+                print(action_str) 
+        if self.VERBOSE_INFO:
+            print("]")                                                
         # MCTS sum reduction over root actions
         t1_reduce_over_actions = time.time() 
         bpg = 1
