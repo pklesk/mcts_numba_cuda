@@ -21,8 +21,9 @@ class GameRunner:
                     try:
                         move_name = input("BLACK PLAYER, PICK YOUR MOVE: ")
                         move_index = self.game_class.move_name_to_index(move_name)
-                        game = self.game_class.move_down_tree_via(game, move_index)
-                        if game is not None:
+                        game_moved = self.game_class.move_down_tree_via(game, move_index)
+                        if game_moved is not None:
+                            game = game_moved
                             move_valid = True                        
                     except:
                         print("INVALID MOVE. GAME STOPPED.")
@@ -50,8 +51,9 @@ class GameRunner:
                     try:
                         move_name = input("WHITE PLAYER, PICK YOUR MOVE: ")
                         move_index = self.game_class.move_name_to_index(move_name)                        
-                        game = self.game_class.move_down_tree_via(game, move_index)
-                        if game is not None:
+                        game_moved = self.game_class.move_down_tree_via(game, move_index)
+                        if game_moved is not None:
+                            game = game_moved
                             move_valid = True
                     except:
                         print("INVALID MOVE. GAME STOPPED.")

@@ -35,8 +35,8 @@ if __name__ == "__main__":
     t1 = time.time()
     n_games = 1
     outcomes = np.zeros(n_games, dtype=np.int8)
-    ai_B = None
-    ai_A = AIS["mcts_cuda_20_inf_8_32_acpo"]
+    ai_A = None # AIS["mcts_cuda_20_inf_8_32_acpo"]
+    ai_B = None # AIS["mcts_cuda_20_inf_8_32_acpo"]
     print(LINE_SEPARATOR)
     print("MATCH-UP:")
     print(f"A: {ai_A if ai_A else 'HUMAN'}")
