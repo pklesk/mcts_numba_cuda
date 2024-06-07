@@ -961,7 +961,7 @@ class MCTSCuda:
     @staticmethod
     @cuda.jit(void(int16, int32[:, :, :], int8[:, :], int32[:, :], int32[:, :], int32[:], int16[:, :], int32[:, :], int32[:, :, :]))
     def _backup_acpo_stage1(n_playouts, trees, trees_turns, trees_ns, trees_ns_wins, trees_nodes_selected, trees_actions_expanded, trees_playout_outcomes, trees_playout_outcomes_children):
-        shared_playout_outcomes_children = cuda.shared.array((1024, 2), dtype=int16) # 1024 - assumed max tpb for playouts, two cells for a row (-1 win, +1 win), each flagged by 0 or 1 after playout 
+        shared_playout_outcomes_children = cuda.shared.array((1024, 2), dtype=int32) # 1024 - assumed max tpb for playouts, two cells for a row (-1 win, +1 win), each flagged by 0 or 1 after playout 
         ti = cuda.blockIdx.x # tree index
         tpb = cuda.blockDim.x
         t = cuda.threadIdx.x        
