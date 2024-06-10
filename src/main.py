@@ -6,7 +6,7 @@ from gomoku import Gomoku
 from game_runner import GameRunner
 import time
 
-STATE_CLASS = C4
+STATE_CLASS = Gomoku
 _BOARD_SHAPE = STATE_CLASS.get_board_shape()
 _EXTRA_INFO_MEMORY = STATE_CLASS.get_extra_info_memory()
 _MAX_ACTIONS = STATE_CLASS.get_max_actions() 
@@ -22,7 +22,8 @@ AIS = {
     "mcts_cuda_3_inf_16_512_scpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=16, n_playouts=512, kind="scpo"),
     "mcts_cuda_5_inf_1_32_scpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=np.inf, search_steps_limit=1000, n_trees=1, n_playouts=32, kind="scpo"),
     "mcts_cuda_20_inf_8_32_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=20.0, search_steps_limit=np.inf, n_trees=8, n_playouts=32, kind="acpo", action_to_name_function=Gomoku.move_index_to_name),
-    "mcts_cuda_20_inf_1_512_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=20.0, search_steps_limit=np.inf, n_trees=1, n_playouts=512, kind="acpo", action_to_name_function=Gomoku.move_index_to_name),    
+    "mcts_cuda_20_inf_1_512_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=20.0, search_steps_limit=np.inf, n_trees=1, n_playouts=512, kind="acpo", action_to_name_function=Gomoku.move_index_to_name),
+    "mcts_cuda_20_inf_1_32_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=20.0, search_steps_limit=np.inf, n_trees=1, n_playouts=32, kind="acpo", action_to_name_function=Gomoku.move_index_to_name),        
     "mcts_cuda_3_inf_1_512_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=1, n_playouts=512, kind="acpo"),
     "mcts_cuda_3_inf_2_512_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=2, n_playouts=512, kind="acpo"),
     "mcts_cuda_3_inf_4_512_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=4, n_playouts=512, kind="acpo"),
@@ -37,7 +38,7 @@ if __name__ == "__main__":
     t1 = time.time()
     n_games = 1
     outcomes = np.zeros(n_games, dtype=np.int8)
-    ai_A = AIS["mcts_cuda_3_inf_1_32_acpo"]
+    ai_A = AIS["mcts_cuda_20_inf_1_32_acpo"]
     ai_B = None # AIS["mcts_cuda_20_inf_8_32_acpo"]
     print(LINE_SEPARATOR)
     print("MATCH-UP:")
