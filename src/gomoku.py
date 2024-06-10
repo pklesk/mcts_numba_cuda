@@ -4,8 +4,8 @@ from numba import jit
 from numba import int8
 
 class Gomoku(State):
-    M = 15
-    N = 15
+    M = 11
+    N = 11
     SYMBOLS = ['\u25CB', '+', '\u25CF'] # or: [['O', '+', 'X']
     
     def __init__(self, parent=None):
@@ -17,11 +17,15 @@ class Gomoku(State):
         self.last_move = None
             
     def __str__(self):
-        s = ""
+        s = "  "
+        for j in range(Gomoku.N):
+            s += f"{chr(j + ord('A'))}"
+        s += "\n"
         for i in range(Gomoku.M, 0, -1):
             s += str(i).rjust(2)
             for j in range(Gomoku.N):
                 s += Gomoku.SYMBOLS[self.board[i - 1, j] + 1]
+            s += str(i).ljust(2)
             s += "\n"
         s += "  "
         for j in range(Gomoku.N):

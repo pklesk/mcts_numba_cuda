@@ -204,10 +204,12 @@ class C4(State):
     def get_extra_info(self):
         return self.column_fills    
     
-    def move_name_to_index(self, name):
+    @staticmethod    
+    def move_name_to_index(name):
         return int(name)
 
-    def move_index_to_name(self, move_index):
+    @staticmethod
+    def move_index_to_name(move_index):
         return str(move_index)
     
     @staticmethod

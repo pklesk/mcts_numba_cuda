@@ -4,36 +4,49 @@ from numba import int8
 @cuda.jit(device=True)
 def is_action_legal(m, n, board, extra_info, turn, action, legal_actions):
     is_action_legal_gomoku(m, n, board, extra_info, turn, action, legal_actions)
-
-@cuda.jit(device=True)
-def legal_actions(m, n, board, extra_info, turn, legal_actions_with_count):
-    legal_actions_gomoku(m, n, board, extra_info, turn, legal_actions_with_count)
+    #is_action_legal_c4(m, n, board, extra_info, turn, action, legal_actions)
 
 @cuda.jit(device=True)
 def take_action(m, n, board, extra_info, turn, action):
     take_action_gomoku(m, n, board, extra_info, turn, action)
+    #take_action_c4(m, n, board, extra_info, turn, action)
+
+@cuda.jit(device=True)
+def legal_actions_playout(m, n, board, extra_info, turn, legal_actions_with_count):
+    legal_actions_playout_gomoku(m, n, board, extra_info, turn, legal_actions_with_count)
+    #legal_actions_playout_c4(m, n, board, extra_info, turn, legal_actions_with_count)
+
+@cuda.jit(device=True)    
+def take_action_playout(m, n, board, extra_info, turn, action, action_ord, legal_actions_with_count):
+    take_action_playout_gomoku(m, n, board, extra_info, turn, action, action_ord, legal_actions_with_count)    
+    #take_action_playout_c4(m, n, board, extra_info, turn, action, action_ord, legal_actions_with_count)
     
 @cuda.jit(device=True)
 def compute_outcome(m, n, board, extra_info, turn, last_action):
     return compute_outcome_gomoku(m, n, board, extra_info, turn, last_action)
-
-
+    #return compute_outcome_c4(m, n, board, extra_info, turn, last_action)
 
 @cuda.jit(device=True)
 def is_action_legal_c4(m, n, board, extra_info, turn, action, legal_actions):
     legal_actions[action] = True if extra_info[action] < m else False
+    
+@cuda.jit(device=True)
+def take_action_c4(m, n, board, extra_info, turn, action):
+    extra_info[action] += 1
+    row = m - extra_info[action]
+    board[row, action] = turn
 
 @cuda.jit(device=True)
-def legal_actions_c4(m, n, board, extra_info, turn, legal_actions_with_count):
+def legal_actions_playout_c4(m, n, board, extra_info, turn, legal_actions_with_count):
     count = 0
     for j in range(n):
         if extra_info[j] < m:            
             legal_actions_with_count[count] = j
             count += 1
     legal_actions_with_count[-1] = count
-    
+
 @cuda.jit(device=True)
-def take_action_c4(m, n, board, extra_info, turn, action):
+def take_action_playout_c4(m, n, board, extra_info, turn, action, action_ord, legal_actions_with_count):
     extra_info[action] += 1
     row = m - extra_info[action]
     board[row, action] = turn
@@ -105,24 +118,34 @@ def is_action_legal_gomoku(m, n, board, extra_info, turn, action, legal_actions)
     i = action // n
     j = action % n
     legal_actions[action] = (board[i, j] == 0)
-
-@cuda.jit(device=True)
-def legal_actions_gomoku(m, n, board, extra_info, turn, legal_actions_with_count):
-    count = 0
-    k = 0
-    for i in range(m):
-        for j in range(n):            
-            if board[i, j] == 0:                
-                legal_actions_with_count[count] = k
-                count += 1
-            k += 1
-    legal_actions_with_count[-1] = count
     
 @cuda.jit(device=True)
 def take_action_gomoku(m, n, board, extra_info, turn, action):
     i = action // n
     j = action % n
     board[i, j] = turn
+
+@cuda.jit(device=True)
+def legal_actions_playout_gomoku(m, n, board, extra_info, turn, legal_actions_with_count):
+    if legal_actions_with_count[-1] == 0: # time-consuming board scan only if legal actions not established yet
+        count = 0 
+        k = 0
+        for i in range(m):
+            for j in range(n):            
+                if board[i, j] == 0:                
+                    legal_actions_with_count[count] = k
+                    count += 1
+                k += 1
+        legal_actions_with_count[-1] = count
+
+@cuda.jit(device=True)
+def take_action_playout_gomoku(m, n, board, extra_info, turn, action, action_ord, legal_actions_with_count):
+    i = action // n
+    j = action % n
+    board[i, j] = turn    
+    last_legal_action = legal_actions_with_count[legal_actions_with_count[-1] - 1]
+    legal_actions_with_count[action_ord] = last_legal_action
+    legal_actions_with_count[- 1] -= 1            
 
 @cuda.jit(device=True)
 def compute_outcome_gomoku(m, n, board, extra_info, turn, last_action):    

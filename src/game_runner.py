@@ -12,8 +12,10 @@ class GameRunner:
     def run(self):
         game = self.game_class()   
         print(game)
-        outcome = 0                         
-        while True:                     
+        outcome = 0
+        move_count = 0                       
+        while True:
+            print(f"MOVE: {move_count + 1}")                     
             if not self.black_ai:
                 move_valid = False
                 escaped = False
@@ -74,4 +76,5 @@ class GameRunner:
             if outcome is not None:
                 print(f"GAME OUTCOME: {GameRunner.OUTCOME_MESSAGES[outcome + 1]}")
                 break
+            move_count += 1
         return outcome

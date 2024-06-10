@@ -7,7 +7,7 @@ import time
 import math
 from numba.core.errors import NumbaPerformanceWarning
 import warnings
-from mcts_cuda_game_specifics import is_action_legal, take_action, compute_outcome, legal_actions
+from mcts_cuda_game_specifics import is_action_legal, take_action, legal_actions_playout, take_action_playout, compute_outcome
 
 warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
 
@@ -131,7 +131,7 @@ class MCTSCuda:
         bpg = self.n_trees
         tpb = self._tpb_reset
         dev_root_board = cuda.to_device(root_board)
-        if root_extra_info == None:
+        if root_extra_info is None:
             root_extra_info = np.zeros(1, dtype=np.int8) # fake extra info array
         dev_root_extra_info = cuda.to_device(root_extra_info)
         if self.VERBOSE_DEBUG:
@@ -290,7 +290,7 @@ class MCTSCuda:
         if self.VERBOSE_DEBUG:
             print(f"[MCTSCuda._reduce_over_actions() done; time: {t2_reduce_over_actions - t1_reduce_over_actions} s]")                
         t2 = time.time()
-        # TODO remove depths below 
+        # TODO suitable if-verbose around depths below (so that efficiency is increased) 
         cuda.synchronize()
         depths = self._dev_trees_depths.copy_to_host()
         sizes = self._dev_trees_sizes.copy_to_host()
@@ -303,7 +303,8 @@ class MCTSCuda:
             max_depth = max(i_depth, max_depth)
         print(f"[steps performed: {step}]")
         print(f"[trees -> max depth: {max_depth}, max size: {np.max(i_sizes)}, mean size: {np.mean(i_sizes)}]")                    
-        print(f"[mean times -> selection: {total_time_select / step} s,  expansion: {total_time_expand / step}, playout: {total_time_playout / step} s, backup: {total_time_backup / step}]")
+        mus_factor = 10.0**6                    
+        print(f"[mean times of stages [us] -> selection: {mus_factor * total_time_select / step},  expansion: {mus_factor * total_time_expand / step}, playout: {mus_factor * total_time_playout / step}, backup: {mus_factor * total_time_backup / step}]")
         print(f"[best action: {best_action}, best score: {best_score}, best q: {qs[best_action]}]")                        
         print(f"MCTS_CUDA RUN SCPO DONE. [time: {t2 - t1} s, steps: {step}]")        
         return best_action
@@ -317,7 +318,7 @@ class MCTSCuda:
         bpg = self.n_trees
         tpb = self._tpb_reset
         dev_root_board = cuda.to_device(root_board)
-        if root_extra_info == None:
+        if root_extra_info is None:
             root_extra_info = np.zeros(1, dtype=np.int8) # fake extra info array        
         dev_root_extra_info = cuda.to_device(root_extra_info)
         if self.VERBOSE_DEBUG:
@@ -336,7 +337,7 @@ class MCTSCuda:
         trees_actions_expanded = np.empty((self.n_trees, self.state_max_actions + 2), dtype=np.int16)
         root_actions_expanded = np.empty(self.state_max_actions + 2, dtype=np.int16)
         while True:
-            t2 = time.time()            
+            t2 = time.time()
             if step >= self.search_steps_limit or t2 - t1 >= self.search_time_limit:
                 break
             if self.VERBOSE_DEBUG:
@@ -354,6 +355,7 @@ class MCTSCuda:
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._select() done; time: {t2_select - t1_select} s]")
             total_time_select += t2_select - t1_select
+                                        
             # MCTS expand            
             t1_expand = time.time()
             t1_expand_stage1 = time.time()
@@ -490,7 +492,7 @@ class MCTSCuda:
         if self.VERBOSE_DEBUG:
             print(f"[MCTSCuda._reduce_over_actions() done; time: {t2_reduce_over_actions - t1_reduce_over_actions} s]")                
         t2 = time.time()
-        # TODO remove depths below 
+        # TODO suitable if-verbose around depths below (so that efficiency is increased) 
         cuda.synchronize()
         depths = self._dev_trees_depths.copy_to_host()
         sizes = self._dev_trees_sizes.copy_to_host()
@@ -502,8 +504,9 @@ class MCTSCuda:
             # print(f"[tree {i} -> size: {sizes[i]}, depth: {i_depth}]")
             max_depth = max(i_depth, max_depth)
         print(f"[steps performed: {step}]")
-        print(f"[trees -> max depth: {max_depth}, max size: {np.max(i_sizes)}, mean size: {np.mean(i_sizes)}]")                    
-        print(f"[mean times -> selection: {total_time_select / step} s,  expansion: {total_time_expand / step}, playout: {total_time_playout / step} s, backup: {total_time_backup / step}]")
+        print(f"[trees -> max depth: {max_depth}, max size: {np.max(i_sizes)}, mean size: {np.mean(i_sizes)}]")
+        mus_factor = 10.0**6                    
+        print(f"[mean times of stages [us] -> selection: {mus_factor * total_time_select / step},  expansion: {mus_factor * total_time_expand / step}, playout: {mus_factor * total_time_playout / step}, backup: {mus_factor * total_time_backup / step}]")
         print(f"[best action: {best_action}, best score: {best_score}, best q: {qs[best_action]}]")                        
         print(f"MCTS_CUDA RUN ACPO DONE. [time: {t2 - t1} s, steps: {step}]")        
         return best_action
@@ -720,6 +723,8 @@ class MCTSCuda:
         bept = (m_n + tpb - 1) // tpb # board elements per thread
         e = t # board element flat index
         selected = trees_nodes_selected[ti]
+        if trees_terminals[ti, selected]:
+            return 
         for _ in range(bept):
             if e < m_n:
                 i = e // n
@@ -816,16 +821,18 @@ class MCTSCuda:
                 for j in range(n):
                     local_board[i, j] = shared_board[i, j]
             for i in range(extra_info_memory):
-                local_extra_info[i] = shared_extra_info[i]
+                local_extra_info[i] = shared_extra_info[i]                
+            local_legal_actions_with_count[-1] = 0
             playout_depth = int16(0)
             turn = trees_turns[ti, selected]
             while True: # playout loop
                 outcome = compute_outcome(m, n, local_board, local_extra_info, turn, last_action)
                 if outcome > int8(1): # indecisive, game ongoing
-                    legal_actions(m, n, local_board, local_extra_info, turn, local_legal_actions_with_count)
+                    legal_actions_playout(m, n, local_board, local_extra_info, turn, local_legal_actions_with_count)
                     count = local_legal_actions_with_count[-1]
-                    last_action = local_legal_actions_with_count[int16(xoroshiro128p_uniform_float32(random_generators_playout, t_global) * count)]
-                    take_action(m, n, local_board, local_extra_info, turn, last_action)
+                    action_ord = int16(xoroshiro128p_uniform_float32(random_generators_playout, t_global) * count)
+                    last_action = local_legal_actions_with_count[action_ord]
+                    take_action_playout(m, n, local_board, local_extra_info, turn, last_action, action_ord, local_legal_actions_with_count)                    
                     turn = -turn
                 else:
                     if playout_depth == int16(0):
@@ -861,7 +868,7 @@ class MCTSCuda:
         local_legal_actions_with_count = cuda.local.array((1024 + 1), dtype=int16) # 1024 - assumed limit on max actions        
         tai = cuda.blockIdx.x # tree-action pair index
         ti = trees_actions_expanded_flat[tai, 0]
-        action = trees_actions_expanded_flat[tai, 1]                
+        action = trees_actions_expanded_flat[tai, 1]  
         tpb = cuda.blockDim.x
         t = cuda.threadIdx.x
         selected = trees_nodes_selected[ti]
@@ -873,8 +880,12 @@ class MCTSCuda:
         if trees_terminals[ti, selected]: # root for playout has been discovered terminal before (by game rules) -> taking stored outcome (multiplied by tpb)
             if t == 0:
                 outcome = trees_outcomes[ti, selected]
-                trees_playout_outcomes[ti, 0] = tpb if outcome == int8(-1) else int32(0) # wins of -1
-                trees_playout_outcomes[ti, 1] = tpb if outcome == int8(1) else int32(0) # wins of +1
+                if fake_child_for_playout != int16(-1):                
+                    trees_playout_outcomes_children[ti, action, 0] = tpb if outcome == int8(-1) else int32(0) # wins of -1
+                    trees_playout_outcomes_children[ti, action, 1] = tpb if outcome == int8(1) else int32(0) # wins of +1
+                else:
+                    trees_playout_outcomes[ti, 0] = tpb if outcome == int8(-1) else int32(0) # wins of -1
+                    trees_playout_outcomes[ti, 1] = tpb if outcome == int8(1) else int32(0) # wins of +1
         else:
             t = cuda.threadIdx.x
             t_global = cuda.grid(1)
@@ -903,15 +914,17 @@ class MCTSCuda:
                     local_board[i, j] = shared_board[i, j]
             for i in range(extra_info_memory):
                 local_extra_info[i] = shared_extra_info[i]
-            playout_depth = int16(0)
+            local_legal_actions_with_count[-1] = 0
+            playout_depth = int16(0)            
             turn = trees_turns[ti, selected]
             while True: # playout loop
                 outcome = compute_outcome(m, n, local_board, local_extra_info, turn, last_action)
                 if outcome > int8(1): # indecisive, game ongoing
-                    legal_actions(m, n, local_board, local_extra_info, turn, local_legal_actions_with_count)
+                    legal_actions_playout(m, n, local_board, local_extra_info, turn, local_legal_actions_with_count)
                     count = local_legal_actions_with_count[-1]
-                    last_action = local_legal_actions_with_count[int16(xoroshiro128p_uniform_float32(random_generators_playout, t_global) * count)]
-                    take_action(m, n, local_board, local_extra_info, turn, last_action)
+                    action_ord = int16(xoroshiro128p_uniform_float32(random_generators_playout, t_global) * count)
+                    last_action = local_legal_actions_with_count[action_ord]
+                    take_action_playout(m, n, local_board, local_extra_info, turn, last_action, action_ord, local_legal_actions_with_count)
                     turn = -turn
                 else:
                     if playout_depth == int16(0):
@@ -982,8 +995,8 @@ class MCTSCuda:
                 shared_playout_outcomes_children[t, 0] = n_negative_wins
                 shared_playout_outcomes_children[t, 1] = n_positive_wins
             else:
-                shared_playout_outcomes_children[t, 0] = np.int16(0)
-                shared_playout_outcomes_children[t, 1] = np.int16(0)                
+                shared_playout_outcomes_children[t, 0] = np.int32(0)
+                shared_playout_outcomes_children[t, 1] = np.int32(0)                
             cuda.syncthreads()
             stride = tpb >> 1
             while stride > 0:
@@ -1018,8 +1031,8 @@ class MCTSCuda:
                     trees_ns_wins[ti, node] += n_positive_wins
                 node = trees[ti, node, 0]
                 if node == int32(-1):
-                    break                
-                
+                    break
+        
     @staticmethod
     @cuda.jit(void(int32[:, :, :], int32[:, :], int32[:, :], int16[:], int64[:], int64[:], int64[:]))
     def _reduce_over_trees(trees, trees_ns, trees_ns_wins, root_actions_expanded, root_ns, actions_ns, actions_ns_wins):
