@@ -304,7 +304,7 @@ class MCTSCuda:
         print(f"[steps performed: {step}]")
         print(f"[trees -> max depth: {max_depth}, max size: {np.max(i_sizes)}, mean size: {np.mean(i_sizes)}]")                    
         mus_factor = 10.0**6                    
-        print(f"[mean times of stages [us] -> selection: {mus_factor * total_time_select / step},  expansion: {mus_factor * total_time_expand / step}, playout: {mus_factor * total_time_playout / step}, backup: {mus_factor * total_time_backup / step}]")
+        print(f"[mean times of stages [us] -> selection: {mus_factor * total_time_select / step}, expansion: {mus_factor * total_time_expand / step}, playout: {mus_factor * total_time_playout / step}, backup: {mus_factor * total_time_backup / step}]")
         print(f"[best action: {best_action}, best score: {best_score}, best q: {qs[best_action]}]")                        
         print(f"MCTS_CUDA RUN SCPO DONE. [time: {t2 - t1} s, steps: {step}]")        
         return best_action
@@ -506,7 +506,7 @@ class MCTSCuda:
         print(f"[steps performed: {step}]")
         print(f"[trees -> max depth: {max_depth}, max size: {np.max(i_sizes)}, mean size: {np.mean(i_sizes)}]")
         mus_factor = 10.0**6                    
-        print(f"[mean times of stages [us] -> selection: {mus_factor * total_time_select / step},  expansion: {mus_factor * total_time_expand / step}, playout: {mus_factor * total_time_playout / step}, backup: {mus_factor * total_time_backup / step}]")
+        print(f"[mean times of stages [us] -> selection: {mus_factor * total_time_select / step}, expansion: {mus_factor * total_time_expand / step}, playout: {mus_factor * total_time_playout / step}, backup: {mus_factor * total_time_backup / step}]")
         print(f"[best action: {best_action}, best score: {best_score}, best q: {qs[best_action]}]")                        
         print(f"MCTS_CUDA RUN ACPO DONE. [time: {t2 - t1} s, steps: {step}]")        
         return best_action
