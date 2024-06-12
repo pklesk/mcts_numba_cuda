@@ -8,7 +8,6 @@ import math
 from numba.core.errors import NumbaPerformanceWarning
 import warnings
 from mcts_cuda_game_specifics import is_action_legal, take_action, legal_actions_playout, take_action_playout, compute_outcome
-from tables.parameters import MAX_TREE_DEPTH
 
 warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
 
