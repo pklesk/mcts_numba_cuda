@@ -67,7 +67,7 @@ class MCTSCuda:
     def _init_device_side_arrays(self):        
         per_state_additional_memory = 1 + 1 + 1 + 1 + 4 + 4 # turns (1), leaves (1), terminals (1), outcomes (1), ns (4), ns_wins (4)
         per_tree_additional_memory = 4 + 4 + (self.state_max_actions + 2) * 4 + 2 * 4 # tree sizes (4), nodes selected (4), nodes expanded ((self.state_max_actions + 2) * 4), playout outcomes (2 * 4)
-        per_tree_additional_memory += (MAX_TREE_DEPTH + 2) * 4 
+        per_tree_additional_memory += (self.MAX_TREE_DEPTH + 2) * 4 
         if self.kind == "acpo":
             per_tree_additional_memory += self.state_max_actions * 2 * 4 # more playout outcomes for the expanded level (self.state_max_actions * 2 * 4)            
         self._per_state_memory = np.prod(self.state_board_shape) + self.state_extra_info_memory + (1 + self.state_max_actions) * 4 + per_state_additional_memory 
@@ -89,7 +89,7 @@ class MCTSCuda:
         self._dev_trees_boards = cuda.device_array((self.n_trees, self._max_tree_size, self.state_board_shape[0], self.state_board_shape[1]), dtype=np.int8)
         self._dev_trees_extra_infos = cuda.device_array((self.n_trees, self._max_tree_size, self.state_extra_info_memory), dtype=np.int8)
         self._dev_trees_nodes_selected = cuda.device_array(self.n_trees, dtype=np.int32)
-        self._dev_trees_selected_paths = cuda.device_array((self.n_trees, MAX_TREE_DEPTH + 2), dtype=np.int32)
+        self._dev_trees_selected_paths = cuda.device_array((self.n_trees, self.MAX_TREE_DEPTH + 2), dtype=np.int32)
         self._dev_trees_actions_expanded = cuda.device_array((self.n_trees, self.state_max_actions + 2), dtype=np.int16) # +2 because 2 last entries inform about: child picked randomly for playout, number of actions (children) expanded            
         board_tpb = int(2**np.ceil(np.log2(np.prod(self.state_board_shape))))
         extra_info_tbp = int(2**np.ceil(np.log2(self.state_extra_info_memory))) if self.state_extra_info_memory > 0 else 1
