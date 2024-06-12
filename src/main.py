@@ -28,9 +28,11 @@ AIS = {
     "mcts_cuda_3_inf_2_512_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=2, n_playouts=512, kind="acpo", action_to_name_function=STATE_CLASS.move_index_to_name),
     "mcts_cuda_3_inf_4_512_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=4, n_playouts=512, kind="acpo", action_to_name_function=STATE_CLASS.move_index_to_name),
     "mcts_cuda_3_inf_1_128_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=1, n_playouts=128, kind="acpo", action_to_name_function=STATE_CLASS.move_index_to_name),            
-    "mcts_cuda_10_inf_4_32_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=10.0, search_steps_limit=np.inf, n_trees=4, n_playouts=32, kind="acpo", action_to_name_function=STATE_CLASS.move_index_to_name),
-    "mcts_cuda_5_inf_1_32_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=1, n_playouts=1, kind="acpo", action_to_name_function=STATE_CLASS.move_index_to_name),
-    "mcts_cuda_5_inf_32_32_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=32, n_playouts=32, kind="acpo", action_to_name_function=STATE_CLASS.move_index_to_name), 
+    "mcts_cuda_3_inf_4_32_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=10.0, search_steps_limit=np.inf, n_trees=4, n_playouts=32, kind="acpo", action_to_name_function=STATE_CLASS.move_index_to_name),
+    "mcts_cuda_10_inf_1_32_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=10.0, search_steps_limit=np.inf, n_trees=1, n_playouts=32, kind="acpo", action_to_name_function=STATE_CLASS.move_index_to_name),
+    "mcts_cuda_10_inf_1_32_acpo2": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=10.0, search_steps_limit=np.inf, n_trees=1, n_playouts=32, kind="acpo2", action_to_name_function=STATE_CLASS.move_index_to_name),
+    "mcts_cuda_10_inf_8_32_acpo": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=10.0, search_steps_limit=np.inf, n_trees=8, n_playouts=32, kind="acpo", action_to_name_function=STATE_CLASS.move_index_to_name),
+    "mcts_cuda_10_inf_8_32_acpo2": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=10.0, search_steps_limit=np.inf, n_trees=8, n_playouts=32, kind="acpo2", action_to_name_function=STATE_CLASS.move_index_to_name) 
     } 
 
 LINE_SEPARATOR = 192 * "="
@@ -41,7 +43,7 @@ if __name__ == "__main__":
     n_games = 1
     outcomes = np.zeros(n_games, dtype=np.int8)
     ai_A = None 
-    ai_B = AIS["mcts_cuda_5_inf_1_32_acpo"]
+    ai_B = AIS["mcts_cuda_5_inf_8_32_acpo2"]
     print(LINE_SEPARATOR)
     print("MATCH-UP:")
     print(f"A: {ai_A if ai_A else 'human'}")
