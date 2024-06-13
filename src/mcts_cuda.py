@@ -618,7 +618,13 @@ class MCTSCuda:
             MCTSCuda._expand_acpo2_stage2[bpg, tpb](self._dev_trees, self._dev_trees_depths, self._dev_trees_turns, self._dev_trees_leaves, self._dev_trees_terminals, self._dev_trees_outcomes, self._dev_trees_ns, self._dev_trees_ns_wins, 
                                                     self._dev_trees_boards, self._dev_trees_extra_infos,                                               
                                                     self._dev_trees_nodes_selected, self._dev_trees_actions_expanded)
+            # TODO remove fragment below (was for debug purposes)
+            # tmp_s = self._dev_trees_nodes_selected.copy_to_host()[0]
+            # tmp_t = self._dev_trees_terminals.copy_to_host()
+            # if tmp_t[0, tmp_s]:
+            #     print("terminal selected")
             cuda.synchronize()
+            
             t2_expand_stage2 = time.time()
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._expand_acpo2_stage2() done; time: {t2_expand_stage2 - t1_expand_stage2} s]")
@@ -644,15 +650,15 @@ class MCTSCuda:
             bpg = self.n_trees
             tpb = self._tpb_backup                     
             if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._backup_acpo_stage1()...; bpg: {bpg}, tpb: {tpb}]")
-            MCTSCuda._backup_acpo_stage1[bpg, tpb](self.n_playouts, 
+                print(f"[MCTSCuda._backup_acpo2_stage1()...; bpg: {bpg}, tpb: {tpb}]")
+            MCTSCuda._backup_acpo2_stage1[bpg, tpb](self.n_playouts, 
                                                    self._dev_trees, self._dev_trees_turns, self._dev_trees_ns, self._dev_trees_ns_wins, 
                                                    self._dev_trees_nodes_selected, self._dev_trees_actions_expanded, self._dev_trees_playout_outcomes, self._dev_trees_playout_outcomes_children)
             cuda.synchronize()            
             t2_backup_stage1 = time.time()
             total_time_backup_1 += t2_backup_stage1 - t1_backup_stage1
             if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._backup_acpo_stage1() done; time: {t2_backup_stage1 - t1_backup_stage1} s]")            
+                print(f"[MCTSCuda._backup_acpo2_stage1() done; time: {t2_backup_stage1 - t1_backup_stage1} s]")            
             t1_backup_stage2 = time.time()            
             tpb = self._tpb_backup
             bpg = self.n_trees         
@@ -1055,9 +1061,9 @@ class MCTSCuda:
                     trees_leaves[ti, selected] = False
                 trees_actions_expanded[ti, -1] = child_shift + 1 # information for next kernel how many children expanded (as last entry in trees_actions_expanded2)                
                 trees_actions_expanded[ti, -2] = int16(-2) # indicates all children for playout (acpo)                                
-            else:
+            else:                
                 trees_actions_expanded[ti, -1] = int16(1)
-                trees_actions_expanded[ti, -2] = int16(-1) # fake child for playout indicating that selected is terminal (and playout to be done from him)                
+                trees_actions_expanded[ti, -2] = int16(-1) # fake child for playout indicating that selected is terminal (and playout to be done from him)                                 
         cuda.syncthreads()        
         if t < state_max_actions: 
             child_index = int32(-1)
@@ -1066,10 +1072,12 @@ class MCTSCuda:
                 child_index = size_so_far + child_shift                
                 trees_actions_expanded[ti, t] = child_shift
             else: 
-                trees_actions_expanded[ti, t] = int16(-1)              
+                trees_actions_expanded[ti, t] = int16(-1)                
             trees[ti, selected, 1 + t] = child_index # parent gets to know where child is 
         if t == 0:
             trees_sizes[ti] += shared_legal_actions_child_shifts[state_max_actions - 1] + 1 # updating tree size
+            if selected_is_terminal:
+                trees_actions_expanded[ti, 0] = int16(0) # fake legal action for terminal playout (exactly 1, any, must be legal)
         
     @staticmethod
     @cuda.jit(void(int32[:, :, :], int16[:, :], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :], int32[:, :], int32[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :]))
