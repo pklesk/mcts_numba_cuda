@@ -23,7 +23,7 @@ class MCTSCuda:
 
     MAX_STATE_BOARD_SHAPE = (32, 32)
     MAX_STATE_EXTRA_INFO_MEMORY = 1024
-    MAX_STATE_MAX_ACTIONS = 1024
+    MAX_STATE_MAX_ACTIONS = 512
     MAX_DEVICE_MEMORY = 2.0 * 1024**3 # to be consumed by device-side multiple trees for MCTS (and related information)        
     MAX_TREE_SIZE = 2**24
     MAX_N_TREES = 512
@@ -287,7 +287,7 @@ class MCTSCuda:
             print(f"[MCTSCuda._reduce_over_actions()...; bpg: {bpg}, tpb: {tpb}]")        
         dev_best_score = cuda.device_array(1, dtype=np.float32)
         dev_best_action = cuda.device_array(1, dtype=np.int16)
-        MCTSCuda._reduce_over_actions[bpg, tpb](dev_actions_ns, dev_actions_ns_wins, dev_best_score, dev_best_action)                 
+        MCTSCuda._reduce_over_actions[bpg, tpb](n_root_actions, dev_actions_ns, dev_actions_ns_wins, dev_best_score, dev_best_action)                 
         best_score = dev_best_score.copy_to_host()[0]
         best_action = dev_best_action.copy_to_host()[0]        
         cuda.synchronize()
@@ -511,7 +511,7 @@ class MCTSCuda:
             print(f"[MCTSCuda._reduce_over_actions()...; bpg: {bpg}, tpb: {tpb}]")        
         dev_best_score = cuda.device_array(1, dtype=np.float32)
         dev_best_action = cuda.device_array(1, dtype=np.int16)
-        MCTSCuda._reduce_over_actions[bpg, tpb](dev_actions_ns, dev_actions_ns_wins, dev_best_score, dev_best_action)                 
+        MCTSCuda._reduce_over_actions[bpg, tpb](n_root_actions, dev_actions_ns, dev_actions_ns_wins, dev_best_score, dev_best_action)                 
         best_score = dev_best_score.copy_to_host()[0]
         best_action = dev_best_action.copy_to_host()[0]        
         cuda.synchronize()
@@ -679,13 +679,9 @@ class MCTSCuda:
         print(f"[loop done, time: {t2_loop - t1_loop} s]")                    
         # MCTS sum reduction over trees for each root action                
         n_root_actions = int(root_actions_expanded[-1]) 
-        t1_rot_transfer1 = time.time()
         root_actions = np.where(root_actions_expanded[:-2] >= 0)[0].astype(np.int16)
         root_actions_expanded[:n_root_actions] = root_actions        
-        t1_rot_transfer1 = time.time() 
         dev_root_actions_expanded = cuda.to_device(root_actions_expanded)        
-        t2_rot_transfer1 = time.time()
-        print(f"[rot transfer 1 time: {t2_rot_transfer1 - t1_rot_transfer1} s, shape: {root_actions.shape}, bytes: {root_actions.nbytes}]")
         t1_rot_transfer2 = time.time()
         t1_reduce_over_trees = time.time()
         bpg = n_root_actions
@@ -729,7 +725,7 @@ class MCTSCuda:
             print(f"[MCTSCuda._reduce_over_actions()...; bpg: {bpg}, tpb: {tpb}]")        
         dev_best_score = cuda.device_array(1, dtype=np.float32)
         dev_best_action = cuda.device_array(1, dtype=np.int16)
-        MCTSCuda._reduce_over_actions[bpg, tpb](self.dev_actions_ns, self.dev_actions_ns_wins, dev_best_score, dev_best_action)                 
+        MCTSCuda._reduce_over_actions[bpg, tpb](n_root_actions, self.dev_actions_ns, self.dev_actions_ns_wins, dev_best_score, dev_best_action)                 
         best_score = dev_best_score.copy_to_host()[0]
         best_action = dev_best_action.copy_to_host()[0]                
         best_action = root_actions_expanded[best_action]
@@ -1629,11 +1625,11 @@ class MCTSCuda:
     @staticmethod
     @cuda.jit(void(int32[:, :, :], int32[:, :], int32[:, :], int16[:], int64[:], int64[:], int64[:]))
     def _reduce_over_trees(trees, trees_ns, trees_ns_wins, root_actions_expanded, root_ns, actions_ns, actions_ns_wins):
-        shared_root_ns = cuda.shared.array(512, dtype=int32) # 512 - assumed max of n_trees
-        shared_actions_ns = cuda.shared.array(512, dtype=int32)
-        shared_actions_ns_wins = cuda.shared.array(512, dtype=int32)
+        shared_root_ns = cuda.shared.array(512, dtype=int64) # 512 - assumed max of n_trees
+        shared_actions_ns = cuda.shared.array(512, dtype=int64)
+        shared_actions_ns_wins = cuda.shared.array(512, dtype=int64)
         b = cuda.blockIdx.x
-        action = root_actions_expanded[cuda.blockIdx.x] # action index
+        action = root_actions_expanded[b] # action index
         n_trees = trees.shape[0]
         tpb = cuda.blockDim.x
         t = cuda.threadIdx.x # thread index == tree index
@@ -1643,9 +1639,9 @@ class MCTSCuda:
             shared_actions_ns[t] = trees_ns[t, action_node]
             shared_actions_ns_wins[t] = trees_ns_wins[t, action_node]
         else:
-            shared_root_ns[t] = int32(0)
-            shared_actions_ns[t] = int32(0)
-            shared_actions_ns_wins[t] = int32(0)
+            shared_root_ns[t] = int64(0)
+            shared_actions_ns[t] = int64(0)
+            shared_actions_ns_wins[t] = int64(0)
         cuda.syncthreads()
         stride = tpb >> 1 # half of tpb
         while stride > 0: # max-argmax reduction pattern
@@ -1662,13 +1658,12 @@ class MCTSCuda:
             actions_ns_wins[b] = shared_actions_ns_wins[0]
             
     @staticmethod
-    @cuda.jit(void(int64[:], int64[:], float32[:], int16[:]))
-    def _reduce_over_actions(actions_ns, actions_ns_wins, best_score, best_action):
+    @cuda.jit(void(int16, int64[:], int64[:], float32[:], int16[:]))
+    def _reduce_over_actions(n_root_actions, actions_ns, actions_ns_wins, best_score, best_action):
         shared_actions_ns = cuda.shared.array(512, dtype=int32) # 512 - assumed max n_actions
         shared_actions_ns_wins = cuda.shared.array(512, dtype=int32)
         shared_best_action = cuda.shared.array(512, dtype=int16)
         tpb = cuda.blockDim.x
-        n_root_actions = actions_ns.size
         a = cuda.threadIdx.x # action index
         if a < n_root_actions:
             shared_actions_ns[a] = actions_ns[a]
