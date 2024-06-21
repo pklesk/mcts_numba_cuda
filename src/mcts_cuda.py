@@ -9,115 +9,183 @@ from numba.core.errors import NumbaPerformanceWarning
 import warnings
 from mcts_cuda_game_specifics import is_action_legal, take_action, legal_actions_playout, take_action_playout, compute_outcome
 
+__version__ = "1.0.0"
+__author__ = "Przemysław Klęsk"
+__email__ = "pklesk@zut.edu.pl" 
+
 warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
+
 
 class MCTSCuda:
     
-    SEARCH_TIME_LIMIT = 5.0
-    SEARCH_STEPS_LIMIT = np.inf
-    UCB1_C = 2.0
-    SEED = 0
-        
-    VERBOSE_DEBUG = False
-    VERBOSE_INFO = True
+    KINDS = ["psc", "pac", "pac_prodigal"]
+    
+    DEFAULT_N_TREES = 8
+    DEFAULT_N_PLAYOUTS = 256
+    DEFAULT_KIND = KINDS[-1]    
+    DEFAULT_SEARCH_TIME_LIMIT = 5.0 # [s], np.inf possible
+    DEFAULT_SEARCH_STEPS_LIMIT = np.inf # np.inf possible
+    DEFAULT_UCB1_C = 2.0
+    DEFAULT_DEVICE_MEMORY = 2.0 * 1024**3 # to be consumed by device-side multiple trees for MCTS (and related information)
+    DEFAULT_SEED = 0 
+    DEFAULT_VERBOSE_DEBUG = False
+    DEFAULT_VERBOSE_INFO = True
 
     MAX_STATE_BOARD_SHAPE = (32, 32)
-    MAX_STATE_EXTRA_INFO_MEMORY = 1024
-    MAX_STATE_MAX_ACTIONS = 512
-    MAX_DEVICE_MEMORY = 2.0 * 1024**3 # to be consumed by device-side multiple trees for MCTS (and related information)        
+    MAX_STATE_EXTRA_INFO_MEMORY = 4096
+    MAX_STATE_MAX_ACTIONS = 512            
     MAX_TREE_SIZE = 2**24
-    MAX_N_TREES = 512
-    
-    MAX_N_PLAYOUTS = 512
-    MAX_TREE_DEPTH = 2048 # to memorize selected paths  
+    MAX_N_TREES = 512    
+    MAX_N_PLAYOUTS = 512        
+    MAX_TREE_DEPTH = 2048 # to memorize paths at select stage          
         
     def __init__(self, state_board_shape, state_extra_info_memory, state_max_actions, 
-                 n_trees=16, n_playouts=128, kind="scpo", 
-                 search_time_limit=SEARCH_TIME_LIMIT, search_steps_limit=SEARCH_STEPS_LIMIT, ucb1_c=UCB1_C, 
-                 seed=SEED, max_device_memory=MAX_DEVICE_MEMORY,
+                 n_trees=DEFAULT_N_TREES, n_playouts=DEFAULT_N_PLAYOUTS, kind=DEFAULT_KIND, 
+                 search_time_limit=DEFAULT_SEARCH_TIME_LIMIT, search_steps_limit=DEFAULT_SEARCH_STEPS_LIMIT, ucb1_c=DEFAULT_UCB1_C, 
+                 device_memory=DEFAULT_DEVICE_MEMORY, seed=DEFAULT_SEED,
+                 verbose_debug=DEFAULT_VERBOSE_DEBUG, verbose_info=DEFAULT_VERBOSE_INFO,
                  action_to_name_function=None):
+        self._set_cuda_constants()
+        if not self.cuda_available:
+            sys.exit(f"[MCTSCuda.__init__(): exiting due to cuda computations not available]")        
         self.state_board_shape = state_board_shape
         if self.state_board_shape[0] > self.MAX_STATE_BOARD_SHAPE[0] or self.state_board_shape[1] > self.MAX_STATE_BOARD_SHAPE[1]:
-            sys.exit(f"[MCTSCuda.__init__() -> exiting due to allowed state board shape exceeded]")            
+            sys.exit(f"[MCTSCuda.__init__(): exiting due to allowed state board shape exceeded]")            
         self.state_extra_info_memory = max(state_extra_info_memory, 1)
         if self.state_extra_info_memory > self.MAX_STATE_EXTRA_INFO_MEMORY:
-            sys.exit(f"[MCTSCuda.__init__() -> exiting due to allowed state extra info memory exceeded]")        
+            sys.exit(f"[MCTSCuda.__init__(): exiting due to allowed state extra info memory exceeded]")        
         self.state_max_actions = state_max_actions
         if self.state_max_actions > self.MAX_STATE_MAX_ACTIONS:
-            sys.exit(f"[MCTSCuda.__init__() -> exiting due to allowed state max actions memory exceeded]")        
-        self.n_trees = min(n_trees, self.MAX_N_TREES)
+            sys.exit(f"[MCTSCuda.__init__(): exiting due to allowed state max actions memory exceeded]")        
+        if self.state_max_actions > self.cuda_tpb_default:
+            sys.exit(f"[MCTSCuda.__init__(): exiting due to state max actions exceeding half of cuda default tpb]")            
+        self.n_trees = n_trees
+        self._validate_param("n_trees", int, False, 1, False, self.MAX_N_TREES, self.DEFAULT_N_TREES)
         self.n_playouts = min(n_playouts, self.MAX_N_PLAYOUTS)
+        self._validate_param("n_playouts", int, False, 1, False, self.MAX_N_PLAYOUTS, self.DEFAULT_N_PLAYOUTS)
         self.kind = kind
-        self._run = None # function pointer assignment postponed        
+        if not self.kind in self.KINDS:
+            invalid_kind = kind
+            kind = self.DEFAULT_KIND
+            print(f"[invalid kind: '{invalid_kind}' changed to '{kind}'; possible kinds: {self.KINDS}]")
         self.search_time_limit = search_time_limit
-        self.search_steps_limit = search_steps_limit
+        self._validate_param("search_time_limit", float, True, 0.0, False, np.inf, self.DEFAULT_SEARCH_TIME_LIMIT)
+        self.search_steps_limit = float(search_steps_limit)        
+        self._validate_param("search_steps_limit", float, True, 0.0, False, np.inf, self.DEFAULT_SEARCH_STEPS_LIMIT) # purposely float, so that np.inf possible
         self.ucb1_c = ucb1_c
+        self._validate_param("ucb1_c", float, False, 0.0, False, np.inf, self.DEFAULT_UCB1_C)
+        self.device_memory = device_memory
+        self._validate_param("device_memory", float, True, 0.0, False, np.inf, self.DEFAULT_DEVICE_MEMORY)    
         self.seed = seed
-        self.max_device_memory = max_device_memory
-        self.action_to_name_function = action_to_name_function         
-        self._set_cuda_constants()
-        if not self._cuda_available:
-            sys.exit(f"[MCTSCuda.__init__() -> exiting due to cuda computations not available]")
-        self._search_time_limit_epsilon = 0.01 + 0.5 * (self.n_trees / self.MAX_N_TREES + self.state_max_actions / self.MAX_STATE_MAX_ACTIONS) * 0.04         
+        self.verbose_debug = verbose_debug 
+        self._validate_param("verbose_debug", bool, False, False, False, True, self.DEFAULT_VERBOSE_DEBUG)
+        self.verbose_info = verbose_info 
+        self._validate_param("verbose_info", bool, False, False, False, True, self.DEFAULT_VERBOSE_INFO)        
+        self.action_to_name_function = action_to_name_function
+        eps = 0.01 + 0.5 * (self.n_trees / self.MAX_N_TREES + self.state_max_actions / self.MAX_STATE_MAX_ACTIONS) * 0.04                                                                         
+        self.search_time_limit_minus_eps = self.search_time_limit * (1.0 - eps)
     
     def _set_cuda_constants(self):    
-        self._cuda_available = cuda.is_available() 
-        self._cuda_tpb_default = cuda.get_current_device().MAX_THREADS_PER_BLOCK // 2 if self._cuda_available else None
+        self.cuda_available = cuda.is_available() 
+        self.cuda_tpb_default = cuda.get_current_device().MAX_THREADS_PER_BLOCK // 2 if self.cuda_available else None
+    
+    def _validate_param(self, name, ptype, leq, low, geq, high, default):
+        value = getattr(self, name)
+        invalid = False
+        invalid = value <= low if leq else value < low
+        if not invalid:
+            invalid = value >= high if geq else value > high
+        if not invalid:
+            invalid = not isinstance(value, ptype)
+        if invalid:
+            low_str = str(low)
+            high_str = str(high)
+            correct_range_str = ("(" if leq else "[") + f"{low_str}, {high_str}" + (")" if geq else "]")
+            setattr(self, name, default)
+            print(f"[invalid param {name}: {value} changed to default: {default}; correct range: {correct_range_str}, correct type: {ptype}]")
         
-    def _init_device_side_arrays(self):        
-        per_state_additional_memory = 1 + 1 + 1 + 1 + 4 + 4 # turns (1), leaves (1), terminals (1), outcomes (1), ns (4), ns_wins (4)
-        per_tree_additional_memory = 4 + 4 + (self.state_max_actions + 2) * 4 + 2 * 4 # tree sizes (4), nodes selected (4), nodes expanded ((self.state_max_actions + 2) * 4), playout outcomes (2 * 4)
-        per_tree_additional_memory += (self.MAX_TREE_DEPTH + 2) * 4 
-        if self.kind == "acpo" or self.kind == "acpo2":
-            per_tree_additional_memory += self.state_max_actions * 2 * 4 # more playout outcomes for the expanded level (self.state_max_actions * 2 * 4)            
-        self._per_state_memory = np.prod(self.state_board_shape) + self.state_extra_info_memory + (1 + self.state_max_actions) * 4 + per_state_additional_memory 
-        self._max_tree_size = (int(self.max_device_memory) - self.n_trees * per_tree_additional_memory) // (self._per_state_memory * self.n_trees)
-        self._max_tree_size = min(self._max_tree_size, self.MAX_TREE_SIZE)         
-        if MCTSCuda.VERBOSE_INFO:
-            print(f"[MCTSCuda._init_device_side_arrays() for {self}]")
-            print(f"[per_state_memory: {self._per_state_memory} B,  calculated _max_tree_size: {self._max_tree_size}]")
-        t1_dev_arrays = time.time()        
-        self._dev_trees = cuda.device_array((self.n_trees, self._max_tree_size, 1 + self.state_max_actions), dtype=np.int32) # each row of a tree represents a node consisting of: parent indexes and indexes of all children (associated with actions), -1 index for none parent or child 
-        self._dev_trees_sizes = cuda.device_array(self.n_trees, dtype=np.int32)
-        self._dev_trees_depths = cuda.device_array((self.n_trees, self._max_tree_size), dtype=np.int16)
-        self._dev_trees_turns = cuda.device_array((self.n_trees, self._max_tree_size), dtype=np.int8)
-        self._dev_trees_leaves = cuda.device_array((self.n_trees, self._max_tree_size), dtype=bool)
-        self._dev_trees_terminals = cuda.device_array((self.n_trees, self._max_tree_size), dtype=bool)
-        self._dev_trees_outcomes = cuda.device_array((self.n_trees, self._max_tree_size), dtype=np.int8)        
-        self._dev_trees_ns = cuda.device_array((self.n_trees, self._max_tree_size), dtype=np.int32)
-        self._dev_trees_ns_wins = cuda.device_array((self.n_trees, self._max_tree_size), dtype=np.int32)
-        self._dev_trees_boards = cuda.device_array((self.n_trees, self._max_tree_size, self.state_board_shape[0], self.state_board_shape[1]), dtype=np.int8)
-        self._dev_trees_extra_infos = cuda.device_array((self.n_trees, self._max_tree_size, self.state_extra_info_memory), dtype=np.int8)
-        self._dev_trees_nodes_selected = cuda.device_array(self.n_trees, dtype=np.int32)
-        self._dev_trees_selected_paths = cuda.device_array((self.n_trees, self.MAX_TREE_DEPTH + 2), dtype=np.int32)
-        self._dev_trees_actions_expanded = cuda.device_array((self.n_trees, self.state_max_actions + 2), dtype=np.int16) # +2 because 2 last entries inform about: child picked randomly for playout, number of actions (children) expanded            
+    def init_device_side_arrays(self):
+        if self.verbose_info:
+            print(f"[MCTSCuda._init_device_side_arrays()... for {self}]")
+        t1_dev_arrays = time.time()
+        # dtypes 
+        node_index_dtype = np.int32
+        node_index_bytes = node_index_dtype().itemsize # 4 B
+        action_index_dtype = np.int16
+        action_index_bytes = action_index_dtype().itemsize # 2 B
+        board_element_dtype = np.int8
+        board_element_bytes = board_element_dtype().itemsize # 1 B
+        extra_info_element_dtype = np.int8
+        extra_info_element_bytes = extra_info_element_dtype().itemsize # 1 B
+        depth_dtype = np.int16
+        depth_bytes = depth_dtype().itemsize # 2 B
+        size_dtype = np.int32
+        size_bytes = size_dtype().itemsize # 4 B        
+        turn_dtype = np.int8
+        turn_bytes = turn_dtype().itemsize # 1 B                                
+        flag_dtype = bool
+        flag_bytes = 1 # 1 B
+        outcome_dtype = np.int8
+        outcome_bytes = outcome_dtype().itemsize # 1 B
+        playout_outcomes_dtype = np.int32
+        playout_outcomes_bytes = playout_outcomes_dtype().itemsize # 4 B                
+        ns_dtype = np.int32
+        ns_bytes = ns_dtype().itemsize # 4 B
+        ns_extended_dtype = np.int64        
+        # memory related calculations        
+        per_state_additional_memory = depth_bytes + turn_bytes + 2 * flag_bytes + outcome_bytes + 2 * ns_bytes # depth, turn, leaf, terminal, ouctome, ns, ns_wins
+        per_tree_additional_memory = size_bytes + node_index_bytes + action_index_bytes * (self.state_max_actions + 2) + playout_outcomes_bytes * 2 \
+                                        + node_index_bytes * (self.MAX_TREE_DEPTH + 2) # tree size, tree node selected, tree actions expanded * (self.state_max_actions + 2), playout outcomes * 2, selected path          
+        if "pac" in self.kind: # playout all children
+            per_tree_additional_memory += playout_outcomes_bytes * self.state_max_actions * 2  # playout children outcomes            
+        per_state_memory = board_element_bytes * np.prod(self.state_board_shape) + extra_info_element_bytes * self.state_extra_info_memory \
+                            + node_index_bytes * (1 + self.state_max_actions) + per_state_additional_memory # board, extra info, tree array entry (parent, children nodes), additional memory
+        self.max_tree_size = (int(self.device_memory) - self.n_trees * per_tree_additional_memory) // (per_state_memory * self.n_trees)
+        self.max_tree_size = min(self.max_tree_size, self.MAX_TREE_SIZE)
+        # tpb 
         board_tpb = int(2**np.ceil(np.log2(np.prod(self.state_board_shape))))
         extra_info_tbp = int(2**np.ceil(np.log2(self.state_extra_info_memory))) if self.state_extra_info_memory > 0 else 1
-        max_actions_tpb = int(2**np.ceil(np.log2(self.state_max_actions)))
-        self._tpb_reset = min(max(board_tpb, extra_info_tbp), self._cuda_tpb_default)
-        self._tpb_select = self._cuda_tpb_default
-        self._tpb_expand_stage1 = min(max(self._tpb_reset, max_actions_tpb), self._cuda_tpb_default)
-        self._dev_random_generators_expand_stage1 = create_xoroshiro128p_states(self.n_trees * self._tpb_expand_stage1, seed=self.seed)
-        self._tpb_expand_stage2 = self._tpb_reset        
-        self._dev_random_generators_playout = None
-        if self.kind == "scpo":
-            self._dev_random_generators_playout =  create_xoroshiro128p_states(self.n_trees * self.n_playouts, seed=0)
-        elif self.kind == "acpo" or self.kind == "acpo2":
-            self._dev_random_generators_playout =  create_xoroshiro128p_states(self.n_trees * self.state_max_actions * self.n_playouts, seed=self.seed)            
-        self._dev_trees_playout_outcomes = cuda.device_array((self.n_trees, 2), dtype=np.int32) # each row stores counts of: -1 wins and +1 wins, respectively (for given tree) 
-        self._dev_trees_playout_outcomes_children = None
-        if self.kind == "acpo" or self.kind == "acpo2":
-            self._dev_trees_playout_outcomes_children = cuda.device_array((self.n_trees, self.state_max_actions, 2), dtype=np.int32) # for each (playable) action, each row stores counts of: -1 wins and +1 wins, respectively (for given tree)            
-        self._tpb_backup = self._cuda_tpb_default
-        self._tbp_reduce_over_actions = min(max_actions_tpb, self._cuda_tpb_default)        
-        self.dev_root_ns = cuda.device_array(self.state_max_actions, dtype=np.int64)
-        self.dev_actions_ns = cuda.device_array(self.state_max_actions, dtype=np.int64)
-        self.dev_actions_ns_wins = cuda.device_array(self.state_max_actions, dtype=np.int64)                
+        max_actions_tpb = int(2**np.ceil(np.log2(self.state_max_actions)))        
+        self.tpb_reset = min(max(board_tpb, extra_info_tbp), self.cuda_tpb_default)
+        self.tpb_select = self.cuda_tpb_default
+        self.tpb_expand_stage1 = min(max(self.tpb_reset, max_actions_tpb), self.cuda_tpb_default)        
+        self.tpb_expand_stage2 = self.tpb_reset                                                    
+        self.tpb_backup = self.cuda_tpb_default
+        self.tbp_reduce_over_actions = min(max_actions_tpb, self.cuda_tpb_default)
+        # device arrays
+        self.dev_trees = cuda.device_array((self.n_trees, self.max_tree_size, 1 + self.state_max_actions), dtype=node_index_dtype) # each row of a tree represents a node consisting of: parent indexes and indexes of all children (associated with actions), -1 index for none parent or child 
+        self.dev_trees_sizes = cuda.device_array(self.n_trees, dtype=size_dtype)
+        self.dev_trees_depths = cuda.device_array((self.n_trees, self.max_tree_size), dtype=depth_dtype)
+        self.dev_trees_turns = cuda.device_array((self.n_trees, self.max_tree_size), dtype=turn_dtype)
+        self.dev_trees_leaves = cuda.device_array((self.n_trees, self.max_tree_size), dtype=flag_dtype)
+        self.dev_trees_terminals = cuda.device_array((self.n_trees, self.max_tree_size), dtype=flag_dtype)
+        self.dev_trees_outcomes = cuda.device_array((self.n_trees, self.max_tree_size), dtype=outcome_dtype)        
+        self.dev_trees_ns = cuda.device_array((self.n_trees, self.max_tree_size), dtype=ns_dtype)
+        self.dev_trees_ns_wins = cuda.device_array((self.n_trees, self.max_tree_size), dtype=ns_dtype)
+        self.dev_trees_boards = cuda.device_array((self.n_trees, self.max_tree_size, self.state_board_shape[0], self.state_board_shape[1]), dtype=board_element_dtype)
+        self.dev_trees_extra_infos = cuda.device_array((self.n_trees, self.max_tree_size, self.state_extra_info_memory), dtype=extra_info_element_dtype)
+        self.dev_trees_nodes_selected = cuda.device_array(self.n_trees, dtype=node_index_dtype)
+        self.dev_trees_selected_paths = cuda.device_array((self.n_trees, self.MAX_TREE_DEPTH + 2), dtype=node_index_dtype)
+        self.dev_trees_actions_expanded = cuda.device_array((self.n_trees, self.state_max_actions + 2), dtype=action_index_dtype) # +2 because 2 last entries inform about: child picked randomly for playout, number of actions (children) expanded            
+        self.dev_trees_playout_outcomes = cuda.device_array((self.n_trees, 2), dtype=playout_outcomes_dtype) # each row stores counts of: -1 wins and +1 wins, respectively (for given tree) 
+        self.dev_trees_playout_outcomes_children = None
+        self.dev_random_generators_expand_stage1 = create_xoroshiro128p_states(self.n_trees * self.tpb_expand_stage1, seed=self.seed)        
+        self.dev_random_generators_playout = None
+        if "psc" in self.kind:
+            self.dev_random_generators_playout = create_xoroshiro128p_states(self.n_trees * self.n_playouts, seed=self.seed)
+        else: # "pac"
+            self.dev_random_generators_playout = create_xoroshiro128p_states(self.n_trees * self.state_max_actions * self.n_playouts, seed=self.seed)                    
+            self.dev_trees_playout_outcomes_children = cuda.device_array((self.n_trees, self.state_max_actions, 2), dtype=playout_outcomes_dtype) # for each (playable) action, each row stores counts of: -1 wins and +1 wins, respectively (for given tree)
+        self.dev_root_actions_expanded = cuda.device_array(self.state_max_actions + 2, dtype=action_index_dtype)                    
+        self.dev_root_ns = cuda.device_array(self.state_max_actions, dtype=ns_extended_dtype)
+        self.dev_actions_ns = cuda.device_array(self.state_max_actions, dtype=ns_extended_dtype)
+        self.dev_actions_ns_wins = cuda.device_array(self.state_max_actions, dtype=ns_extended_dtype)                 
         t2_dev_arrays = time.time()
-        print(f"[device arrays initialized; time: {t2_dev_arrays - t1_dev_arrays} s; press any key]") 
+        if self.verbose_info:
+            print(f"[MCTSCuda._init_device_side_arrays() done; time: {t2_dev_arrays - t1_dev_arrays} s, per_state_memory: {per_state_memory} B,  calculated max_tree_size: {self.max_tree_size}]")
 
     def __str__(self):         
-        return f"{self.__class__.__name__}(n_trees={self.n_trees}, n_playouts={self.n_playouts}, kind='{self.kind}', search_time_limit={self.search_time_limit} s, search_steps_limit={self.search_steps_limit}, ucb1_c={self.ucb1_c}, seed: {self.seed}, max_device_memory={np.round(self.max_device_memory / 1024**3, 2)} GB)"
+        return f"MCTSCuda(n_trees={self.n_trees}, n_playouts={self.n_playouts}, kind='{self.kind}', search_time_limit={self.search_time_limit} s, search_steps_limit={self.search_steps_limit}, ucb1_c={self.ucb1_c}, seed: {self.seed}, device_memory={np.round(self.device_memory / 1024**3, 2)} GB)"
         
     def __repr__(self):
         repr_str = f"{str(self)}, "
@@ -125,17 +193,25 @@ class MCTSCuda:
         return repr_str 
     
     def run(self, root_board, root_extra_info, root_turn):
-        self._run = getattr(self, "_run_" + self.kind)
-        return self._run(root_board, root_extra_info, root_turn)
+        print(f"MCTS_CUDA RUN... [{self}]")
+        t1 = time.time()        
+        run_method = getattr(self, "_run_" + self.kind)
+        run_method(root_board, root_extra_info, root_turn)
+        t2 = time.time()
+        best_action_label = str(self.best_action)
+        if self.action_to_name_function is not None:
+            best_action_label += f" ({self.action_to_name_function(self.best_action)})"
+        print(f"MCTS_CUDA RUN DONE. [time: {t2 - t1} s; best action: {best_action_label}, best score: {self.best_score}, best q: {self.best_q}]")
+        return self.best_action
     
-    def _run_scpo(self, root_board, root_extra_info, root_turn):
-        print("MCTS_CUDA RUN SCPO...")
+    def _run_psc(self, root_board, root_extra_info, root_turn):
+        print("MCTS_CUDA RUN PSC...")
         print(f"[{self}]")
         t1 = time.time()            
         # MCTS reset
         t1_reset = time.time()
         bpg = self.n_trees
-        tpb = self._tpb_reset
+        tpb = self.tpb_reset
         dev_root_board = cuda.to_device(root_board)
         if root_extra_info is None:
             root_extra_info = np.zeros(1, dtype=np.int8) # fake extra info array
@@ -143,8 +219,8 @@ class MCTSCuda:
         if self.VERBOSE_DEBUG:
             print(f"[MCTSCuda._reset()...; bpg: {bpg}, tpb: {tpb}]")                
         MCTSCuda._reset[bpg, tpb](dev_root_board, dev_root_extra_info, root_turn, 
-                                  self._dev_trees, self._dev_trees_sizes, self._dev_trees_depths, self._dev_trees_turns, self._dev_trees_leaves, self._dev_trees_terminals, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                  self._dev_trees_boards, self._dev_trees_extra_infos)    
+                                  self.dev_trees, self.dev_trees_sizes, self.dev_trees_depths, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                  self.dev_trees_boards, self.dev_trees_extra_infos)    
         t2_reset = time.time()
         if self.VERBOSE_DEBUG:
             print(f"[MCTSCuda._reset() done; time: {t2_reset - t1_reset} s]")
@@ -157,19 +233,19 @@ class MCTSCuda:
         root_actions_expanded = np.empty(self.state_max_actions + 2, dtype=np.int16)
         while True:
             t2 = time.time()            
-            if step >= self.search_steps_limit or t2 - t1 >= self.search_time_limit * (1.0 - self._search_time_limit_epsilon):
+            if step >= self.search_steps_limit or t2 - t1 >= self.search_time_limit_minus_eps:
                 break
             if self.VERBOSE_DEBUG:
                 print(f"[step: {step + 1} starting, time used so far: {t2 - t1} s]")     
             # MCTS select
             t1_select = time.time()
             bpg = self.n_trees
-            tpb = self._tpb_select
+            tpb = self.tpb_select
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._select()...; bpg: {bpg}, tpb: {tpb}]")
             MCTSCuda._select[bpg, tpb](self.state_max_actions, self.ucb1_c, 
-                                       self._dev_trees, self._dev_trees_leaves, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                       self._dev_trees_nodes_selected)
+                                       self.dev_trees, self.dev_trees_leaves, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                       self.dev_trees_nodes_selected)
             t2_select = time.time()
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._select() done; time: {t2_select - t1_select} s]")
@@ -178,20 +254,20 @@ class MCTSCuda:
             t1_expand = time.time()
             t1_expand_stage1 = time.time()
             bpg = self.n_trees
-            tpb = self._tpb_expand_stage1
+            tpb = self.tpb_expand_stage1
             if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._expand_scpo_stage1()...; bpg: {bpg}, tpb: {tpb}]")                         
-            MCTSCuda._expand_scpo_stage1[bpg, tpb](self.state_max_actions, self._max_tree_size, 
-                                                   self._dev_trees, self._dev_trees_sizes, self._dev_trees_turns, self._dev_trees_leaves, self._dev_trees_terminals,
-                                                   self._dev_trees_boards, self._dev_trees_extra_infos, 
-                                                   self._dev_trees_nodes_selected, self._dev_random_generators_expand_stage1, self._dev_trees_actions_expanded)                                                    
-            self._dev_trees_actions_expanded.copy_to_host(ary=trees_actions_expanded)
+                print(f"[MCTSCuda._expand_psc_stage1()...; bpg: {bpg}, tpb: {tpb}]")                         
+            MCTSCuda._expand_psc_stage1[bpg, tpb](self.state_max_actions, self.max_tree_size, 
+                                                   self.dev_trees, self.dev_trees_sizes, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals,
+                                                   self.dev_trees_boards, self.dev_trees_extra_infos, 
+                                                   self.dev_trees_nodes_selected, self.dev_random_generators_expand_stage1, self.dev_trees_actions_expanded)                                                    
+            self.dev_trees_actions_expanded.copy_to_host(ary=trees_actions_expanded)
             cuda.synchronize()
             if step == 0:
                 root_actions_expanded = np.copy(trees_actions_expanded[0])
             t2_expand_stage1 = time.time()            
             if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._expand_scpo_stage1() done; time: {t2_expand_stage1 - t1_expand_stage1} s]")
+                print(f"[MCTSCuda._expand_psc_stage1() done; time: {t2_expand_stage1 - t1_expand_stage1} s]")
             t1_expand_stage2 = time.time()
             actions_expanded_cumsum = np.cumsum(trees_actions_expanded[:, -1])
             trees_actions_expanded_flat = np.empty((actions_expanded_cumsum[-1], 2), dtype=np.int16)
@@ -202,13 +278,13 @@ class MCTSCuda:
                 trees_actions_expanded_flat[s, 1] = trees_actions_expanded[ti, :trees_actions_expanded[ti, -1]]
                 shift = actions_expanded_cumsum[ti]                                        
             bpg = actions_expanded_cumsum[-1]            
-            tpb = self._tpb_expand_stage2
+            tpb = self.tpb_expand_stage2
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._expand_stage2()...; bpg: {bpg}, tpb: {tpb}]")
             dev_trees_actions_expanded_flat = cuda.to_device(trees_actions_expanded_flat)
-            MCTSCuda._expand_stage2[bpg, tpb](self._dev_trees, self._dev_trees_depths, self._dev_trees_turns, self._dev_trees_leaves, self._dev_trees_terminals, self._dev_trees_outcomes, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                              self._dev_trees_boards, self._dev_trees_extra_infos,                                               
-                                              self._dev_trees_nodes_selected, dev_trees_actions_expanded_flat)
+            MCTSCuda._expand_stage2[bpg, tpb](self.dev_trees, self.dev_trees_depths, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals, self.dev_trees_outcomes, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                              self.dev_trees_boards, self.dev_trees_extra_infos,                                               
+                                              self.dev_trees_nodes_selected, dev_trees_actions_expanded_flat)
             t2_expand_stage2 = time.time()
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._expand_stage2() done; time: {t2_expand_stage2 - t1_expand_stage2} s]")
@@ -219,23 +295,23 @@ class MCTSCuda:
             bpg = self.n_trees
             tpb = self.n_playouts
             if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._playout_scpo()...; bpg: {bpg}, tpb: {tpb}]")
-            MCTSCuda._playout_scpo[bpg, tpb](self._dev_trees, self._dev_trees_turns, self._dev_trees_terminals, self._dev_trees_outcomes, 
-                                             self._dev_trees_boards, self._dev_trees_extra_infos, 
-                                             self._dev_trees_nodes_selected, self._dev_trees_actions_expanded, self._dev_random_generators_playout, self._dev_trees_playout_outcomes)
+                print(f"[MCTSCuda._playout_psc()...; bpg: {bpg}, tpb: {tpb}]")
+            MCTSCuda._playout_psc[bpg, tpb](self.dev_trees, self.dev_trees_turns, self.dev_trees_terminals, self.dev_trees_outcomes, 
+                                             self.dev_trees_boards, self.dev_trees_extra_infos, 
+                                             self.dev_trees_nodes_selected, self.dev_trees_actions_expanded, self.dev_random_generators_playout, self.dev_trees_playout_outcomes)
             t2_playout = time.time()
             if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._playout_scpo() done; time: {t2_playout - t1_playout} s]")
+                print(f"[MCTSCuda._playout_psc() done; time: {t2_playout - t1_playout} s]")
             total_time_playout += t2_playout - t1_playout
             # MCTS backup
             t1_backup = time.time()
-            tpb = self._tpb_backup
+            tpb = self.tpb_backup
             bpg = (self.n_trees + tpb - 1) // tpb         
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._backup()...; bpg: {bpg}, tpb: {tpb}]")
-            MCTSCuda._backup_scpo[bpg, tpb](self.n_playouts,
-                                            self._dev_trees, self._dev_trees_turns, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                            self._dev_trees_nodes_selected, self._dev_trees_actions_expanded, self._dev_trees_playout_outcomes)            
+            MCTSCuda._backup_psc[bpg, tpb](self.n_playouts,
+                                            self.dev_trees, self.dev_trees_turns, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                            self.dev_trees_nodes_selected, self.dev_trees_actions_expanded, self.dev_trees_playout_outcomes)            
             t2_backup = time.time()
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._backup() done; time: {t2_backup - t1_backup} s]")
@@ -252,7 +328,7 @@ class MCTSCuda:
         dev_root_ns = cuda.device_array(n_root_actions, dtype=np.int64)
         dev_actions_ns = cuda.device_array(n_root_actions, dtype=np.int64)
         dev_actions_ns_wins = cuda.device_array(n_root_actions, dtype=np.int64)
-        MCTSCuda._reduce_over_trees[bpg, tpb](self._dev_trees, self._dev_trees_ns, self._dev_trees_ns_wins, dev_root_actions_expanded, dev_root_ns, dev_actions_ns, dev_actions_ns_wins)
+        MCTSCuda._reduce_over_trees[bpg, tpb](self.dev_trees, self.dev_trees_ns, self.dev_trees_ns_wins, dev_root_actions_expanded, dev_root_ns, dev_actions_ns, dev_actions_ns_wins)
         root_ns = np.empty(n_root_actions, dtype=np.int64)
         actions_ns = np.empty(n_root_actions, dtype=np.int64)
         actions_ns_wins = np.empty(n_root_actions, dtype=np.int64)        
@@ -265,24 +341,24 @@ class MCTSCuda:
             print(f"[MCTSCuda._reduce_over_trees() done; time: {t2_reduce_over_trees - t1_reduce_over_trees} s]")                
         t2 = time.time()
         qs = -np.ones(self.state_max_actions)
-        if self.VERBOSE_INFO:
+        if self.verbose_info:
             print("[action values:")
         for i in range(n_root_actions):
             q = actions_ns_wins[i] / actions_ns[i] if actions_ns[i] > 0 else np.nan
             ucb1 = q + self.ucb1_c * np.sqrt(np.log(root_ns[i]) / actions_ns[i]) if actions_ns[i] > 0 else np.nan
             qs[root_actions_expanded[i]] = q
-            if self.VERBOSE_INFO:
+            if self.verbose_info:
                 action_str = f"action: {root_actions_expanded[i]}, "
                 if self.action_to_name_function:
                     action_str += f"name: {self.action_to_name_function(root_actions_expanded[i])}, "
                 action_str += f"root_n: {root_ns[i]}, n: {actions_ns[i]}, n_wins: {actions_ns_wins[i]}, q: {q}, ucb1: {ucb1}"
                 print(action_str) 
-        if self.VERBOSE_INFO:
+        if self.verbose_info:
             print("]")            
         # MCTS sum reduction over root actions
         t1_reduce_over_actions = time.time() 
         bpg = 1
-        tpb = self._tbp_reduce_over_actions
+        tpb = self.tbp_reduce_over_actions
         if self.VERBOSE_DEBUG:
             print(f"[MCTSCuda._reduce_over_actions()...; bpg: {bpg}, tpb: {tpb}]")        
         dev_best_score = cuda.device_array(1, dtype=np.float32)
@@ -298,8 +374,8 @@ class MCTSCuda:
         t2 = time.time()
         # TODO suitable if-verbose around depths below (so that efficiency is increased) 
         cuda.synchronize()
-        depths = self._dev_trees_depths.copy_to_host()
-        sizes = self._dev_trees_sizes.copy_to_host()
+        depths = self.dev_trees_depths.copy_to_host()
+        sizes = self.dev_trees_sizes.copy_to_host()
         i_sizes = np.zeros(self.n_trees, dtype=np.int32)
         max_depth = -1        
         for i in range(self.n_trees):            
@@ -312,7 +388,7 @@ class MCTSCuda:
         mus_factor = 10.0**6                    
         print(f"[mean times of stages [us] -> selection: {mus_factor * total_time_select / step}, expansion: {mus_factor * total_time_expand / step}, playout: {mus_factor * total_time_playout / step}, backup: {mus_factor * total_time_backup / step}]")
         print(f"[best action: {best_action}, best score: {best_score}, best q: {qs[best_action]}]")                        
-        print(f"MCTS_CUDA RUN SCPO DONE. [time: {t2 - t1} s, steps: {step}]")        
+        print(f"MCTS_CUDA RUN PSC DONE. [time: {t2 - t1} s, steps: {step}]")        
         return best_action
 
     def _run_acpo(self, root_board, root_extra_info, root_turn):
@@ -322,7 +398,7 @@ class MCTSCuda:
         # MCTS reset
         t1_reset = time.time()
         bpg = self.n_trees
-        tpb = self._tpb_reset
+        tpb = self.tpb_reset
         dev_root_board = cuda.to_device(root_board)
         if root_extra_info is None:
             root_extra_info = np.zeros(1, dtype=np.int8) # fake extra info array        
@@ -330,8 +406,8 @@ class MCTSCuda:
         if self.VERBOSE_DEBUG:
             print(f"[MCTSCuda._reset()...; bpg: {bpg}, tpb: {tpb}]")                
         MCTSCuda._reset[bpg, tpb](dev_root_board, dev_root_extra_info, root_turn, 
-                                  self._dev_trees, self._dev_trees_sizes, self._dev_trees_depths, self._dev_trees_turns, self._dev_trees_leaves, self._dev_trees_terminals, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                  self._dev_trees_boards, self._dev_trees_extra_infos)
+                                  self.dev_trees, self.dev_trees_sizes, self.dev_trees_depths, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                  self.dev_trees_boards, self.dev_trees_extra_infos)
         cuda.synchronize()    
         t2_reset = time.time()
         if self.VERBOSE_DEBUG:
@@ -355,15 +431,15 @@ class MCTSCuda:
             # MCTS select
             t1_select = time.time()
             bpg = self.n_trees
-            tpb = self._tpb_select
+            tpb = self.tpb_select
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._select()...; bpg: {bpg}, tpb: {tpb}]")
             # MCTSCuda._select[bpg, tpb](self.state_max_actions, self.ucb1_c, 
-            #                            self._dev_trees, self._dev_trees_leaves, self._dev_trees_ns, self._dev_trees_ns_wins, 
-            #                            self._dev_trees_nodes_selected)
+            #                            self.dev_trees, self.dev_trees_leaves, self.dev_trees_ns, self.dev_trees_ns_wins, 
+            #                            self.dev_trees_nodes_selected)
             MCTSCuda._select[bpg, tpb](self.state_max_actions, self.ucb1_c, 
-                                       self._dev_trees, self._dev_trees_leaves, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                       self._dev_trees_nodes_selected, self._dev_trees_selected_paths)
+                                       self.dev_trees, self.dev_trees_leaves, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                       self.dev_trees_nodes_selected, self.dev_trees_selected_paths)
             cuda.synchronize()                     
             t2_select = time.time()
             if self.VERBOSE_DEBUG:
@@ -373,14 +449,14 @@ class MCTSCuda:
             # MCTS expand                        
             t1_expand_stage1 = time.time()
             bpg = self.n_trees
-            tpb = self._tpb_expand_stage1
+            tpb = self.tpb_expand_stage1
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._expand_acpo_stage1()...; bpg: {bpg}, tpb: {tpb}]")                         
-            MCTSCuda._expand_acpo_stage1[bpg, tpb](self.state_max_actions, self._max_tree_size, 
-                                                   self._dev_trees, self._dev_trees_sizes, self._dev_trees_turns, self._dev_trees_leaves, self._dev_trees_terminals,
-                                                   self._dev_trees_boards, self._dev_trees_extra_infos, 
-                                                   self._dev_trees_nodes_selected, self._dev_trees_actions_expanded)                                             
-            self._dev_trees_actions_expanded.copy_to_host(ary=trees_actions_expanded)
+            MCTSCuda._expand_acpo_stage1[bpg, tpb](self.state_max_actions, self.max_tree_size, 
+                                                   self.dev_trees, self.dev_trees_sizes, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals,
+                                                   self.dev_trees_boards, self.dev_trees_extra_infos, 
+                                                   self.dev_trees_nodes_selected, self.dev_trees_actions_expanded)                                             
+            self.dev_trees_actions_expanded.copy_to_host(ary=trees_actions_expanded)
             cuda.synchronize()
             if step == 0:
                 root_actions_expanded = np.copy(trees_actions_expanded[0])                                                                 
@@ -398,13 +474,13 @@ class MCTSCuda:
             total_time_expand += t2_expand_stage1 - t1_expand_stage1                                             
             t1_expand_stage2 = time.time()
             bpg = actions_expanded_cumsum[-1]            
-            tpb = self._tpb_expand_stage2
+            tpb = self.tpb_expand_stage2
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._expand_stage2()...; bpg: {bpg}, tpb: {tpb}]")
             dev_trees_actions_expanded_flat = cuda.to_device(trees_actions_expanded_flat)
-            MCTSCuda._expand_stage2[bpg, tpb](self._dev_trees, self._dev_trees_depths, self._dev_trees_turns, self._dev_trees_leaves, self._dev_trees_terminals, self._dev_trees_outcomes, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                              self._dev_trees_boards, self._dev_trees_extra_infos,                                               
-                                              self._dev_trees_nodes_selected, dev_trees_actions_expanded_flat)
+            MCTSCuda._expand_stage2[bpg, tpb](self.dev_trees, self.dev_trees_depths, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals, self.dev_trees_outcomes, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                              self.dev_trees_boards, self.dev_trees_extra_infos,                                               
+                                              self.dev_trees_nodes_selected, dev_trees_actions_expanded_flat)
             cuda.synchronize()
             t2_expand_stage2 = time.time()
             if self.VERBOSE_DEBUG:
@@ -416,10 +492,10 @@ class MCTSCuda:
             tpb = self.n_playouts
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._playout_acpo()...; bpg: {bpg}, tpb: {tpb}]")
-            MCTSCuda._playout_acpo[bpg, tpb](self._dev_trees, self._dev_trees_turns, self._dev_trees_terminals, self._dev_trees_outcomes, 
-                                             self._dev_trees_boards, self._dev_trees_extra_infos, 
-                                             self._dev_trees_nodes_selected, self._dev_trees_actions_expanded, dev_trees_actions_expanded_flat,
-                                             self._dev_random_generators_playout, self._dev_trees_playout_outcomes, self._dev_trees_playout_outcomes_children)
+            MCTSCuda._playout_acpo[bpg, tpb](self.dev_trees, self.dev_trees_turns, self.dev_trees_terminals, self.dev_trees_outcomes, 
+                                             self.dev_trees_boards, self.dev_trees_extra_infos, 
+                                             self.dev_trees_nodes_selected, self.dev_trees_actions_expanded, dev_trees_actions_expanded_flat,
+                                             self.dev_random_generators_playout, self.dev_trees_playout_outcomes, self.dev_trees_playout_outcomes_children)
             cuda.synchronize()
             t2_playout = time.time()
             if self.VERBOSE_DEBUG:
@@ -429,32 +505,32 @@ class MCTSCuda:
             t1_backup = time.time()
             t1_backup_stage1 = time.time()
             bpg = self.n_trees
-            tpb = self._tpb_backup                     
+            tpb = self.tpb_backup                     
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._backup_acpo_stage1()...; bpg: {bpg}, tpb: {tpb}]")
             MCTSCuda._backup_acpo_stage1[bpg, tpb](self.n_playouts, 
-                                                   self._dev_trees, self._dev_trees_turns, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                                   self._dev_trees_nodes_selected, self._dev_trees_actions_expanded, self._dev_trees_playout_outcomes, self._dev_trees_playout_outcomes_children)
+                                                   self.dev_trees, self.dev_trees_turns, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                                   self.dev_trees_nodes_selected, self.dev_trees_actions_expanded, self.dev_trees_playout_outcomes, self.dev_trees_playout_outcomes_children)
             cuda.synchronize()            
             t2_backup_stage1 = time.time()
             total_time_backup_1 += t2_backup_stage1 - t1_backup_stage1
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._backup_acpo_stage1() done; time: {t2_backup_stage1 - t1_backup_stage1} s]")            
             t1_backup_stage2 = time.time()            
-            # tpb = self._tpb_backup 
+            # tpb = self.tpb_backup 
             # bpg = (self.n_trees + tpb) // tpb         
             # if self.VERBOSE_DEBUG:
             #     print(f"[MCTSCuda._backup_acpo_stage2()...; bpg: {bpg}, tpb: {tpb}]")
             # MCTSCuda._backup_acpo_stage2[bpg, tpb](self.n_playouts,
-            #                                        self._dev_trees, self._dev_trees_turns, self._dev_trees_ns, self._dev_trees_ns_wins, 
-            #                                        self._dev_trees_nodes_selected, self._dev_trees_actions_expanded, self._dev_trees_playout_outcomes)
-            tpb = self._tpb_backup
+            #                                        self.dev_trees, self.dev_trees_turns, self.dev_trees_ns, self.dev_trees_ns_wins, 
+            #                                        self.dev_trees_nodes_selected, self.dev_trees_actions_expanded, self.dev_trees_playout_outcomes)
+            tpb = self.tpb_backup
             bpg = self.n_trees         
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._backup_acpo_stage2()...; bpg: {bpg}, tpb: {tpb}]")
             MCTSCuda._backup_acpo_stage2[bpg, tpb](self.n_playouts,
-                                                   self._dev_trees_turns, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                                   self._dev_trees_selected_paths, self._dev_trees_actions_expanded, self._dev_trees_playout_outcomes)
+                                                   self.dev_trees_turns, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                                   self.dev_trees_selected_paths, self.dev_trees_actions_expanded, self.dev_trees_playout_outcomes)
             cuda.synchronize()                                    
             t2_backup_stage2 = time.time()
             total_time_backup_2 += t2_backup_stage2 - t1_backup_stage2
@@ -476,7 +552,7 @@ class MCTSCuda:
         dev_root_ns = cuda.device_array(n_root_actions, dtype=np.int64)
         dev_actions_ns = cuda.device_array(n_root_actions, dtype=np.int64)
         dev_actions_ns_wins = cuda.device_array(n_root_actions, dtype=np.int64)
-        MCTSCuda._reduce_over_trees[bpg, tpb](self._dev_trees, self._dev_trees_ns, self._dev_trees_ns_wins, dev_root_actions_expanded, dev_root_ns, dev_actions_ns, dev_actions_ns_wins)
+        MCTSCuda._reduce_over_trees[bpg, tpb](self.dev_trees, self.dev_trees_ns, self.dev_trees_ns_wins, dev_root_actions_expanded, dev_root_ns, dev_actions_ns, dev_actions_ns_wins)
         root_ns = np.empty(n_root_actions, dtype=np.int64)
         actions_ns = np.empty(n_root_actions, dtype=np.int64)
         actions_ns_wins = np.empty(n_root_actions, dtype=np.int64)        
@@ -489,24 +565,24 @@ class MCTSCuda:
             print(f"[MCTSCuda._reduce_over_trees() done; time: {t2_reduce_over_trees - t1_reduce_over_trees} s]")                
         t2 = time.time()
         qs = -np.ones(self.state_max_actions)                
-        if self.VERBOSE_INFO:
+        if self.verbose_info:
             print("[action values:")
         for i in range(n_root_actions):
             q = actions_ns_wins[i] / actions_ns[i] if actions_ns[i] > 0 else np.nan
             ucb1 = q + self.ucb1_c * np.sqrt(np.log(root_ns[i]) / actions_ns[i]) if actions_ns[i] > 0 else np.nan
             qs[root_actions_expanded[i]] = q
-            if self.VERBOSE_INFO:
+            if self.verbose_info:
                 action_str = f"action: {root_actions_expanded[i]}, "
                 if self.action_to_name_function:
                     action_str += f"name: {self.action_to_name_function(root_actions_expanded[i])}, "
                 action_str += f"root_n: {root_ns[i]}, n: {actions_ns[i]}, n_wins: {actions_ns_wins[i]}, q: {q}, ucb1: {ucb1}"
                 print(action_str) 
-        if self.VERBOSE_INFO:
+        if self.verbose_info:
             print("]")                                                
         # MCTS sum reduction over root actions
         t1_reduce_over_actions = time.time() 
         bpg = 1
-        tpb = self._tbp_reduce_over_actions
+        tpb = self.tbp_reduce_over_actions
         if self.VERBOSE_DEBUG:
             print(f"[MCTSCuda._reduce_over_actions()...; bpg: {bpg}, tpb: {tpb}]")        
         dev_best_score = cuda.device_array(1, dtype=np.float32)
@@ -522,8 +598,8 @@ class MCTSCuda:
         t2 = time.time()
         # TODO suitable if-verbose around depths below (so that efficiency is increased) 
         cuda.synchronize()
-        depths = self._dev_trees_depths.copy_to_host()
-        sizes = self._dev_trees_sizes.copy_to_host()
+        depths = self.dev_trees_depths.copy_to_host()
+        sizes = self.dev_trees_sizes.copy_to_host()
         i_sizes = np.zeros(self.n_trees, dtype=np.int32)
         max_depth = -1        
         for i in range(self.n_trees):            
@@ -535,33 +611,30 @@ class MCTSCuda:
         print(f"[trees -> max depth: {max_depth}, max size: {np.max(i_sizes)}, mean size: {np.mean(i_sizes)}]")
         ms_factor = 10.0**3                    
         print(f"[loop time [ms] -> total: {ms_factor * (t2_loop - t1_loop)}, mean: {ms_factor * (t2_loop - t1_loop) / step}]")
-        print(f"[mean times of stages [ms] -> selection: {ms_factor * total_time_select / step}, expansion: {ms_factor * total_time_expand / step}, playout: {ms_factor * total_time_playout / step}, backup: {ms_factor * total_time_backup / step}]")
-        print(f"[mean times of stages [ms] -> backup stage 1: {ms_factor * total_time_backup_1 / step}, backup stage 2: {ms_factor * total_time_backup_2 / step}]") 
+        print(f"[mean times of stages [ms] -> selection: {ms_factor * total_time_select / step}, expansion: {ms_factor * total_time_expand / step}, playout: {ms_factor * total_time_playout / step}, backup: {ms_factor * total_time_backup / step}]") 
         print(f"[best action: {best_action}, best score: {best_score}, best q: {qs[best_action]}]")                        
         print(f"MCTS_CUDA RUN ACPO DONE. [time: {t2 - t1} s, steps: {step}]")        
         return best_action
 
-    def _run_acpo2(self, root_board, root_extra_info, root_turn):
-        print("MCTS_CUDA RUN ACPO2...")
-        print(f"[{self}]")
-        t1 = time.time()            
+    def _run_pac_prodigal(self, root_board, root_extra_info, root_turn):        
         # MCTS reset
         t1_reset = time.time()
         bpg = self.n_trees
-        tpb = self._tpb_reset
+        tpb = self.tpb_reset
         dev_root_board = cuda.to_device(root_board)
         if root_extra_info is None:
             root_extra_info = np.zeros(1, dtype=np.int8) # fake extra info array        
         dev_root_extra_info = cuda.to_device(root_extra_info)
-        if self.VERBOSE_DEBUG:
+        if self.verbose_debug:
             print(f"[MCTSCuda._reset()...; bpg: {bpg}, tpb: {tpb}]")                
         MCTSCuda._reset[bpg, tpb](dev_root_board, dev_root_extra_info, root_turn, 
-                                  self._dev_trees, self._dev_trees_sizes, self._dev_trees_depths, self._dev_trees_turns, self._dev_trees_leaves, self._dev_trees_terminals, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                  self._dev_trees_boards, self._dev_trees_extra_infos)
+                                  self.dev_trees, self.dev_trees_sizes, self.dev_trees_depths, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                  self.dev_trees_boards, self.dev_trees_extra_infos)
         cuda.synchronize()    
         t2_reset = time.time()
-        if self.VERBOSE_DEBUG:
+        if self.verbose_debug:
             print(f"[MCTSCuda._reset() done; time: {t2_reset - t1_reset} s]")
+        
         total_time_select = 0.0
         total_time_expand = 0.0        
         total_time_playout = 0.0
@@ -569,126 +642,119 @@ class MCTSCuda:
         total_time_backup_1 = 0.0
         total_time_backup_2 = 0.0        
         step = 0
-        root_actions_expanded = np.empty(self.state_max_actions + 2, dtype=np.int16)
+        
         t1_loop = time.time()
         while True:
-            t2 = time.time()
-            if step >= self.search_steps_limit or t2 - t1 >= self.search_time_limit:
+            t2_loop = time.time()
+            if step >= self.search_steps_limit or t2_loop - t1_loop >= self.search_time_limit_minus_eps:
                 break
-            if self.VERBOSE_DEBUG:
+            if self.verbose_debug:
                 print(f"[step: {step + 1} starting, time used so far: {t2 - t1} s]")     
+        
             # MCTS select
             t1_select = time.time()
             bpg = self.n_trees
-            tpb = self._tpb_select
-            if self.VERBOSE_DEBUG:
+            tpb = self.tpb_select
+            if self.verbose_debug:
                 print(f"[MCTSCuda._select()...; bpg: {bpg}, tpb: {tpb}]")
             MCTSCuda._select[bpg, tpb](self.state_max_actions, self.ucb1_c, 
-                                       self._dev_trees, self._dev_trees_leaves, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                       self._dev_trees_nodes_selected, self._dev_trees_selected_paths)
+                                       self.dev_trees, self.dev_trees_leaves, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                       self.dev_trees_nodes_selected, self.dev_trees_selected_paths)
             cuda.synchronize()                     
             t2_select = time.time()
-            if self.VERBOSE_DEBUG:
+            if self.verbose_debug:
                 print(f"[MCTSCuda._select() done; time: {t2_select - t1_select} s]")
             total_time_select += t2_select - t1_select                                    
+            
             # MCTS expand                        
             t1_expand_stage1 = time.time()
             bpg = self.n_trees
-            tpb = self._tpb_expand_stage1
-            if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._expand_acpo2_stage1()...; bpg: {bpg}, tpb: {tpb}]")                         
-            MCTSCuda._expand_acpo2_stage1[bpg, tpb](self.state_max_actions, self._max_tree_size, 
-                                                    self._dev_trees, self._dev_trees_sizes, self._dev_trees_turns, self._dev_trees_leaves, self._dev_trees_terminals,
-                                                    self._dev_trees_boards, self._dev_trees_extra_infos, 
-                                                    self._dev_trees_nodes_selected, self._dev_trees_actions_expanded)
-            if step == 0:
-                trees_actions_expanded = np.empty((self.n_trees, self.state_max_actions + 2), dtype=np.int16)
-                self._dev_trees_actions_expanded.copy_to_host(ary=trees_actions_expanded)                        
-                root_actions_expanded = np.copy(trees_actions_expanded[0])
+            tpb = self.tpb_expand_stage1
+            if self.verbose_debug:
+                print(f"[MCTSCuda._expand_stage1_pac_prodigal()...; bpg: {bpg}, tpb: {tpb}]")                         
+            MCTSCuda._expand_stage1_pac_prodigal[bpg, tpb](self.state_max_actions, self.max_tree_size, 
+                                                           self.dev_trees, self.dev_trees_sizes, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals,
+                                                           self.dev_trees_boards, self.dev_trees_extra_infos, 
+                                                           self.dev_trees_nodes_selected, self.dev_trees_actions_expanded)                        
             cuda.synchronize()
+            if step == 0:                
+                MCTSCuda._memorize_root_actions_expanded[1, self.state_max_actions + 2](self.dev_trees_actions_expanded, self.dev_root_actions_expanded)                            
+                cuda.synchronize()
             t2_expand_stage1 = time.time()
-            if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._expand_acpo2_stage1() done; time: {t2_expand_stage1 - t1_expand_stage1} s]")
-            total_time_expand += t2_expand_stage1 - t1_expand_stage1          
+            if self.verbose_debug:
+                print(f"[MCTSCuda._expand_stage1_pac_prodigal() done; time: {t2_expand_stage1 - t1_expand_stage1} s]")
+            total_time_expand += t2_expand_stage1 - t1_expand_stage1                      
             t1_expand_stage2 = time.time()
             bpg = (self.n_trees, self.state_max_actions)            
-            tpb = self._tpb_expand_stage2 
-            if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._expand_acpo2_stage2()...; bpg: {bpg}, tpb: {tpb}]")
-            MCTSCuda._expand_acpo2_stage2[bpg, tpb](self._dev_trees, self._dev_trees_depths, self._dev_trees_turns, self._dev_trees_leaves, self._dev_trees_terminals, self._dev_trees_outcomes, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                                    self._dev_trees_boards, self._dev_trees_extra_infos,                                               
-                                                    self._dev_trees_nodes_selected, self._dev_trees_actions_expanded)
-            # TODO remove fragment below (was for debug purposes)
-            # tmp_s = self._dev_trees_nodes_selected.copy_to_host()[0]
-            # tmp_t = self._dev_trees_terminals.copy_to_host()
-            # if tmp_t[0, tmp_s]:
-            #     print("terminal selected")
-            cuda.synchronize()
-            
+            tpb = self.tpb_expand_stage2 
+            if self.verbose_debug:
+                print(f"[MCTSCuda._expand_stage2_pac_prodigal()...; bpg: {bpg}, tpb: {tpb}]")
+            MCTSCuda._expand_stage2_pac_prodigal[bpg, tpb](self.dev_trees, self.dev_trees_depths, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals, self.dev_trees_outcomes, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                                           self.dev_trees_boards, self.dev_trees_extra_infos,                                               
+                                                           self.dev_trees_nodes_selected, self.dev_trees_actions_expanded)
+            cuda.synchronize()            
             t2_expand_stage2 = time.time()
-            if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._expand_acpo2_stage2() done; time: {t2_expand_stage2 - t1_expand_stage2} s]")
+            if self.verbose_debug:
+                print(f"[MCTSCuda._expand_stage2_pac_prodigal() done; time: {t2_expand_stage2 - t1_expand_stage2} s]")
             total_time_expand += t2_expand_stage2 - t1_expand_stage2
+            
             # MCTS playout
             t1_playout = time.time()
             bpg = (self.n_trees, self.state_max_actions)
             tpb = self.n_playouts
-            if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._playout_acpo2()...; bpg: {bpg}, tpb: {tpb}]")
-            MCTSCuda._playout_acpo2[bpg, tpb](self._dev_trees, self._dev_trees_turns, self._dev_trees_terminals, self._dev_trees_outcomes, 
-                                              self._dev_trees_boards, self._dev_trees_extra_infos, 
-                                              self._dev_trees_nodes_selected, self._dev_trees_actions_expanded,
-                                              self._dev_random_generators_playout, self._dev_trees_playout_outcomes, self._dev_trees_playout_outcomes_children)
+            if self.verbose_debug:
+                print(f"[MCTSCuda._playout_pac_prodigal()...; bpg: {bpg}, tpb: {tpb}]")
+            MCTSCuda._playout_pac_prodigal[bpg, tpb](self.dev_trees, self.dev_trees_turns, self.dev_trees_terminals, self.dev_trees_outcomes, 
+                                                     self.dev_trees_boards, self.dev_trees_extra_infos, 
+                                                     self.dev_trees_nodes_selected, self.dev_trees_actions_expanded,
+                                                     self.dev_random_generators_playout, self.dev_trees_playout_outcomes, self.dev_trees_playout_outcomes_children)
             cuda.synchronize()
             t2_playout = time.time()
-            if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._playout_acpo2() done; time: {t2_playout - t1_playout} s]")
+            if self.verbose_debug:
+                print(f"[MCTSCuda._playout_pac_prodigal() done; time: {t2_playout - t1_playout} s]")
             total_time_playout += t2_playout - t1_playout
+            
             # MCTS backup
             t1_backup = time.time()
             t1_backup_stage1 = time.time()
             bpg = self.n_trees
-            tpb = self._tpb_backup                     
-            if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._backup_acpo2_stage1()...; bpg: {bpg}, tpb: {tpb}]")
-            MCTSCuda._backup_acpo2_stage1[bpg, tpb](self.n_playouts, 
-                                                   self._dev_trees, self._dev_trees_turns, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                                   self._dev_trees_nodes_selected, self._dev_trees_actions_expanded, self._dev_trees_playout_outcomes, self._dev_trees_playout_outcomes_children)
+            tpb = self.tpb_backup                     
+            if self.verbose_debug:
+                print(f"[MCTSCuda._backup_stage1_pac_prodigal()...; bpg: {bpg}, tpb: {tpb}]")
+            MCTSCuda._backup_stage1_pac_prodigal[bpg, tpb](self.n_playouts, 
+                                                           self.dev_trees, self.dev_trees_turns, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                                           self.dev_trees_nodes_selected, self.dev_trees_actions_expanded, self.dev_trees_playout_outcomes, self.dev_trees_playout_outcomes_children)
             cuda.synchronize()            
             t2_backup_stage1 = time.time()
             total_time_backup_1 += t2_backup_stage1 - t1_backup_stage1
-            if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._backup_acpo2_stage1() done; time: {t2_backup_stage1 - t1_backup_stage1} s]")            
+            if self.verbose_debug:
+                print(f"[MCTSCuda._backup_stage1_pac_prodigal() done; time: {t2_backup_stage1 - t1_backup_stage1} s]")            
             t1_backup_stage2 = time.time()            
-            tpb = self._tpb_backup
+            tpb = self.tpb_backup
             bpg = self.n_trees         
-            if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._backup_acpo_stage2()...; bpg: {bpg}, tpb: {tpb}]")
-            MCTSCuda._backup_acpo_stage2[bpg, tpb](self.n_playouts,
-                                                   self._dev_trees_turns, self._dev_trees_ns, self._dev_trees_ns_wins, 
-                                                   self._dev_trees_selected_paths, self._dev_trees_actions_expanded, self._dev_trees_playout_outcomes)
+            if self.verbose_debug:
+                print(f"[MCTSCuda._backup_stage2_pac()...; bpg: {bpg}, tpb: {tpb}]")
+            MCTSCuda._backup_stage2_pac[bpg, tpb](self.n_playouts,
+                                                  self.dev_trees_turns, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                                  self.dev_trees_selected_paths, self.dev_trees_actions_expanded, self.dev_trees_playout_outcomes)
             cuda.synchronize()                                    
             t2_backup_stage2 = time.time()
             total_time_backup_2 += t2_backup_stage2 - t1_backup_stage2
-            if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._backup_acpo_stage2() done; time: {t2_backup_stage2 - t1_backup_stage2} s]")
+            if self.verbose_debug:
+                print(f"[MCTSCuda._backup_stage2_pac() done; time: {t2_backup_stage2 - t1_backup_stage2} s]")
             t2_backup = time.time()
-            total_time_backup += t2_backup - t1_backup                                        
+            total_time_backup += t2_backup - t1_backup
+                                                    
             step += 1
         t2_loop = time.time()
-        print(f"[loop done, time: {t2_loop - t1_loop} s]")                    
-        # MCTS sum reduction over trees for each root action                
-        n_root_actions = int(root_actions_expanded[-1]) 
-        root_actions = np.where(root_actions_expanded[:-2] >= 0)[0].astype(np.int16)
-        root_actions_expanded[:n_root_actions] = root_actions        
-        dev_root_actions_expanded = cuda.to_device(root_actions_expanded)        
-        t1_rot_transfer2 = time.time()
+                                                        
+        # MCTS sum reduction over trees
         t1_reduce_over_trees = time.time()
-        bpg = n_root_actions
+        bpg = self.state_max_actions
         tpb = int(2**np.ceil(np.log2(self.n_trees)))
-        if True:
-            print(f"[MCTSCuda._reduce_over_trees()...; bpg: {bpg}, tpb: {tpb}]")        
-        MCTSCuda._reduce_over_trees[bpg, tpb](self._dev_trees, self._dev_trees_ns, self._dev_trees_ns_wins, dev_root_actions_expanded, self.dev_root_ns, self.dev_actions_ns, self.dev_actions_ns_wins)
+        if self.verbose_debug:
+            print(f"[MCTSCuda._reduce_over_trees_prodigal()...; bpg: {bpg}, tpb: {tpb}]")        
+        MCTSCuda._reduce_over_trees_prodigal[bpg, tpb](self.dev_trees, self.dev_trees_ns, self.dev_trees_ns_wins, self.dev_root_actions_expanded, self.dev_root_ns, self.dev_actions_ns, self.dev_actions_ns_wins)
         root_ns = np.empty(self.state_max_actions, dtype=np.int64)
         actions_ns = np.empty(self.state_max_actions, dtype=np.int64)
         actions_ns_wins = np.empty(self.state_max_actions, dtype=np.int64)        
@@ -696,64 +762,63 @@ class MCTSCuda:
         self.dev_actions_ns.copy_to_host(ary=actions_ns)
         self.dev_actions_ns_wins.copy_to_host(ary=actions_ns_wins)
         cuda.synchronize()
-        t2_rot_transfer2 = time.time()
-        print(f"[rot transfer 2 time: {t2_rot_transfer2 - t1_rot_transfer2} s]")            
         t2_reduce_over_trees = time.time()
-        if True:
-            print(f"[MCTSCuda._reduce_over_trees() done; time: {t2_reduce_over_trees - t1_reduce_over_trees} s]")                
-        t2 = time.time()
+        if self.verbose_debug:
+            print(f"[MCTSCuda._reduce_over_trees_prodigal() done; time: {t2_reduce_over_trees - t1_reduce_over_trees} s]")                
         qs = -np.ones(self.state_max_actions)                
-        if self.VERBOSE_INFO:
-            print("[action values:")
-        for i in range(n_root_actions):
+        for i in range(self.state_max_actions):
+            if self.verbose_info and i == 0:
+                print("[action values:")
+            if root_ns[i] == 0:
+                continue
             q = actions_ns_wins[i] / actions_ns[i] if actions_ns[i] > 0 else np.nan
             ucb1 = q + self.ucb1_c * np.sqrt(np.log(root_ns[i]) / actions_ns[i]) if actions_ns[i] > 0 else np.nan
-            qs[root_actions_expanded[i]] = q
-            if self.VERBOSE_INFO:
-                action_str = f"action: {root_actions_expanded[i]}, "
+            qs[i] = q
+            if self.verbose_info:
+                action_str = f" action: {i}, "
                 if self.action_to_name_function:
-                    action_str += f"name: {self.action_to_name_function(root_actions_expanded[i])}, "
+                    action_str += f"name: {self.action_to_name_function(i)}, "
                 action_str += f"root_n: {root_ns[i]}, n: {actions_ns[i]}, n_wins: {actions_ns_wins[i]}, q: {q}, ucb1: {ucb1}"
-                print(action_str) 
-        if self.VERBOSE_INFO:
-            print("]")                                                
+                if i == self.state_max_actions - 1:
+                    action_str += "]"
+                print(action_str)
+        
         # MCTS sum reduction over root actions
         t1_reduce_over_actions = time.time() 
         bpg = 1
-        tpb = self._tbp_reduce_over_actions
-        if True:
-            print(f"[MCTSCuda._reduce_over_actions()...; bpg: {bpg}, tpb: {tpb}]")        
+        tpb = self.tbp_reduce_over_actions
+        if self.verbose_debug:
+            print(f"[MCTSCuda._reduce_over_actions_prodigal()...; bpg: {bpg}, tpb: {tpb}]")        
         dev_best_score = cuda.device_array(1, dtype=np.float32)
         dev_best_action = cuda.device_array(1, dtype=np.int16)
-        MCTSCuda._reduce_over_actions[bpg, tpb](n_root_actions, self.dev_actions_ns, self.dev_actions_ns_wins, dev_best_score, dev_best_action)                 
-        best_score = dev_best_score.copy_to_host()[0]
-        best_action = dev_best_action.copy_to_host()[0]                
-        best_action = root_actions_expanded[best_action]
+        MCTSCuda._reduce_over_actions_prodigal[bpg, tpb](self.dev_actions_ns, self.dev_actions_ns_wins, dev_best_score, dev_best_action)                 
+        self.best_score = dev_best_score.copy_to_host()[0]
+        self.best_action = dev_best_action.copy_to_host()[0]
+        self.best_q = qs[self.best_action]                
         cuda.synchronize()
-        t2_reduce_over_actions = time.time()
-        if True:
-            print(f"[MCTSCuda._reduce_over_actions() done; time: {t2_reduce_over_actions - t1_reduce_over_actions} s]")                
-        t2 = time.time()
-        # TODO suitable if-verbose around depths below (so that efficiency is increased)         
-        depths = self._dev_trees_depths.copy_to_host()
-        sizes = self._dev_trees_sizes.copy_to_host()
-        cuda.synchronize()
-        i_sizes = np.zeros(self.n_trees, dtype=np.int32)
-        max_depth = -1        
-        for i in range(self.n_trees):            
-            i_depth = np.max(depths[i, :sizes[i]])
-            i_sizes[i] = sizes[i]
-            # print(f"[tree {i} -> size: {sizes[i]}, depth: {i_depth}]")
-            max_depth = max(i_depth, max_depth)
-        print(f"[steps performed: {step}]")
-        print(f"[trees -> max depth: {max_depth}, max size: {np.max(i_sizes)}, mean size: {np.mean(i_sizes)}]")
-        ms_factor = 10.0**3                    
-        print(f"[loop time [ms] -> total: {ms_factor * (t2_loop - t1_loop)}, mean: {ms_factor * (t2_loop - t1_loop) / step}]")
-        print(f"[mean times of stages [ms] -> selection: {ms_factor * total_time_select / step}, expansion: {ms_factor * total_time_expand / step}, playout: {ms_factor * total_time_playout / step}, backup: {ms_factor * total_time_backup / step}]")
-        print(f"[mean times of stages [ms] -> backup stage 1: {ms_factor * total_time_backup_1 / step}, backup stage 2: {ms_factor * total_time_backup_2 / step}]") 
-        print(f"[best action: {best_action}, best score: {best_score}, best q: {qs[best_action]}]")                        
-        print(f"MCTS_CUDA RUN ACPO2 DONE. [time: {t2 - t1} s, steps: {step}]")        
-        return best_action
+        t2_reduce_over_actions = time.time()                            
+        if self.verbose_debug:
+            print(f"[MCTSCuda._reduce_over_actions_prodigal() done; time: {t2_reduce_over_actions - t1_reduce_over_actions} s]")                
+                 
+        if self.verbose_info:
+            depths = self.dev_trees_depths.copy_to_host()
+            sizes = self.dev_trees_sizes.copy_to_host()
+            cuda.synchronize()
+            i_sizes = np.zeros(self.n_trees, dtype=np.int32)
+            max_depth = -1        
+            for i in range(self.n_trees):            
+                i_depth = np.max(depths[i, :sizes[i]])
+                i_sizes[i] = sizes[i]
+                max_depth = max(i_depth, max_depth)
+            print(f"[steps performed: {step}]")
+            print(f"[trees -> max depth: {max_depth}, max size: {np.max(i_sizes)}, mean size: {np.mean(i_sizes)}]")
+            ms_factor = 10.0**3                    
+            print(f"[loop time [ms] -> total: {ms_factor * (t2_loop - t1_loop)}, mean: {ms_factor * (t2_loop - t1_loop) / step}]")
+            print(f"[mean times of stages [ms] -> selection: {ms_factor * total_time_select / step}, expansion: {ms_factor * total_time_expand / step}, playout: {ms_factor * total_time_playout / step}, backup: {ms_factor * total_time_backup / step}]")
+            print(f"[mean times of stages [ms] -> backup stage 1: {ms_factor * total_time_backup_1 / step}, backup stage 2: {ms_factor * total_time_backup_2 / step}]") 
+            print(f"[best action: {self.best_action}, best score: {self.best_score}, best q: {self.best_q}]")                                        
+        
+        return self.best_action
 
     @staticmethod
     @cuda.jit(void(int8[:, :], int8[:], int8, int32[:, :, :], int32[:], int16[:, :], int8[:, :], boolean[:, :], boolean[:, :], int32[:, :], int32[:, :], int8[:, :, :, :], int8[:, :, :]))
@@ -837,50 +902,12 @@ class MCTSCuda:
             e += tpb
         if t == 0:
             trees_nodes_selected[ti] = node
-            trees_selected_paths[ti, -1] = path_length
-      
-    # TODO remove _select_old when not needed
-    @staticmethod
-    @cuda.jit(void(int16, float32, int32[:, :, :], boolean[:, :], int32[:, :], int32[:, :], int32[:]))        
-    def _select_old(state_max_actions, ucb1_c, trees, trees_leaves, trees_ns, trees_ns_wins, trees_nodes_selected):
-        shared_ucb1s = cuda.shared.array(1024, dtype=float32) # 1024 - assumed limit on max actions
-        shared_best_child = cuda.shared.array(1024, dtype=int32) # 1024 - assumed limit on max actions (array instead of one index due to max-argmax reduction pattern) 
-        ti = cuda.blockIdx.x # tree index 
-        tpb = cuda.blockDim.x
-        t = cuda.threadIdx.x
-        node = 0
-        while not trees_leaves[ti, node]:            
-            if t < state_max_actions:
-                child = trees[ti, node, 1 + t]
-                shared_best_child[t] = child                
-                if child == int32(-1):
-                    shared_ucb1s[t] = -float32(inf)
-                else:
-                    child_n = trees_ns[ti, child]             
-                    if child_n == int32(0):
-                        shared_ucb1s[t] = float32(inf)
-                    else:                        
-                        shared_ucb1s[t] = trees_ns_wins[ti, child] / float32(child_n) + ucb1_c * math.sqrt(math.log(trees_ns[ti, node]) / child_n)
-            else:
-                shared_ucb1s[t] = -float32(inf)
-            cuda.syncthreads()
-            stride = tpb >> 1 # half of tpb
-            while stride > 0: # max-argmax reduction pattern
-                if t < stride:
-                    t_stride = t + stride
-                    if shared_ucb1s[t] < shared_ucb1s[t_stride]:
-                        shared_ucb1s[t] = shared_ucb1s[t_stride]
-                        shared_best_child[t] = shared_best_child[t_stride]    
-                cuda.syncthreads()
-                stride >>= 1
-            node = shared_best_child[0]
-        if t == 0:
-            trees_nodes_selected[ti] = node
+            trees_selected_paths[ti, -1] = path_length      
             
     @staticmethod
     @cuda.jit(void(int16, int32, int32[:, :, :], int32[:], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], xoroshiro128p_type[:], int16[:, :]))
-    def _expand_scpo_stage1(state_max_actions, max_tree_size, trees, trees_sizes, trees_turns, trees_leaves, trees_terminals, trees_boards, trees_extra_infos, 
-                            trees_nodes_selected, random_generators_expand_stage1, trees_actions_expanded):
+    def _expand_stage1_psc(state_max_actions, max_tree_size, trees, trees_sizes, trees_turns, trees_leaves, trees_terminals, trees_boards, trees_extra_infos, 
+                           trees_nodes_selected, random_generators_expand_stage1, trees_actions_expanded):
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         shared_legal_actions = cuda.shared.array(1024, dtype=boolean) # 1024 - assumed limit on max actions
@@ -945,8 +972,8 @@ class MCTSCuda:
         
     @staticmethod
     @cuda.jit(void(int16, int32, int32[:, :, :], int32[:], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :]))
-    def _expand_acpo_stage1(state_max_actions, max_tree_size, trees, trees_sizes, trees_turns, trees_leaves, trees_terminals, trees_boards, trees_extra_infos, 
-                            trees_nodes_selected, trees_actions_expanded):
+    def _expand_stage1_pac(state_max_actions, max_tree_size, trees, trees_sizes, trees_turns, trees_leaves, trees_terminals, trees_boards, trees_extra_infos, 
+                           trees_nodes_selected, trees_actions_expanded):
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         shared_legal_actions = cuda.shared.array(1024, dtype=boolean) # 1024 - assumed limit on max actions
@@ -1009,8 +1036,8 @@ class MCTSCuda:
 
     @staticmethod
     @cuda.jit(void(int16, int32, int32[:, :, :], int32[:], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :]))
-    def _expand_acpo2_stage1(state_max_actions, max_tree_size, trees, trees_sizes, trees_turns, trees_leaves, trees_terminals, trees_boards, trees_extra_infos, 
-                             trees_nodes_selected, trees_actions_expanded):
+    def _expand_stage1_pac_prodigal(state_max_actions, max_tree_size, trees, trees_sizes, trees_turns, trees_leaves, trees_terminals, trees_boards, trees_extra_infos, 
+                                    trees_nodes_selected, trees_actions_expanded):
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         shared_legal_actions = cuda.shared.array(1024, dtype=boolean) # 1024 - assumed limit on max actions
@@ -1074,6 +1101,12 @@ class MCTSCuda:
             trees_sizes[ti] += shared_legal_actions_child_shifts[state_max_actions - 1] + 1 # updating tree size
             if selected_is_terminal:
                 trees_actions_expanded[ti, 0] = int16(0) # fake legal action for terminal playout (exactly 1, any, must be legal)
+                
+    @staticmethod
+    @cuda.jit(void(int16[:, :], int16[:]))
+    def _memorize_root_actions_expanded(dev_trees_actions_expanded, dev_root_actions_expanded):
+        t = cuda.threadIdx.x
+        dev_root_actions_expanded[t] = dev_trees_actions_expanded[0, t]                
         
     @staticmethod
     @cuda.jit(void(int32[:, :, :], int16[:, :], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :], int32[:, :], int32[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :]))
@@ -1140,12 +1173,12 @@ class MCTSCuda:
             
     @staticmethod
     @cuda.jit(void(int32[:, :, :], int16[:, :], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :], int32[:, :], int32[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :]))
-    def _expand_acpo2_stage2(trees, trees_depths, trees_turns, trees_leaves, trees_terminals, trees_outcomes, trees_ns, trees_ns_wins, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded):
+    def _expand_stage2_pac_prodigal(trees, trees_depths, trees_turns, trees_leaves, trees_terminals, trees_outcomes, trees_ns, trees_ns_wins, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded):
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         ti = cuda.blockIdx.x
         action = cuda.blockIdx.y
-        if trees_actions_expanded[ti, action] == int16(-1):
+        if trees_actions_expanded[ti, action] == int16(-1): # prodigality
             return
         tpb = cuda.blockDim.x
         t = cuda.threadIdx.x
@@ -1204,7 +1237,7 @@ class MCTSCuda:
                             
     @staticmethod
     @cuda.jit(void(int32[:, :, :], int8[:, :], boolean[:, :], int8[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :], xoroshiro128p_type[:], int32[:, :]))
-    def _playout_scpo(trees, trees_turns, trees_terminals, trees_outcomes, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded, random_generators_playout, trees_playout_outcomes):
+    def _playout_psc(trees, trees_turns, trees_terminals, trees_outcomes, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded, random_generators_playout, trees_playout_outcomes):
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         shared_playout_outcomes = cuda.shared.array((1024, 2), dtype=int16) # 1024 - assumed max tpb for playouts, two cells for a row (-1 win, +1 win), each flagged by 0 or 1 after playout 
@@ -1381,14 +1414,14 @@ class MCTSCuda:
                 
     @staticmethod
     @cuda.jit(void(int32[:, :, :], int8[:, :], boolean[:, :], int8[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :], xoroshiro128p_type[:], int32[:, :], int32[:, :, :]))
-    def _playout_acpo2(trees, trees_turns, trees_terminals, trees_outcomes, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded,  random_generators_playout, trees_playout_outcomes, 
-                      trees_playout_outcomes_children):
+    def _playout_pac_prodigal(trees, trees_turns, trees_terminals, trees_outcomes, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded,  random_generators_playout, trees_playout_outcomes, 
+                              trees_playout_outcomes_children):
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         shared_playout_outcomes = cuda.shared.array((1024, 2), dtype=int16) # 1024 - assumed max tpb for playouts, two cells for a row (-1 win, +1 win), each flagged by 0 or 1 after playout
         ti = cuda.blockIdx.x
         action = cuda.blockIdx.y
-        if trees_actions_expanded[ti, action] == int16(-1):
+        if trees_actions_expanded[ti, action] == int16(-1): # prodigality
             return 
         local_board = cuda.local.array((32, 32), dtype=int8)
         local_extra_info = cuda.local.array(4096, dtype=int8)
@@ -1474,7 +1507,7 @@ class MCTSCuda:
     
     @staticmethod
     @cuda.jit(void(int16, int32[:, :, :], int8[:, :], int32[:, :], int32[:, :], int32[:], int16[:, :], int32[:, :]))
-    def _backup_scpo(n_playouts, trees, trees_turns, trees_ns, trees_ns_wins, trees_nodes_selected, trees_actions_expanded, trees_playout_outcomes):
+    def _backup_psc(n_playouts, trees, trees_turns, trees_ns, trees_ns_wins, trees_nodes_selected, trees_actions_expanded, trees_playout_outcomes):
         ti = cuda.grid(1)
         n_trees = trees.shape[0]
         if ti < n_trees:
@@ -1536,7 +1569,7 @@ class MCTSCuda:
 
     @staticmethod
     @cuda.jit(void(int16, int32[:, :, :], int8[:, :], int32[:, :], int32[:, :], int32[:], int16[:, :], int32[:, :], int32[:, :, :]))
-    def _backup_acpo2_stage1(n_playouts, trees, trees_turns, trees_ns, trees_ns_wins, trees_nodes_selected, trees_actions_expanded, trees_playout_outcomes, trees_playout_outcomes_children):
+    def _backup_stage1_pac_prodigal(n_playouts, trees, trees_turns, trees_ns, trees_ns_wins, trees_nodes_selected, trees_actions_expanded, trees_playout_outcomes, trees_playout_outcomes_children):
         shared_playout_outcomes_children = cuda.shared.array((1024, 2), dtype=int32) # 1024 - assumed max tpb for playouts, two cells for a row (-1 win, +1 win), each flagged by 0 or 1 after playout 
         ti = cuda.blockIdx.x # tree index
         tpb = cuda.blockDim.x
@@ -1545,7 +1578,7 @@ class MCTSCuda:
         max_actions = trees_actions_expanded.shape[1] - 2
         if fake_child_for_playout != int16(-1): # check if selected is not terminal
             selected = trees_nodes_selected[ti]
-            if t < max_actions and trees_actions_expanded[ti, t] != int16(-1):
+            if t < max_actions and trees_actions_expanded[ti, t] != int16(-1): # prodigality
                 a = t
                 n_negative_wins = trees_playout_outcomes_children[ti, a, 0]
                 n_positive_wins = trees_playout_outcomes_children[ti, a, 1]
@@ -1575,7 +1608,7 @@ class MCTSCuda:
 
     @staticmethod
     @cuda.jit(void(int16, int8[:, :], int32[:, :], int32[:, :], int32[:, :], int16[:, :], int32[:, :]))
-    def _backup_acpo_stage2(n_playouts, trees_turns, trees_ns, trees_ns_wins, trees_selected_paths, trees_actions_expanded, trees_playout_outcomes):
+    def _backup_stage2_pac(n_playouts, trees_turns, trees_ns, trees_ns_wins, trees_selected_paths, trees_actions_expanded, trees_playout_outcomes):
         ti = cuda.blockIdx.x
         t = cuda.threadIdx.x
         tpb = cuda.blockDim.x
@@ -1584,7 +1617,7 @@ class MCTSCuda:
         n_expanded_actions = trees_actions_expanded[ti, -1]
         if n_expanded_actions == int16(0):
             n_expanded_actions = int16(1)
-        n_playouts_total = n_playouts * n_expanded_actions
+        n_playouts_total = n_playouts * n_expanded_actions   
         path_length = trees_selected_paths[ti, -1]
         pept = (path_length + tpb - 1) // tpb # path elements per thread
         e = t
@@ -1600,7 +1633,7 @@ class MCTSCuda:
             
     @staticmethod
     @cuda.jit(void(int16, int32[:, :, :], int8[:, :], int32[:, :], int32[:, :], int32[:], int16[:, :], int32[:, :]))
-    def _backup_acpo_stage2_old(n_playouts, trees, trees_turns, trees_ns, trees_ns_wins, trees_nodes_selected, trees_actions_expanded, trees_playout_outcomes):
+    def _backup_stage2_pac_OLD_SINGLE_THREADED(n_playouts, trees, trees_turns, trees_ns, trees_ns_wins, trees_nodes_selected, trees_actions_expanded, trees_playout_outcomes):
         ti = cuda.grid(1)
         n_trees = trees.shape[0]
         if ti >= n_trees:
@@ -1658,6 +1691,41 @@ class MCTSCuda:
             actions_ns_wins[b] = shared_actions_ns_wins[0]
             
     @staticmethod
+    @cuda.jit(void(int32[:, :, :], int32[:, :], int32[:, :], int16[:], int64[:], int64[:], int64[:]))
+    def _reduce_over_trees_prodigal(trees, trees_ns, trees_ns_wins, root_actions_expanded, root_ns, actions_ns, actions_ns_wins):
+        shared_root_ns = cuda.shared.array(512, dtype=int64) # 512 - assumed max of n_trees
+        shared_actions_ns = cuda.shared.array(512, dtype=int64)
+        shared_actions_ns_wins = cuda.shared.array(512, dtype=int64)
+        b = cuda.blockIdx.x
+        action = b
+        t = cuda.threadIdx.x # thread index == tree index
+        shared_root_ns[t] = int64(0)
+        shared_actions_ns[t] = int64(0)
+        shared_actions_ns_wins[t] = int64(0)        
+        if root_actions_expanded[action] != int16(-1): 
+            n_trees = trees.shape[0]
+            tpb = cuda.blockDim.x            
+            if t < n_trees:
+                shared_root_ns[t] = trees_ns[t, 0]
+                action_node = trees[t, 0, 1 + action]
+                shared_actions_ns[t] = trees_ns[t, action_node]
+                shared_actions_ns_wins[t] = trees_ns_wins[t, action_node]
+            cuda.syncthreads()
+            stride = tpb >> 1 # half of tpb
+            while stride > 0: # max-argmax reduction pattern
+                if t < stride:
+                    t_stride = t + stride
+                    shared_root_ns[t] += shared_root_ns[t_stride]
+                    shared_actions_ns[t] += shared_actions_ns[t_stride]
+                    shared_actions_ns_wins[t] += shared_actions_ns_wins[t_stride]    
+                cuda.syncthreads()
+                stride >>= 1
+        if t == 0:
+            root_ns[b] = shared_root_ns[0]
+            actions_ns[b] = shared_actions_ns[0]
+            actions_ns_wins[b] = shared_actions_ns_wins[0]            
+            
+    @staticmethod
     @cuda.jit(void(int16, int64[:], int64[:], float32[:], int16[:]))
     def _reduce_over_actions(n_root_actions, actions_ns, actions_ns_wins, best_score, best_action):
         shared_actions_ns = cuda.shared.array(512, dtype=int32) # 512 - assumed max n_actions
@@ -1666,6 +1734,37 @@ class MCTSCuda:
         tpb = cuda.blockDim.x
         a = cuda.threadIdx.x # action index
         if a < n_root_actions:
+            shared_actions_ns[a] = actions_ns[a]
+            shared_actions_ns_wins[a] = actions_ns_wins[a]            
+        else:
+            shared_actions_ns[a] = int64(-1)
+            shared_actions_ns_wins[a] = int64(-1)
+        shared_best_action[a] = a
+        cuda.syncthreads()
+        stride = tpb >> 1 # half of tpb
+        while stride > 0: # max-argmax reduction pattern
+            if a < stride:
+                a_stride = a + stride
+                if (shared_actions_ns[a] < shared_actions_ns[a_stride]) or ((shared_actions_ns[a] == shared_actions_ns[a_stride]) and (shared_actions_ns_wins[a] < shared_actions_ns_wins[a_stride])):
+                    shared_actions_ns[a] = shared_actions_ns[a_stride]
+                    shared_actions_ns_wins[a] = shared_actions_ns_wins[a_stride]
+                    shared_best_action[a] = shared_best_action[a_stride]     
+            cuda.syncthreads()
+            stride >>= 1
+        if a == 0:
+            best_score[0] = shared_actions_ns[0]
+            best_action[0] = shared_best_action[0]
+
+    @staticmethod
+    @cuda.jit(void(int64[:], int64[:], float32[:], int16[:]))
+    def _reduce_over_actions_prodigal(actions_ns, actions_ns_wins, best_score, best_action):
+        shared_actions_ns = cuda.shared.array(512, dtype=int32) # 512 - assumed max n_actions
+        shared_actions_ns_wins = cuda.shared.array(512, dtype=int32)
+        shared_best_action = cuda.shared.array(512, dtype=int16)
+        tpb = cuda.blockDim.x
+        a = cuda.threadIdx.x # action index
+        state_max_actions = actions_ns.size 
+        if a < state_max_actions:
             shared_actions_ns[a] = actions_ns[a]
             shared_actions_ns_wins[a] = actions_ns_wins[a]            
         else:
