@@ -1,30 +1,29 @@
 from numba import cuda
-from numba import int8
 
 @cuda.jit(device=True)
 def is_action_legal(m, n, board, extra_info, turn, action, legal_actions):
     is_action_legal_gomoku(m, n, board, extra_info, turn, action, legal_actions)
-    #is_action_legal_c4(m, n, board, extra_info, turn, action, legal_actions)
+    # is_action_legal_c4(m, n, board, extra_info, turn, action, legal_actions)
 
 @cuda.jit(device=True)
 def take_action(m, n, board, extra_info, turn, action):
     take_action_gomoku(m, n, board, extra_info, turn, action)
-    #take_action_c4(m, n, board, extra_info, turn, action)
+    # take_action_c4(m, n, board, extra_info, turn, action)
 
 @cuda.jit(device=True)
 def legal_actions_playout(m, n, board, extra_info, turn, legal_actions_with_count):
     legal_actions_playout_gomoku(m, n, board, extra_info, turn, legal_actions_with_count)
-    #legal_actions_playout_c4(m, n, board, extra_info, turn, legal_actions_with_count)
+    # legal_actions_playout_c4(m, n, board, extra_info, turn, legal_actions_with_count)
 
 @cuda.jit(device=True)    
 def take_action_playout(m, n, board, extra_info, turn, action, action_ord, legal_actions_with_count):
     take_action_playout_gomoku(m, n, board, extra_info, turn, action, action_ord, legal_actions_with_count)    
-    #take_action_playout_c4(m, n, board, extra_info, turn, action, action_ord, legal_actions_with_count)
+    # take_action_playout_c4(m, n, board, extra_info, turn, action, action_ord, legal_actions_with_count)
     
 @cuda.jit(device=True)
 def compute_outcome(m, n, board, extra_info, turn, last_action):
     return compute_outcome_gomoku(m, n, board, extra_info, turn, last_action)
-    #return compute_outcome_c4(m, n, board, extra_info, turn, last_action)
+    # return compute_outcome_c4(m, n, board, extra_info, turn, last_action)
 
 @cuda.jit(device=True)
 def is_action_legal_c4(m, n, board, extra_info, turn, action, legal_actions):
@@ -110,8 +109,8 @@ def compute_outcome_c4(m, n, board, extra_info, turn, last_action):
             draw = False
             break
     if draw:
-        return int8(0)
-    return int8(2) # anything > 1 (hence, other than {-1, 0, 1}) means game indecisive (ongoing)
+        return 0
+    return 2 # anything > 1 (hence, other than {-1, 0, 1}) means game indecisive (ongoing)
 
 @cuda.jit(device=True)
 def is_action_legal_gomoku(m, n, board, extra_info, turn, action, legal_actions):
@@ -145,7 +144,7 @@ def take_action_playout_gomoku(m, n, board, extra_info, turn, action, action_ord
     board[i, j] = turn    
     last_legal_action = legal_actions_with_count[legal_actions_with_count[-1] - 1]
     legal_actions_with_count[action_ord] = last_legal_action
-    legal_actions_with_count[- 1] -= 1            
+    legal_actions_with_count[-1] -= 1            
 
 @cuda.jit(device=True)
 def compute_outcome_gomoku(m, n, board, extra_info, turn, last_action):    
@@ -207,5 +206,5 @@ def compute_outcome_gomoku(m, n, board, extra_info, turn, last_action):
                 draw = False
                 break
     if draw:
-        return int8(0)
-    return int8(2) # anything > 1 (hence, other than {-1, 0, 1}) means game indecisive (ongoing)
+        return 0
+    return 2 # anything > 1 (hence, other than {-1, 0, 1}) means game indecisive (ongoing)
