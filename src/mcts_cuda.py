@@ -8,6 +8,7 @@ import math
 from numba.core.errors import NumbaPerformanceWarning
 import warnings
 from mcts_cuda_game_specifics import is_action_legal, take_action, legal_actions_playout, take_action_playout, compute_outcome
+from utils import dict_to_str
 
 __version__ = "1.0.0"
 __author__ = "Przemysław Klęsk"
@@ -18,7 +19,7 @@ warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
 
 class MCTSCuda:
     
-    KINDS = ["ocp", "acp", "acp_prodigal"] # one child playouts, all children playouts, all children playouts (with prodigal cuda blocks) 
+    KINDS = ["ocp_thrifty", "ocp_prodigal", "acp_thrifty", "acp_prodigal"] # ocp - one child playouts, acp - all children playouts; thrifty / prodigal - accurate / overhead usage of cuda blocks (pertains to expanded actions)  
     
     DEFAULT_N_TREES = 8
     DEFAULT_N_PLAYOUTS = 256
@@ -223,7 +224,55 @@ class MCTSCuda:
         print(f"MCTS_CUDA RUN DONE. [time: {t2 - t1} s; best action: {best_action_label}, best win_flag: {self.best_win_flag} best n: {self.best_n}, best n_wins: {self.best_n_wins}, best q: {self.best_q}]")
         return self.best_action
     
-    def _run_ocp(self, root_board, root_extra_info, root_turn):
+    def _flatten_trees_actions_expanded_thrifty(self, trees_actions_expanded):            
+        actions_expanded_cumsum = np.cumsum(trees_actions_expanded[:, -1])
+        trees_actions_expanded_flat = np.empty((actions_expanded_cumsum[-1], 2), dtype=np.int16)
+        shift = 0
+        for ti in range(self.n_trees):
+            s = slice(shift, actions_expanded_cumsum[ti])
+            trees_actions_expanded_flat[s, 0] = ti
+            trees_actions_expanded_flat[s, 1] = trees_actions_expanded[ti, :trees_actions_expanded[ti, -1]]
+            shift = actions_expanded_cumsum[ti]                                        
+        trees_actions_expanded_total = actions_expanded_cumsum[-1]
+        return trees_actions_expanded_flat, trees_actions_expanded_total
+    
+    def _make_actions_info_thrifty(self, root_actions_expanded):
+        root_ns_thrifty = np.empty(self.state_max_actions, dtype=np.int64)
+        actions_win_flags_thrifty = np.empty(self.state_max_actions, dtype=bool)
+        actions_ns_thrifty = np.empty(self.state_max_actions, dtype=np.int64)
+        actions_ns_wins_thrifty = np.empty(self.state_max_actions, dtype=np.int64)       
+        self.dev_root_ns.copy_to_host(ary=root_ns_thrifty)
+        self.dev_actions_win_flags.copy_to_host(ary=actions_win_flags_thrifty)
+        self.dev_actions_ns.copy_to_host(ary=actions_ns_thrifty)
+        self.dev_actions_ns_wins.copy_to_host(ary=actions_ns_wins_thrifty)
+        actions_dict = {}
+        best_entry = None 
+        n_root_actions = root_actions_expanded[-1]
+        for i in range(n_root_actions):
+            entry = {}                        
+            a = root_actions_expanded[i]
+            entry["name"] = self.action_to_name_function(a) if self.action_to_name_function else str(a)
+            entry["n_root"] = root_ns_thrifty[i]
+            entry["win_flag"] = actions_win_flags_thrifty[i]
+            entry["n"] = actions_ns_thrifty[i]
+            entry["n_wins"] = actions_ns_wins_thrifty[i]
+            entry["q"] = entry["n_wins"] / entry["n"] if entry["n"] > 0 else np.nan                          
+            entry["ucb1"] = entry["q"] + self.ucb1_c * np.sqrt(np.log(entry["n_root"]) / entry["n"]) if entry["n"] > 0 else np.nan
+            actions_dict[a] = entry
+            if a == self.best_action:
+                best_entry = {"index": a, **entry}
+        actions_dict["best"] = best_entry
+        return actions_dict     
+    
+    def _make_performance_info(self, time, steps, time_loop, total_time_select, total_time_expand, total_time_playout, total_time_backup):
+        performance_info = {}
+        performance_info["time [s]"] = time
+        performance_info["steps"] = steps
+        ms_factor = 10.0**3     
+        # performance_info["loop time [ms]"] {ms_factor * (t2_loop - t1_loop)}, mean: {ms_factor * (t2_loop - t1_loop) / step}]")                         
+        # print(f"[mean times of stages [ms] -> selection: {ms_factor * total_time_select / step}, expansion: {ms_factor * total_time_expand / step}, playout: {ms_factor * total_time_playout / step}, backup: {ms_factor * total_time_backup / step}]")           
+                        
+    def _run_ocp_thrifty(self, root_board, root_extra_info, root_turn):
         # MCTS reset
         t1_reset = time.time()
         bpg = self.n_trees
@@ -247,7 +296,7 @@ class MCTSCuda:
         total_time_playout = 0.0
         total_time_backup = 0.0    
         step = 0        
-        trees_actions_expanded = np.empty((self.n_trees, self.state_max_actions + 2), dtype=np.int16) # needed at host side for non-prodigal kinds
+        trees_actions_expanded = np.empty((self.n_trees, self.state_max_actions + 2), dtype=np.int16) # needed at host side for thrifty kind
         
         t1_loop = time.time()
         while True:
@@ -278,11 +327,11 @@ class MCTSCuda:
             bpg = self.n_trees
             tpb = self.tpb_expand_stage1
             if self.verbose_debug:
-                print(f"[MCTSCuda._expand_stage1_ocp()...; bpg: {bpg}, tpb: {tpb}]")                         
-            MCTSCuda._expand_stage1_ocp[bpg, tpb](self.max_tree_size, 
-                                                  self.dev_trees, self.dev_trees_sizes, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals,
-                                                  self.dev_trees_boards, self.dev_trees_extra_infos, 
-                                                  self.dev_trees_nodes_selected, self.dev_random_generators_expand_stage1, self.dev_trees_actions_expanded)                                                    
+                print(f"[MCTSCuda._expand_stage1_ocp_thrifty()...; bpg: {bpg}, tpb: {tpb}]")                         
+            MCTSCuda._expand_stage1_ocp_thrifty[bpg, tpb](self.max_tree_size, 
+                                                          self.dev_trees, self.dev_trees_sizes, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals,
+                                                          self.dev_trees_boards, self.dev_trees_extra_infos, 
+                                                          self.dev_trees_nodes_selected, self.dev_random_generators_expand_stage1, self.dev_trees_actions_expanded)                                                    
             self.dev_trees_actions_expanded.copy_to_host(ary=trees_actions_expanded)
             cuda.synchronize()
             if step == 0:                
@@ -290,28 +339,21 @@ class MCTSCuda:
                 cuda.synchronize()
             t2_expand_stage1 = time.time()            
             if self.verbose_debug:
-                print(f"[MCTSCuda._expand_stage1_ocp() done; time: {t2_expand_stage1 - t1_expand_stage1} s]")
-            t1_expand_stage2 = time.time()
-            actions_expanded_cumsum = np.cumsum(trees_actions_expanded[:, -1])
-            trees_actions_expanded_flat = np.empty((actions_expanded_cumsum[-1], 2), dtype=np.int16)
-            shift = 0
-            for ti in range(self.n_trees):
-                s = slice(shift, actions_expanded_cumsum[ti])
-                trees_actions_expanded_flat[s, 0] = ti
-                trees_actions_expanded_flat[s, 1] = trees_actions_expanded[ti, :trees_actions_expanded[ti, -1]]
-                shift = actions_expanded_cumsum[ti]                                        
-            bpg = actions_expanded_cumsum[-1]            
+                print(f"[MCTSCuda._expand_stage1_ocp_thrifty() done; time: {t2_expand_stage1 - t1_expand_stage1} s]")
+            t1_expand_stage2 = time.time()            
+            trees_actions_expanded_flat, trees_actions_expanded_total = self._flatten_trees_actions_expanded_thrifty(trees_actions_expanded)
+            bpg = trees_actions_expanded_total # thrifty number of blocks
             tpb = self.tpb_expand_stage2
             if self.verbose_debug:
-                print(f"[MCTSCuda._expand_stage2()...; bpg: {bpg}, tpb: {tpb}]")
+                print(f"[MCTSCuda._expand_stage2_thrifty()...; bpg: {bpg}, tpb: {tpb}]")
             dev_trees_actions_expanded_flat = cuda.to_device(trees_actions_expanded_flat)
-            MCTSCuda._expand_stage2[bpg, tpb](self.dev_trees, self.dev_trees_depths, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals, self.dev_trees_outcomes, self.dev_trees_ns, self.dev_trees_ns_wins, 
-                                              self.dev_trees_boards, self.dev_trees_extra_infos,                                               
-                                              self.dev_trees_nodes_selected, dev_trees_actions_expanded_flat)
+            MCTSCuda._expand_stage2_thrifty[bpg, tpb](self.dev_trees, self.dev_trees_depths, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals, self.dev_trees_outcomes, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                                      self.dev_trees_boards, self.dev_trees_extra_infos,                                               
+                                                      self.dev_trees_nodes_selected, dev_trees_actions_expanded_flat)
             cuda.synchronize()
             t2_expand_stage2 = time.time()
             if self.verbose_debug:
-                print(f"[MCTSCuda._expand_stage2() done; time: {t2_expand_stage2 - t1_expand_stage2} s]")
+                print(f"[MCTSCuda._expand_stage2_thrifty() done; time: {t2_expand_stage2 - t1_expand_stage2} s]")
             t2_expand = time.time()
             total_time_expand += t2_expand - t1_expand
             
@@ -362,30 +404,29 @@ class MCTSCuda:
         bpg = n_root_actions
         tpb = self.tpb_reduce_over_trees
         if self.verbose_debug:
-            print(f"[MCTSCuda._reduce_over_trees()...; bpg: {bpg}, tpb: {tpb}]")
-        MCTSCuda._reduce_over_trees[bpg, tpb](self.dev_trees, self.dev_trees_terminals, self.dev_trees_outcomes,
-                                              self.dev_trees_ns, self.dev_trees_ns_wins, 
-                                              self.dev_root_actions_expanded, root_turn,
-                                              self.dev_root_ns, self.dev_actions_win_flags, self.dev_actions_ns, self.dev_actions_ns_wins)
+            print(f"[MCTSCuda._reduce_over_trees_thrifty()...; bpg: {bpg}, tpb: {tpb}]")
+        MCTSCuda._reduce_over_trees_thrifty[bpg, tpb](self.dev_trees, self.dev_trees_terminals, self.dev_trees_outcomes,
+                                                      self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                                      self.dev_root_actions_expanded, root_turn,
+                                                      self.dev_root_ns, self.dev_actions_win_flags, self.dev_actions_ns, self.dev_actions_ns_wins)
         cuda.synchronize()
-        # TODO clean downwards
         t2_reduce_over_trees = time.time()
         if self.verbose_debug:
-            print(f"[MCTSCuda._reduce_over_trees() done; time: {t2_reduce_over_trees - t1_reduce_over_trees} s]")
+            print(f"[MCTSCuda._reduce_over_trees_thrifty() done; time: {t2_reduce_over_trees - t1_reduce_over_trees} s]")
             
         # MCTS sum reduction over root actions
         t1_reduce_over_actions = time.time() 
         bpg = 1
         tpb = self.tpb_reduce_over_actions
         if self.verbose_debug:
-            print(f"[MCTSCuda._reduce_over_actions()...; bpg: {bpg}, tpb: {tpb}]")        
+            print(f"[MCTSCuda._reduce_over_actions_thrifty()...; bpg: {bpg}, tpb: {tpb}]")        
         dev_best_action = cuda.device_array(1, dtype=np.int16)
         dev_best_win_flag = cuda.device_array(1, dtype=bool)                
         dev_best_n = cuda.device_array(1, dtype=np.int64)
         dev_best_n_wins = cuda.device_array(1, dtype=np.int64)                                        
-        MCTSCuda._reduce_over_actions[bpg, tpb](n_root_actions, 
-                                                self.dev_actions_win_flags, self.dev_actions_ns, self.dev_actions_ns_wins, 
-                                                dev_best_action, dev_best_win_flag, dev_best_n, dev_best_n_wins)
+        MCTSCuda._reduce_over_actions_thrifty[bpg, tpb](n_root_actions, 
+                                                        self.dev_actions_win_flags, self.dev_actions_ns, self.dev_actions_ns_wins, 
+                                                        dev_best_action, dev_best_win_flag, dev_best_n, dev_best_n_wins)
         self.best_action = dev_best_action.copy_to_host()[0]
         self.best_win_flag = dev_best_win_flag.copy_to_host()[0]                
         self.best_n = dev_best_n.copy_to_host()[0]
@@ -395,33 +436,11 @@ class MCTSCuda:
         self.best_action = root_actions_expanded[self.best_action]
         t2_reduce_over_actions = time.time()
         if self.verbose_debug:
-            print(f"[MCTSCuda._reduce_over_actions() done; time: {t2_reduce_over_actions - t1_reduce_over_actions} s]")                
+            print(f"[MCTSCuda._reduce_over_actions_thrifty() done; time: {t2_reduce_over_actions - t1_reduce_over_actions} s]")                
          
         if self.verbose_info:
-            # actions printout
-            root_ns_packed = np.empty(self.state_max_actions, dtype=np.int64)
-            actions_win_flags_packed = np.empty(self.state_max_actions, dtype=bool)
-            actions_ns_packed = np.empty(self.state_max_actions, dtype=np.int64)
-            actions_ns_wins_packed = np.empty(self.state_max_actions, dtype=np.int64)       
-            self.dev_root_ns.copy_to_host(ary=root_ns_packed)
-            self.dev_actions_win_flags.copy_to_host(ary=actions_win_flags_packed)
-            self.dev_actions_ns.copy_to_host(ary=actions_ns_packed)
-            self.dev_actions_ns_wins.copy_to_host(ary=actions_ns_wins_packed)
-            root_ns = np.zeros(self.state_max_actions, dtype=np.int64)
-            actions_win_flags = np.zeros(self.state_max_actions, dtype=bool)
-            actions_ns = np.zeros(self.state_max_actions, dtype=np.int64)
-            actions_ns_wins = np.zeros(self.state_max_actions, dtype=np.int64)                        
-            qs = -np.ones(self.state_max_actions, dtype=np.float32)
-            ucb1s = -np.ones(self.state_max_actions, dtype=np.float32)
-            for i in range(n_root_actions):
-                a = root_actions_expanded[i]
-                root_ns[a] = root_ns_packed[i]
-                actions_win_flags[a] = actions_win_flags_packed[i]
-                actions_ns[a] = actions_ns_packed[i]
-                actions_ns_wins[a] = actions_ns_wins_packed[i]
-                qs[a] = actions_ns_wins[a] / actions_ns[a] if actions_ns[a] > 0 else np.nan                          
-                ucb1s[a] = qs[a] + self.ucb1_c * np.sqrt(np.log(root_ns[a]) / actions_ns[a]) if actions_ns[a] > 0 else np.nan            
-            self._actions_printout(root_ns, actions_win_flags, actions_ns, actions_ns_wins, qs, ucb1s)
+            actions_info = self._make_actions_info_thrifty(root_actions_expanded)
+            print(f"[actions info:\n{dict_to_str(actions_info, indent=1)}\n]")
             # performance and tree info printout 
             depths = self.dev_trees_depths.copy_to_host()
             sizes = self.dev_trees_sizes.copy_to_host()
@@ -521,13 +540,13 @@ class MCTSCuda:
             if self.VERBOSE_DEBUG:
                 print(f"[MCTSCuda._expand_stage2()...; bpg: {bpg}, tpb: {tpb}]")
             dev_trees_actions_expanded_flat = cuda.to_device(trees_actions_expanded_flat)
-            MCTSCuda._expand_stage2[bpg, tpb](self.dev_trees, self.dev_trees_depths, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals, self.dev_trees_outcomes, self.dev_trees_ns, self.dev_trees_ns_wins, 
-                                              self.dev_trees_boards, self.dev_trees_extra_infos,                                               
-                                              self.dev_trees_nodes_selected, dev_trees_actions_expanded_flat)
+            MCTSCuda._expand_stage2_thrifty[bpg, tpb](self.dev_trees, self.dev_trees_depths, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals, self.dev_trees_outcomes, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                                      self.dev_trees_boards, self.dev_trees_extra_infos,                                               
+                                                      self.dev_trees_nodes_selected, dev_trees_actions_expanded_flat)
             cuda.synchronize()
             t2_expand_stage2 = time.time()
             if self.VERBOSE_DEBUG:
-                print(f"[MCTSCuda._expand_stage2() done; time: {t2_expand_stage2 - t1_expand_stage2} s]")
+                print(f"[MCTSCuda._expand_stage2_thrifty() done; time: {t2_expand_stage2 - t1_expand_stage2} s]")
             total_time_expand += t2_expand_stage2 - t1_expand_stage2
             # MCTS playout
             t1_playout = time.time()
@@ -729,14 +748,14 @@ class MCTSCuda:
             bpg = (self.n_trees, self.state_max_actions)            
             tpb = self.tpb_expand_stage2 
             if self.verbose_debug:
-                print(f"[MCTSCuda._expand_stage2_acp_prodigal()...; bpg: {bpg}, tpb: {tpb}]")
-            MCTSCuda._expand_stage2_acp_prodigal[bpg, tpb](self.dev_trees, self.dev_trees_depths, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals, self.dev_trees_outcomes, self.dev_trees_ns, self.dev_trees_ns_wins, 
-                                                           self.dev_trees_boards, self.dev_trees_extra_infos,                                               
-                                                           self.dev_trees_nodes_selected, self.dev_trees_actions_expanded)
+                print(f"[MCTSCuda._expand_stage2_prodigal()...; bpg: {bpg}, tpb: {tpb}]")
+            MCTSCuda._expand_stage2_prodigal[bpg, tpb](self.dev_trees, self.dev_trees_depths, self.dev_trees_turns, self.dev_trees_leaves, self.dev_trees_terminals, self.dev_trees_outcomes, self.dev_trees_ns, self.dev_trees_ns_wins, 
+                                                       self.dev_trees_boards, self.dev_trees_extra_infos,                                               
+                                                       self.dev_trees_nodes_selected, self.dev_trees_actions_expanded)
             cuda.synchronize()            
             t2_expand_stage2 = time.time()
             if self.verbose_debug:
-                print(f"[MCTSCuda._expand_stage2_acp_prodigal() done; time: {t2_expand_stage2 - t1_expand_stage2} s]")
+                print(f"[MCTSCuda._expand_stage2_prodigal() done; time: {t2_expand_stage2 - t1_expand_stage2} s]")
             t2_expand = time.time()
             total_time_expand += t2_expand - t1_expand
                         
@@ -951,8 +970,8 @@ class MCTSCuda:
             
     @staticmethod
     @cuda.jit(void(int32, int32[:, :, :], int32[:], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], xoroshiro128p_type[:], int16[:, :]))
-    def _expand_stage1_ocp(max_tree_size, trees, trees_sizes, trees_turns, trees_leaves, trees_terminals, trees_boards, trees_extra_infos, 
-                           trees_nodes_selected, random_generators_expand_stage1, trees_actions_expanded):
+    def _expand_stage1_ocp_thrifty(max_tree_size, trees, trees_sizes, trees_turns, trees_leaves, trees_terminals, trees_boards, trees_extra_infos, 
+                                   trees_nodes_selected, random_generators_expand_stage1, trees_actions_expanded):
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         shared_legal_actions = cuda.shared.array(1024, dtype=boolean) # 1024 - assumed limit on max actions
@@ -1161,7 +1180,7 @@ class MCTSCuda:
         
     @staticmethod
     @cuda.jit(void(int32[:, :, :], int16[:, :], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :], int32[:, :], int32[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :]))
-    def _expand_stage2(trees, trees_depths, trees_turns, trees_leaves, trees_terminals, trees_outcomes, trees_ns, trees_ns_wins, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded_flat):
+    def _expand_stage2_thrifty(trees, trees_depths, trees_turns, trees_leaves, trees_terminals, trees_outcomes, trees_ns, trees_ns_wins, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded_flat):
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         tai = cuda.blockIdx.x # tree-action pair index
@@ -1224,7 +1243,7 @@ class MCTSCuda:
             
     @staticmethod
     @cuda.jit(void(int32[:, :, :], int16[:, :], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :], int32[:, :], int32[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :]))
-    def _expand_stage2_acp_prodigal(trees, trees_depths, trees_turns, trees_leaves, trees_terminals, trees_outcomes, trees_ns, trees_ns_wins, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded):
+    def _expand_stage2_prodigal(trees, trees_depths, trees_turns, trees_leaves, trees_terminals, trees_outcomes, trees_ns, trees_ns_wins, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded):
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         ti = cuda.blockIdx.x
@@ -1742,7 +1761,7 @@ class MCTSCuda:
     
     @staticmethod
     @cuda.jit(void(int32[:, :, :], boolean[:, :], int8[:, :], int32[:, :], int32[:, :], int16[:], int8, int64[:], boolean[:], int64[:], int64[:]))
-    def _reduce_over_trees(trees, trees_terminals, trees_outcomes, trees_ns, trees_ns_wins, root_actions_expanded, root_turn, root_ns, actions_win_flags, actions_ns, actions_ns_wins):
+    def _reduce_over_trees_thrifty(trees, trees_terminals, trees_outcomes, trees_ns, trees_ns_wins, root_actions_expanded, root_turn, root_ns, actions_win_flags, actions_ns, actions_ns_wins):
         shared_root_ns = cuda.shared.array(512, dtype=int64) # 512 - assumed max of n_trees
         shared_actions_ns = cuda.shared.array(512, dtype=int64)
         shared_actions_ns_wins = cuda.shared.array(512, dtype=int64)
@@ -1816,7 +1835,7 @@ class MCTSCuda:
             
     @staticmethod
     @cuda.jit(void(int16, boolean[:], int64[:], int64[:], int16[:], boolean[:], int64[:], int64[:]))
-    def _reduce_over_actions(n_root_actions, actions_win_flags, actions_ns, actions_ns_wins, best_action, best_win_flag, best_n, best_n_wins):
+    def _reduce_over_actions_thrifty(n_root_actions, actions_win_flags, actions_ns, actions_ns_wins, best_action, best_win_flag, best_n, best_n_wins):
         shared_actions = cuda.shared.array(512, dtype=int16) # 512 - assumed max state actions
         shared_actions_win_flags = cuda.shared.array(512, dtype=boolean) 
         shared_actions_ns = cuda.shared.array(512, dtype=int64) 

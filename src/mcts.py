@@ -1,12 +1,6 @@
 import numpy as np
 import time
-
-def dict_to_str(d):
-    dict_str = ""
-    for i, key in enumerate(d):
-        dict_str += "{\n " if i == 0 else " "  
-        dict_str += str(key) + ": " + str(d[key]) + (",\n" if i < len(d) - 1 else "\n}")
-    return dict_str
+from utils import dict_to_str
 
 class State:
     def __init__(self, parent=None):
@@ -104,7 +98,7 @@ class MCTS:
             n = children[key].n
             n_wins = children[key].n_wins
             n_parent = children[key].parent.n
-            win_freq = n_wins / n if n > 0 else 0.0 # 2nd case does not affect ucb1
+            q = n_wins / n if n > 0 else 0.0 # 2nd case does not affect ucb1
             bound_width = self.ucb1_c * np.sqrt(np.log(n_parent) / n) if n > 0 else np.inf
             ucb1 = win_freq + bound_width  
             entry = {}
@@ -112,7 +106,7 @@ class MCTS:
             entry["n"] = n
             entry["n_wins"] = n_wins
             entry["n_parent"] = n_parent
-            entry["win_freq"] = win_freq
+            entry["q"] = q
             entry["bound_width"] = bound_width
             entry["ucb1"] = ucb1
             values[key] = entry
@@ -124,13 +118,13 @@ class MCTS:
     def best_move(self, children, values):
         best_key = None
         best_n = -1
-        best_win_freq = -np.inf
+        best_q = -np.inf
         for key in children.keys():
             n = values[key]["n"]
-            win_freq = values[key]["win_freq"]
-            if (n > best_n) or (n == best_n and win_freq > best_win_freq):
+            q = values[key]["q"]
+            if (n > best_n) or (n == best_n and q > best_q):
                 best_n = n
-                best_win_freq = win_freq
+                best_q = q
                 best_key = key                        
         return best_key
                 
