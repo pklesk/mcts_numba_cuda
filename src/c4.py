@@ -29,13 +29,7 @@ class C4(State):
         s += " "
         for j in range(C4.N):
             s += f"{j} "
-        return s
-    
-    def __repr__(self):
-        s = str(self)
-        s += f"\n[n: {self.n}, n_wins: {self.n_wins}]"
-        s += f"\n[turn: {self.turn}, outcome: {self.outcome}, n_children: {len(self.children)}]"
-        return s    
+        return s      
     
     def move(self, move_index):
         j_index = move_index 

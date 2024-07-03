@@ -30,13 +30,7 @@ class Gomoku(State):
         s += "  "
         for j in range(Gomoku.N):
             s += f"{chr(j + ord('A'))}"
-        return s
-    
-    def __repr__(self):
-        s = str(self)
-        s += f"\n[n: {self.n}, n_wins: {self.n_wins}]"
-        s += f"\n[turn: {self.turn}, outcome: {self.outcome}, n_children: {len(self.children)}]"
-        return s    
+        return s        
     
     @staticmethod
     def move_name_to_index(name):

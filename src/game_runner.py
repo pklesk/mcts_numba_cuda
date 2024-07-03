@@ -41,7 +41,7 @@ class GameRunner:
                 move_name = self.game_class.move_index_to_name(move_index)
                 print(f"PICKED MOVE: {move_name}")
                 game = self.game_class.move_down_tree_via(game, move_index)
-            print(repr(game), flush=True)
+            print(str(game), flush=True)
             outcome = game.get_outcome()
             if outcome is not None:                
                 print(f"GAME OUTCOME: {GameRunner.OUTCOME_MESSAGES[outcome + 1]}")
@@ -71,7 +71,7 @@ class GameRunner:
                 move_name = self.game_class.move_index_to_name(move_index)
                 print(f"PICKED MOVE: {move_name}")                    
                 game = self.game_class.move_down_tree_via(game, move_index)
-            print(repr(game), flush=True)
+            print(str(game), flush=True)
             outcome = game.get_outcome()
             if outcome is not None:
                 print(f"GAME OUTCOME: {GameRunner.OUTCOME_MESSAGES[outcome + 1]}")
