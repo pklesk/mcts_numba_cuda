@@ -4,7 +4,7 @@ from numba import jit
 from numba import int8
 
 class C4(State):
-    M = 6
+    M = 6 
     N = 7 
     SYMBOLS = ['\u25CB', '.', '\u25CF'] # or: ["O", ".", "X"]    
     

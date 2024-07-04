@@ -19,7 +19,7 @@ warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
 
 class MCTSCuda:
     
-    KINDS = ["ocp_thrifty", "ocp_prodigal", "acp_thrifty", "acp_prodigal"] # ocp - one child playouts, acp - all children playouts; thrifty / prodigal - accurate / overhead usage of cuda blocks (pertains to expanded actions)  
+    KINDS = ["ocp_thrifty", "ocp_prodigal", "acp_thrifty", "acp_prodigal"] # ocp - one child playouts, acp - all children playouts; thrifty/prodigal - accurate/overhead usage of cuda blocks (pertains to expanded actions)  
     
     DEFAULT_N_TREES = 8
     DEFAULT_N_PLAYOUTS = 256
@@ -221,7 +221,7 @@ class MCTSCuda:
         performance_info = {}
         performance_info["steps"] = self.steps
         performance_info["steps per second"] = self.steps / self.time_total
-        performance_info["playouts"] = self.dev_root_ns.copy_to_host()[0]
+        performance_info["playouts"] = np.max(self.dev_root_ns.copy_to_host()) # in fact, all non-zero values in this array are equal 
         performance_info["playouts per second"] = performance_info["playouts"] / self.time_total           
         ms_factor = 10.0**3
         times_info = {}
@@ -724,7 +724,6 @@ class MCTSCuda:
                 print(f"[MCTSCuda._expand_stage1_acp_thrifty() done; time: {t2_expand_stage1 - t1_expand_stage1} s]")
             t1_expand_stage2 = time.time()            
             trees_actions_expanded_flat, trees_actions_expanded_total = self._flatten_trees_actions_expanded_thrifty(trees_actions_expanded)
-            # TODO check if vertical space here needed
             bpg = trees_actions_expanded_total # thrifty number of blocks                                
             tpb = self.tpb_expand_stage2
             if self.verbose_debug:
@@ -967,6 +966,10 @@ class MCTSCuda:
             if self.verbose_debug:
                 print(f"[MCTSCuda._playout_acp_prodigal() done; time: {t2_playout - t1_playout} s]")
             self.time_playout += t2_playout - t1_playout
+            # TODO remove check ones done
+            tmp_outcomes = self.dev_trees_outcomes.copy_to_host()
+            if tmp_outcomes[0, -1] == -10:
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!CHECK POSITIVE!!!")
             
             # MCTS backup
             t1_backup = time.time()
@@ -1045,7 +1048,7 @@ class MCTSCuda:
                  
         if self.verbose_info:
             print(f"[actions info:\n{dict_to_str(self._make_actions_info_prodigal())}]")
-            print(f"[performance info:\n{dict_to_str(self._make_performance_info())}]")             
+            print(f"[performance info:\n{dict_to_str(self._make_performance_info())}]")                     
         
         return self.best_action
 
@@ -1350,8 +1353,8 @@ class MCTSCuda:
             trees[ti, selected, 1 + t] = child_index # parent gets to know where child is 
         if t == 0:
             trees_sizes[ti] += shared_legal_actions_child_shifts[state_max_actions - 1] + 1 # updating tree size
-            if selected_is_terminal:
-                trees_actions_expanded[ti, 0] = int16(0) # fake legal action for prodigal terminal playout (so that exactly one block becomes executed in full body)
+            if selected_is_terminal or fake_child_for_playout == int16(-3):
+                trees_actions_expanded[ti, 0] = int16(0) # fake legal action for playout (so that exactly one block becomes executed in full body)
 
     @staticmethod
     @cuda.jit(void(int32, int32[:, :, :], int32[:], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :]))
@@ -1426,8 +1429,8 @@ class MCTSCuda:
             trees[ti, selected, 1 + t] = child_index # parent gets to know where child is 
         if t == 0:
             trees_sizes[ti] += shared_legal_actions_child_shifts[state_max_actions - 1] + 1 # updating tree size
-            if selected_is_terminal:
-                trees_actions_expanded[ti, 0] = int16(0) # fake legal action for prodigal terminal playout (so that exactly one block becomes executed in full body)
+            if selected_is_terminal or fake_child_for_playout == int16(-3):
+                trees_actions_expanded[ti, 0] = int16(0) # fake legal action for playout (so that exactly one block becomes executed in full body)
                 
     @staticmethod
     @cuda.jit(void(int16[:, :], int16[:]))
@@ -1618,7 +1621,6 @@ class MCTSCuda:
             for i in range(extra_info_memory):
                 local_extra_info[i] = shared_extra_info[i]                
             local_legal_actions_with_count[-1] = 0
-            playout_depth = int16(0)
             turn = trees_turns[ti, to_be_played_out]
             outcome = compute_outcome(m, n, local_board, local_extra_info, turn, last_action) if last_action != int16(-1) else int8(2) # else case only when trees not grown due to memory limit (then selected played out)
             while True: # playout loop                
@@ -1630,14 +1632,9 @@ class MCTSCuda:
                     take_action_playout(m, n, local_board, local_extra_info, turn, last_action, action_ord, local_legal_actions_with_count)                    
                     turn = -turn
                 else:
-                    if playout_depth == int16(0):
-                        if t == 0:
-                            trees_terminals[ti, to_be_played_out] = True
-                            trees_outcomes[ti, to_be_played_out] = outcome
                     if outcome != int8(0):
                         shared_playout_outcomes[t, (outcome + 1) // 2] = int8(1)
                     break
-                playout_depth += 1
                 outcome = compute_outcome(m, n, local_board, local_extra_info, turn, last_action)
             cuda.syncthreads()
             stride = tpb >> 1 # half of tpb
@@ -1710,8 +1707,7 @@ class MCTSCuda:
                     local_board[i, j] = shared_board[i, j]
             for i in range(extra_info_memory):
                 local_extra_info[i] = shared_extra_info[i]
-            local_legal_actions_with_count[-1] = 0
-            playout_depth = int16(0)            
+            local_legal_actions_with_count[-1] = 0            
             turn = trees_turns[ti, to_be_played_out]
             outcome = compute_outcome(m, n, local_board, local_extra_info, turn, last_action) if last_action != int16(-1) else int8(2) # else case only when trees not grown due to memory limit (then selected played out)
             while True: # playout loop                
@@ -1723,14 +1719,9 @@ class MCTSCuda:
                     take_action_playout(m, n, local_board, local_extra_info, turn, last_action, action_ord, local_legal_actions_with_count)
                     turn = -turn
                 else:
-                    if playout_depth == int16(0):
-                        if t == 0:
-                            trees_terminals[ti, to_be_played_out] = True
-                            trees_outcomes[ti, to_be_played_out] = outcome
                     if outcome != int8(0):
                         shared_playout_outcomes[t, (outcome + 1) // 2] = int8(1)
                     break
-                playout_depth += 1
                 outcome = compute_outcome(m, n, local_board, local_extra_info, turn, last_action)
             cuda.syncthreads()
             stride = tpb >> 1 # half of tpb
@@ -1770,7 +1761,7 @@ class MCTSCuda:
         if trees_terminals[ti, to_be_played_out]: # root for playouts has been discovered terminal before (by game rules) -> taking stored outcome ("multiplied" by tpb)
             if t == 0:
                 outcome = trees_outcomes[ti, to_be_played_out]
-                if fake_child_for_playout != int16(-1): # case where terminal is one child among all children of selected node             
+                if fake_child_for_playout == int16(-2): # case where terminal is one child among all children of selected node             
                     trees_playout_outcomes_children[ti, action, 0] = int32(tpb) if outcome == int8(-1) else int32(0) # wins of -1
                     trees_playout_outcomes_children[ti, action, 1] = int32(tpb) if outcome == int8(1) else int32(0) # wins of +1
                 else: # case where terminal was selected
@@ -1806,7 +1797,6 @@ class MCTSCuda:
             for i in range(extra_info_memory):
                 local_extra_info[i] = shared_extra_info[i]
             local_legal_actions_with_count[-1] = 0
-            playout_depth = int16(0)            
             turn = trees_turns[ti, to_be_played_out]
             outcome = compute_outcome(m, n, local_board, local_extra_info, turn, last_action) if last_action != int16(-1) else int8(2) # else case only when trees not grown due to memory limit (then selected played out)
             while True: # playout loop                
@@ -1817,15 +1807,10 @@ class MCTSCuda:
                     last_action = local_legal_actions_with_count[action_ord]
                     take_action_playout(m, n, local_board, local_extra_info, turn, last_action, action_ord, local_legal_actions_with_count)
                     turn = -turn
-                else:
-                    if playout_depth == int16(0):
-                        if t == 0:
-                            trees_terminals[ti, to_be_played_out] = True
-                            trees_outcomes[ti, to_be_played_out] = outcome
+                else:                                                
                     if outcome != int8(0):
                         shared_playout_outcomes[t, (outcome + 1) // 2] = int8(1)
                     break
-                playout_depth += 1
                 outcome = compute_outcome(m, n, local_board, local_extra_info, turn, last_action)
             cuda.syncthreads()
             stride = tpb >> 1 # half of tpb
@@ -1944,7 +1929,7 @@ class MCTSCuda:
         t = cuda.threadIdx.x        
         fake_child_for_playout = trees_actions_expanded[ti, -2]
         max_actions = trees_actions_expanded.shape[1] - 2
-        if fake_child_for_playout != int16(-1): # check if selected is not terminal
+        if fake_child_for_playout == int16(-2): # check if actual children of selected were played out
             selected = trees_nodes_selected[ti]
             if t < max_actions and trees_actions_expanded[ti, t] != int16(-1): # prodigality
                 a = t
