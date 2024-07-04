@@ -100,7 +100,7 @@ class MCTS:
             n_parent = children[key].parent.n
             q = n_wins / n if n > 0 else 0.0 # 2nd case does not affect ucb1
             bound_width = self.ucb1_c * np.sqrt(np.log(n_parent) / n) if n > 0 else np.inf
-            ucb1 = win_freq + bound_width  
+            ucb1 = q + bound_width  
             entry = {}
             entry["name"] = children[key].__class__.move_index_to_name(key)
             entry["n"] = n
@@ -194,6 +194,6 @@ class MCTS:
             print(f"[states total: {self.root.states_total()}]")
             print(f"[depth: {self.root.depth()}]")
             print(f"[root n: {self.root.n}]") 
-        print(f"[best move: {best_move}, q: {vs[best_move]['win_freq']}]")                           
+        print(f"[best move: {best_move}, q: {vs[best_move]['q']}]")                           
         print(f"MCTS RUN DONE. [time: {t2 - t1} s]")                        
         return best_move
