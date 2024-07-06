@@ -6,7 +6,7 @@ from gomoku import Gomoku
 from game_runner import GameRunner
 import time
 
-STATE_CLASS = Gomoku
+STATE_CLASS = C4
 _BOARD_SHAPE = STATE_CLASS.get_board_shape()
 _EXTRA_INFO_MEMORY = STATE_CLASS.get_extra_info_memory()
 _MAX_ACTIONS = STATE_CLASS.get_max_actions()
@@ -17,14 +17,21 @@ AIS = {
     "mcts_15_inf": MCTS(search_time_limit=15.0, search_steps_limit=np.inf),
     "mcts_cuda_5_inf_1_512_ocp_thrifty": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=1, n_playouts=512, kind="ocp_thrifty", action_to_name_function=_ACTION_TO_NAME_FUNCTION),
     "mcts_cuda_5_inf_4_128_ocp_thrifty": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, kind="ocp_thrifty", action_to_name_function=_ACTION_TO_NAME_FUNCTION),
+    "mcts_cuda_inf_1000_4_128_ocp_thrifty": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=np.inf, search_steps_limit=1000, n_trees=4, n_playouts=128, kind="ocp_thrifty", action_to_name_function=_ACTION_TO_NAME_FUNCTION),
+    "mcts_cuda_inf_1000_4_128_acp_thrifty": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=np.inf, search_steps_limit=1000, n_trees=4, n_playouts=128, kind="acp_thrifty", action_to_name_function=_ACTION_TO_NAME_FUNCTION),                
     "mcts_cuda_5_inf_4_128_ocp_prodigal": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, kind="ocp_prodigal", action_to_name_function=_ACTION_TO_NAME_FUNCTION),
+    "mcts_cuda_5_inf_1_512_acp_thrifty": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=1, n_playouts=512, kind="acp_thrifty", action_to_name_function=_ACTION_TO_NAME_FUNCTION),    
     "mcts_cuda_5_inf_4_128_acp_thrifty": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, kind="acp_thrifty", action_to_name_function=_ACTION_TO_NAME_FUNCTION),            
     "mcts_cuda_5_inf_1_32_acp_prodigal": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=1, n_playouts=32, kind="acp_prodigal", action_to_name_function=_ACTION_TO_NAME_FUNCTION),
     "mcts_cuda_5_inf_1_64_acp_prodigal": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=1, n_playouts=64, kind="acp_prodigal", action_to_name_function=_ACTION_TO_NAME_FUNCTION),        
     "mcts_cuda_5_inf_1_256_acp_prodigal": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=1, n_playouts=256, kind="acp_prodigal", action_to_name_function=_ACTION_TO_NAME_FUNCTION),    
     "mcts_cuda_5_inf_4_32_acp_prodigal": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=4, n_playouts=32, kind="acp_prodigal", action_to_name_function=_ACTION_TO_NAME_FUNCTION),    
     "mcts_cuda_5_inf_4_128_acp_prodigal": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, kind="acp_prodigal", action_to_name_function=_ACTION_TO_NAME_FUNCTION),
-    "mcts_cuda_2_inf_4_128_acp_prodigal": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=2.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, kind="acp_prodigal", action_to_name_function=_ACTION_TO_NAME_FUNCTION)    
+    "mcts_cuda_2_inf_4_128_acp_prodigal": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=2.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, kind="acp_prodigal", action_to_name_function=_ACTION_TO_NAME_FUNCTION),
+    "mcts_cuda_3_inf_4_128_ocp_thrifty": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, kind="ocp_thrifty", action_to_name_function=_ACTION_TO_NAME_FUNCTION),
+    "mcts_cuda_3_inf_4_128_ocp_prodigal": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, kind="ocp_prodigal", action_to_name_function=_ACTION_TO_NAME_FUNCTION),
+    "mcts_cuda_3_inf_4_128_acp_thrifty": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, kind="acp_thrifty", action_to_name_function=_ACTION_TO_NAME_FUNCTION),
+    "mcts_cuda_3_inf_4_128_acp_prodigal": MCTSCuda(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=3.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, kind="acp_prodigal", action_to_name_function=_ACTION_TO_NAME_FUNCTION)                
     } 
 
 LINE_SEPARATOR = 208 * "="
@@ -32,10 +39,10 @@ LINE_SEPARATOR = 208 * "="
 if __name__ == "__main__":
     print("MAIN (MCTS EXPERIMENTS)...", flush=True)
     t1 = time.time()
-    n_games = 20
+    n_games = 1
     outcomes = np.zeros(n_games, dtype=np.int8)
-    ai_A =  AIS["mcts_cuda_5_inf_4_128_ocp_thrifty"]
-    ai_B = AIS["mcts_cuda_5_inf_4_128_acp_thrifty"]
+    ai_A =  AIS["mcts_cuda_inf_1000_4_128_acp_thrifty"]
+    ai_B = None
     print(LINE_SEPARATOR)
     print("MATCH-UP:")
     print(f"A: {ai_A if ai_A else 'human'}")

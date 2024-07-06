@@ -9,6 +9,7 @@ from numba.core.errors import NumbaPerformanceWarning
 import warnings
 from mcts_cuda_game_specifics import is_action_legal, take_action, legal_actions_playout, take_action_playout, compute_outcome
 from utils import dict_to_str
+import json
 
 __version__ = "1.0.0"
 __author__ = "Przemysław Klęsk"
@@ -83,7 +84,7 @@ class MCTSCuda:
         self.verbose_info = verbose_info 
         self._validate_param("verbose_info", bool, False, False, False, True, self.DEFAULT_VERBOSE_INFO)        
         self.action_to_name_function = action_to_name_function
-        eps = (0.5 * (self.n_trees / self.MAX_N_TREES + self.state_max_actions / self.MAX_STATE_MAX_ACTIONS)) * 0.010 # 10 ms for final reductions (pessimistic)                                                                          
+        eps = (0.5 * (self.n_trees / self.MAX_N_TREES + self.state_max_actions / self.MAX_STATE_MAX_ACTIONS)) * 0.010 + 0.010 # 20 ms for final reductions (pessimistic)                                                                          
         self.search_time_limit_minus_eps = self.search_time_limit - eps
     
     def _set_cuda_constants(self):    
@@ -1793,30 +1794,6 @@ class MCTSCuda:
                 trees_playout_outcomes_children[ti, action, 1] = shared_playout_outcomes[0, 1]                    
     
     @staticmethod
-    @cuda.jit(void(int16, int32[:, :, :], int8[:, :], int32[:, :], int32[:, :], int32[:], int16[:, :], int32[:, :]))
-    def _backup_ocp_OLD_SINGLE_THREADED(n_playouts, trees, trees_turns, trees_ns, trees_ns_wins, trees_nodes_selected, trees_actions_expanded, trees_playout_outcomes):
-        ti = cuda.grid(1)
-        n_trees = trees.shape[0]
-        if ti >= n_trees:
-            return
-        node = trees_nodes_selected[ti]
-        rand_child_for_playout = trees_actions_expanded[ti, -2]
-        if rand_child_for_playout != int16(-1): # check if some child picked on random for playouts
-            last_action = trees_actions_expanded[ti, rand_child_for_playout]
-            node = trees[ti, node, 1 + last_action]
-        n_negative_wins = trees_playout_outcomes[ti, 0]
-        n_positive_wins = trees_playout_outcomes[ti, 1]
-        while True:
-            trees_ns[ti, node] += n_playouts
-            if trees_turns[ti, node] == int8(1):
-                trees_ns_wins[ti, node] += n_negative_wins 
-            else:
-                trees_ns_wins[ti, node] += n_positive_wins
-            node = trees[ti, node, 0]
-            if node == int32(-1):
-                break
-
-    @staticmethod
     @cuda.jit(void(int16, int32[:, :, :], int8[:, :], int32[:, :], int32[:, :], int32[:], int32[:, :], int16[:, :], int32[:, :]))
     def _backup_ocp(n_playouts, trees, trees_turns, trees_ns, trees_ns_wins, trees_nodes_selected, trees_selected_paths, trees_actions_expanded, trees_playout_outcomes):
         ti = cuda.blockIdx.x
@@ -2125,3 +2102,108 @@ class MCTSCuda:
             best_win_flag[0] = shared_actions_win_flags[0]
             best_n[0] = shared_actions_ns[0]
             best_n_wins[0] = shared_actions_ns_wins[0]
+            
+            
+        # self.dev_trees = cuda.device_array((self.n_trees, self.max_tree_size, 1 + self.state_max_actions), dtype=node_index_dtype) # each row of a tree represents a node consisting of: parent indexes and indexes of all children (associated with actions), -1 index for none parent or child 
+        # self.dev_trees_sizes = cuda.device_array(self.n_trees, dtype=size_dtype)
+        # self.dev_trees_depths = cuda.device_array((self.n_trees, self.max_tree_size), dtype=depth_dtype)
+        # self.dev_trees_turns = cuda.device_array((self.n_trees, self.max_tree_size), dtype=turn_dtype)
+        # self.dev_trees_leaves = cuda.device_array((self.n_trees, self.max_tree_size), dtype=flag_dtype)
+        # self.dev_trees_terminals = cuda.device_array((self.n_trees, self.max_tree_size), dtype=flag_dtype)
+        # self.dev_trees_outcomes = cuda.device_array((self.n_trees, self.max_tree_size), dtype=outcome_dtype)        
+        # self.dev_trees_ns = cuda.device_array((self.n_trees, self.max_tree_size), dtype=ns_dtype)
+        # self.dev_trees_ns_wins = cuda.device_array((self.n_trees, self.max_tree_size), dtype=ns_dtype)
+        # self.dev_trees_boards = cuda.device_array((self.n_trees, self.max_tree_size, self.state_board_shape[0], self.state_board_shape[1]), dtype=board_element_dtype)
+        # self.dev_trees_extra_infos = cuda.device_array((self.n_trees, self.max_tree_size, self.state_extra_info_memory), dtype=extra_info_element_dtype)
+        # self.dev_trees_nodes_selected = cuda.device_array(self.n_trees, dtype=node_index_dtype)
+        # self.dev_trees_selected_paths = cuda.device_array((self.n_trees, self.MAX_TREE_DEPTH + 2), dtype=node_index_dtype)
+        # self.dev_trees_actions_expanded = cuda.device_array((self.n_trees, self.state_max_actions + 2), dtype=action_index_dtype) # +2 because 2 last entries inform about: child picked randomly for playouts, number of actions (children) expanded            
+        # self.dev_trees_playout_outcomes = cuda.device_array((self.n_trees, 2), dtype=playout_outcomes_dtype) # each row stores counts of: -1 wins and +1 wins, respectively (for given tree) 
+        # self.dev_trees_playout_outcomes_children = None
+            
+    def _json_dump(self, fname):
+        """Dumps (saves) device-side arrays, copied to host, representing trees and MCTS elements from the last run to a text file in json format."""        
+        if self.verbose_info:
+            print(f"JSON DUMP... [to file: {fname}]")
+        t1 = time.time()                
+        d = {}
+                
+        d["n_trees"] = self.n_trees
+        d["n_playouts"] = self.n_playouts
+        d["kind"] = self.kind
+        d["search_time_limit"] = self.search_time_limit if self.search_time_limit < np.inf else "inf" 
+        d["search_steps_limit"] = self.search_steps_limit if self.search_steps_limit < np.inf else "inf"
+        d["ucb1_c"] = self.ucb1_c
+        d["seed"] = self.seed
+        d["device_memory"] = self.device_memory
+        
+        trees_sizes = np.empty_like(self.dev_trees_sizes)
+        self.dev_trees_sizes.copy_to_host(ary=trees_sizes)
+        tree_size_max = np.max(trees_sizes)                        
+        
+        trees = np.empty_like(self.dev_trees)        
+        self.dev_trees.copy_to_host(ary=trees)
+        trees = trees[:, :tree_size_max, :]        
+        
+        trees_depths = np.empty_like(self.dev_trees_depths)
+        self.dev_trees_depths.copy_to_host(ary=trees_depths)
+        trees_depths = trees_depths[:, :tree_size_max]
+        depth_max = -np.inf
+        for i in range(self.n_trees):
+            depth_max = max(depth_max, np.max(trees_depths[i, :trees_sizes[i]]))
+
+        trees_turns = np.empty_like(self.dev_trees_turns)        
+        self.dev_trees_turns.copy_to_host(ary=trees_turns)
+        trees_turns = trees_turns[:, :tree_size_max]
+
+        trees_ns = np.empty_like(self.dev_trees_ns)        
+        self.dev_trees_ns.copy_to_host(ary=trees_ns)
+        trees_ns = trees_ns[:, :tree_size_max]
+
+        trees_ns_wins = np.empty_like(self.dev_trees_ns_wins)        
+        self.dev_trees_ns_wins.copy_to_host(ary=trees_ns_wins)
+        trees_ns_wins = trees_ns_wins[:, :tree_size_max]
+        
+        trees_nodes_selected = np.empty_like(self.dev_trees_nodes_selected)
+        self.dev_trees_nodes_selected.copy_to_host(ary=trees_nodes_selected)    
+
+        trees_selected_paths = np.empty_like(self.dev_trees_selected_paths)
+        self.dev_trees_selected_paths.copy_to_host(ary=trees_selected_paths)
+        tmp_trees_selected_paths = trees_selected_paths[:, :depth_max + 2];
+        tmp_trees_selected_paths[:, -1] = trees_selected_paths[:, -1]
+        trees_selected_paths = tmp_trees_selected_paths
+        
+        trees_actions_expanded = np.empty_like(self.dev_trees_actions_expanded)
+        self.dev_trees_actions_expanded.copy_to_host(ary=trees_actions_expanded)
+        
+        trees_playout_outcomes = np.empty_like(self.dev_trees_playout_outcomes)
+        self.dev_trees_playout_outcomes.copy_to_host(ary=trees_playout_outcomes)
+        
+        trees_playout_outcomes_children = None
+        if self.dev_trees_playout_outcomes_children is not None:
+            trees_playout_outcomes_children = np.empty_like(self.dev_trees_playout_outcomes_children)
+            self.dev_trees_playout_outcomes_children.copy_to_host(ary=trees_playout_outcomes_children)
+        
+        d["trees"] = trees.tolist()
+        d["trees"] = trees.tolist()
+        d["trees_sizes"] = trees_sizes.tolist()
+        d["trees_depths"] = trees_depths.tolist()
+        d["trees_turns"] = trees_turns.tolist()
+        d["trees_ns"] = trees_ns.tolist()
+        d["trees_ns_wins"] = trees_ns_wins.tolist()
+        d["trees_nodes_selected"] = trees_nodes_selected.tolist()
+        d["trees_selected_paths"] = trees_selected_paths.tolist()
+        d["trees_actions_expanded"] = trees_actions_expanded.tolist()
+        d["trees_playout_outcomes"] = trees_playout_outcomes.tolist()
+        if trees_playout_outcomes_children is not None:
+            d["trees_playout_outcomes_children"] = trees_playout_outcomes_children.tolist()    
+        
+        try:
+            f = open(fname, "w+")
+            json.dump(d, f, indent=2)
+            f.close()
+        except IOError:
+            sys.exit(f"[error occurred when trying to dump MCTSCuda as json to file: {fname}]")
+        t2 = time.time()
+        if self.verbose_info:
+            print(f"JSON DUMP DONE. [time: {t2 - t1} s]")                        

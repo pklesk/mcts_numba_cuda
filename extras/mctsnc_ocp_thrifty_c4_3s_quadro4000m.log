@@ -1,0 +1,54 @@
+MAIN (MCTS EXPERIMENTS)...
+================================================================================================================================================================================================================
+MATCH-UP:
+A: MCTSCuda(n_trees=4, n_playouts=128, kind='ocp_thrifty', search_time_limit=3.0, search_steps_limit=inf, ucb1_c=2.0, seed: 0, device_memory=1.5)
+VS
+B: human
+================================================================================================================================================================================================================
+[MCTSCuda._init_device_side_arrays()... for MCTSCuda(n_trees=4, n_playouts=128, kind='ocp_thrifty', search_time_limit=3.0, search_steps_limit=inf, ucb1_c=2.0, seed: 0, device_memory=1.5)]
+[MCTSCuda._init_device_side_arrays() done; time: 0.7667801380157471 s, per_state_memory: 95 B,  calculated max_tree_size: 4238367]
+================================================================================================================================================================================================================
+GAME 1/1:
+BLACK: MCTSCuda(n_trees=4, n_playouts=128, kind='ocp_thrifty', search_time_limit=3.0, search_steps_limit=inf, ucb1_c=2.0, seed: 0, device_memory=1.5)
+WHITE: None
+|.|.|.|.|.|.|.|
+|.|.|.|.|.|.|.|
+|.|.|.|.|.|.|.|
+|.|.|.|.|.|.|.|
+|.|.|.|.|.|.|.|
+|.|.|.|.|.|.|.|
+ 0 1 2 3 4 5 6 
+MOVE: 1
+MCTS_CUDA RUN... [MCTSCuda(n_trees=4, n_playouts=128, kind='ocp_thrifty', search_time_limit=3.0, search_steps_limit=inf, ucb1_c=2.0, seed: 0, device_memory=1.5)]
+[actions info:
+{
+  0: {'name': '0', 'n_root': 702464, 'win_flag': False, 'n': 9856, 'n_wins': 4826, 'q': 0.489650974025974, 'ucb1': 0.5635672499159765},
+  1: {'name': '1', 'n_root': 702464, 'win_flag': False, 'n': 17536, 'n_wins': 9187, 'q': 0.5238937043795621, 'ucb1': 0.5793084261179126},
+  2: {'name': '2', 'n_root': 702464, 'win_flag': False, 'n': 34944, 'n_wins': 19462, 'q': 0.55694826007326, 'ucb1': 0.5962040857901624},
+  3: {'name': '3', 'n_root': 702464, 'win_flag': False, 'n': 577408, 'n_wins': 353925, 'q': 0.6129547910662824, 'ucb1': 0.6226119421707967},
+  4: {'name': '4', 'n_root': 702464, 'win_flag': False, 'n': 35712, 'n_wins': 19875, 'q': 0.5565356182795699, 'ucb1': 0.5953670442233779},
+  5: {'name': '5', 'n_root': 702464, 'win_flag': False, 'n': 16256, 'n_wins': 8461, 'q': 0.5204847440944882, 'ucb1': 0.5780398132249269},
+  6: {'name': '6', 'n_root': 702464, 'win_flag': False, 'n': 10752, 'n_wins': 5278, 'q': 0.4908854166666667, 'ucb1': 0.5616548629081514},
+  best: {'index': 3, 'name': '3', 'n_root': 702464, 'win_flag': False, 'n': 577408, 'n_wins': 353925, 'q': 0.6129547910662824, 'ucb1': 0.6226119421707967}
+}]
+[performance info:
+{
+  steps: 1372,
+  steps per second: 458.31830753265206,
+  playouts: 702464,
+  playouts per second: 234658.97345671785,
+  times [ms]: {'total': 2993.5526847839355, 'loop': 2990.574598312378, 'reduce over trees': 0.9973049163818359, 'reduce over actions': 0.9973049163818359, 'mean loop': 2.1797190949798675, 'mean select': 0.2302343226730302, 'mean expand': 1.0437680402928122, 'mean playout': 0.6801086334028328, 'mean backup': 0.2146827236208902},
+  trees: {'count': 4, 'mean depth': 5.617844854551142, 'max depth': 9, 'mean size': 9591.0, 'max size': 9605}
+}]
+MCTS_CUDA RUN DONE. [time: 2.9935526847839355 s; best action: 3 (3), best win_flag: False best n: 577408, best n_wins: 353925, best q: 0.6129547910662824]
+JSON DUMP... [to file: ../extras/mctsnc_ocp_thrifty_c4_3s_quadro4000m.json]
+JSON DUMP DONE. [time: 1.2674858570098877 s]
+PICKED MOVE: 3
+|.|.|.|.|.|.|.|
+|.|.|.|.|.|.|.|
+|.|.|.|.|.|.|.|
+|.|.|.|.|.|.|.|
+|.|.|.|.|.|.|.|
+|.|.|.|●|.|.|.|
+ 0 1 2 3 4 5 6 
+WHITE PLAYER, PICK YOUR MOVE: 
