@@ -28,7 +28,7 @@ class MCTSCuda:
     DEFAULT_SEARCH_TIME_LIMIT = 5.0 # [s], np.inf possible
     DEFAULT_SEARCH_STEPS_LIMIT = np.inf # np.inf possible
     DEFAULT_UCB1_C = 2.0
-    DEFAULT_DEVICE_MEMORY = 1.5 # [GB] # TODO 2 GB 
+    DEFAULT_DEVICE_MEMORY = 2.0 
     DEFAULT_SEED = 0 
     DEFAULT_VERBOSE_DEBUG = False
     DEFAULT_VERBOSE_INFO = True
