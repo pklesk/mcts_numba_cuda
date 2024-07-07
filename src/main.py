@@ -41,7 +41,7 @@ if __name__ == "__main__":
     t1 = time.time()
     n_games = 1
     outcomes = np.zeros(n_games, dtype=np.int8)
-    ai_A =  AIS["mcts_cuda_inf_1000_4_128_acp_thrifty"]
+    ai_A =  None # AIS["mcts_cuda_3_inf_4_128_acp_prodigal"]
     ai_B = None
     print(LINE_SEPARATOR)
     print("MATCH-UP:")
