@@ -6,7 +6,7 @@ from gomoku import Gomoku
 from game_runner import GameRunner
 import time
 
-STATE_CLASS = C4
+STATE_CLASS = Gomoku
 _BOARD_SHAPE = STATE_CLASS.get_board_shape()
 _EXTRA_INFO_MEMORY = STATE_CLASS.get_extra_info_memory()
 _MAX_ACTIONS = STATE_CLASS.get_max_actions()
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     t1 = time.time()
     n_games = 1
     outcomes = np.zeros(n_games, dtype=np.int8)
-    ai_A =  None # AIS["mcts_cuda_3_inf_4_128_acp_prodigal"]
+    ai_A =  AIS["mcts_cuda_5_inf_4_128_acp_prodigal"]
     ai_B = None
     print(LINE_SEPARATOR)
     print("MATCH-UP:")
