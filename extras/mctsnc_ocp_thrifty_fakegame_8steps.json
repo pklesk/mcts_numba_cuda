@@ -1,10 +1,10 @@
 {
   "n_trees": 4,
   "n_playouts": 128,
-  "kind": "ocp_thrifty",
+  "variant": "ocp_thrifty",
   "search_time_limit": "inf",
   "search_steps_limit": 8.0,
-  "ucb1_c": 2.0,
+  "ucb_c": 2.0,
   "seed": 0,
   "device_memory": 1610612736.0,
   "trees": [

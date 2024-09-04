@@ -1,4 +1,4 @@
-from mcts_cuda import MCTSCuda
+from mctsnc import MCTSNC
 
 class GameRunner:
     
@@ -34,7 +34,7 @@ class GameRunner:
                 if escaped:
                     break
             else:
-                if isinstance(self.black_ai, MCTSCuda):
+                if isinstance(self.black_ai, MCTSNC):
                     move_index = self.black_ai.run(game.get_board(), game.get_extra_info(), game.turn)
                 else:
                     move_index = self.black_ai.run(game)
@@ -64,7 +64,7 @@ class GameRunner:
                 if escaped:
                     break                
             else:
-                if isinstance(self.white_ai, MCTSCuda):
+                if isinstance(self.white_ai, MCTSNC):
                     move_index = self.white_ai.run(game.get_board(), game.get_extra_info(), game.turn)
                 else:
                     move_index = self.white_ai.run(game)

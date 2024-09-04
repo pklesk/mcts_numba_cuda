@@ -3,6 +3,7 @@ import time
 from utils import dict_to_str
 
 class State:
+    
     def __init__(self, parent=None):
         self.n = 0
         self.n_wins = 0
@@ -13,10 +14,6 @@ class State:
         self.turn = 1 if self.parent is None else self.parent.turn
     
     def move(self, move_index):            
-        pass
-    
-    @staticmethod
-    def move_down_tree_via(state, move_index):
         pass
     
     def get_outcome(self):
@@ -33,6 +30,10 @@ class State:
 
     def get_extra_info(self):
         pass
+    
+    @staticmethod
+    def move_down_tree_via(state, move_index):
+        pass    
     
     @staticmethod
     def move_name_to_index(name):
@@ -53,7 +54,7 @@ class State:
     @staticmethod
     def get_max_actions():
         pass
-            
+    
     def states_total(self):
         t = 1
         for key in self.children:
@@ -68,6 +69,7 @@ class State:
                 d = 1 + temp_d 
         return d
     
+                
 class MCTS:
     
     SEARCH_TIME_LIMIT = 5.0
@@ -115,7 +117,7 @@ class MCTS:
                 key_max = key                  
         return values, key_max
         
-    def best_move(self, children, values):
+    def best_move(self, children, values): # TODO 3-level comparison (direct outcome included first; i.e. win_flag -> n -> q)
         best_key = None
         best_n = -1
         best_q = -np.inf
@@ -144,7 +146,7 @@ class MCTS:
             print(f"[initial root n: {self.root.n}]")
         while True:
             t2 = time.time()
-            if step >= self.search_steps_limit or t2 - t1 >= self.search_time_limit:
+            if step >= self.search_steps_limit or t2 - t1 >= self.search_time_limit: # TODO epsilon involved here (as in mctsnc), or removed from mctsnc
                 break            
             state = self.root
             # MCTS selection
@@ -174,9 +176,9 @@ class MCTS:
             total_time_playout += t2_playout - t1_playout                            
             # MCTS backup
             t1_backup = time.time()
-            outcome = state.get_outcome()
+            outcome = state.get_outcome() # TODO seems like duplicated call w.r.t. line 171 (to check if always the same outcome returned here as in 171)
             state = playout_root
-            del state.children # getting rid of playout
+            del state.children # getting rid of playout branch
             state.children = {}
             while state:
                 state.n += 1
