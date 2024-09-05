@@ -46,7 +46,7 @@ LINE_SEPARATOR = 208 * "="
 if __name__ == "__main__":
     print("MAIN (MCTS EXPERIMENTS)...", flush=True)
     t1 = time.time()
-    n_games = 10
+    n_games = 20
     outcomes = np.zeros(n_games, dtype=np.int8)
     ai_A = AIS["mcts_10_inf_vanilla"]
     ai_B = AIS["mctsnc_1_inf_4_128_acp_prodigal"]
