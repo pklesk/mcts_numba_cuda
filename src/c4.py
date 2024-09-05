@@ -16,7 +16,6 @@ class C4(State):
         else:
             self.board = np.zeros((C4.M, C4.N), dtype=np.int8)
             self.column_fills = np.zeros(C4.N, dtype=np.int8)
-        self.last_move = None
             
     def __str__(self):
         s = ""
@@ -31,109 +30,89 @@ class C4(State):
             s += f"{j} "
         return s      
     
-    def move(self, move_index):
-        j_index = move_index 
-        if self.column_fills[j_index] == C4.M:
+    def take_action_job(self, action_index):
+        j = action_index 
+        if self.column_fills[j] == C4.M:
             return False
-        i_index = C4.M - 1 - self.column_fills[j_index] 
-        self.board[i_index, j_index] = self.turn
-        self.column_fills[j_index] += 1
+        i = C4.M - 1 - self.column_fills[j] 
+        self.board[i, j] = self.turn
+        self.column_fills[j] += 1
         self.turn *= -1
-        self.last_move = (i_index, j_index)
         return True
     
-    @staticmethod
-    def move_down_tree_via(c4, move_index):
-        if len(c4.children) > 0:
-            return c4.children[move_index]
-        child = C4(c4)
-        move_valid = child.move(move_index) 
-        if not move_valid:
-            return None
-        return child
-    
-    def get_outcome(self):
-        if self.outcome_computed:
-            return self.outcome
-        if not self.last_move:
-            return None
-        self.outcome_computed = True # will be soon        
+    def compute_outcome_job(self):
+        j = self.last_action_index
+        i = C4.M - self.column_fills[j]     
         if True: # a bit faster outcome via numba
-            numba_outcome = C4.get_outcome_numba_jit(C4.M, C4.N, self.turn, self.last_move[0], self.last_move[1], self.board)
+            numba_outcome = C4.compute_outcome_job_numba_jit(C4.M, C4.N, self.turn, i, j, self.board)
             if numba_outcome != 0:
-                self.outcome = numba_outcome
-                return self.outcome 
-        else:
+                return numba_outcome 
+        else: # a bit slower outcome via pure Python (inactive now)
             last_token = -self.turn        
-            i, j = self.last_move            
             # N-S
             total = 0
-            for k in range(1, 4 + 1):
+            for k in range(1, 4):
                 if i -  k < 0 or self.board[i - k, j] != last_token:
                     break
                 total += 1
-            for k in range(1, 4 + 1):
+            for k in range(1, 4):
                 if i + k >= C4.M or self.board[i + k, j] != last_token:
                     break            
                 total += 1
-            if total >= 3:
-                self.outcome = last_token            
+            if total >= 3:            
                 return last_token            
             # E-W
             total = 0
-            for k in range(1, 4 + 1):
+            for k in range(1, 4):
                 if j + k >= C4.N or self.board[i, j + k] != last_token:
                     break
                 total += 1
-            for k in range(1, 4 + 1):
+            for k in range(1, 4):
                 if j - k < 0 or self.board[i, j - k] != last_token:
                     break            
                 total += 1
             if total >= 3:
-                self.outcome = last_token
                 return last_token            
             # NE-SW
             total = 0
-            for k in range(1, 4 + 1):
+            for k in range(1, 4):
                 if i - k < 0 or j + k >= C4.N or self.board[i - k, j + k] != last_token:
                     break
                 total += 1
-            for k in range(1, 4 + 1):
+            for k in range(1, 4):
                 if i + k >= C4.M or j - k < 0 or self.board[i + k, j - k] != last_token:
                     break
                 total += 1            
             if total >= 3:
-                self.outcome = last_token
                 return last_token            
             # NW-SE
             total = 0
-            for k in range(1, 4 + 1):
+            for k in range(1, 4):
                 if i - k < 0 or j - k < 0 or self.board[i - k, j - k] != last_token:
                     break
                 total += 1
-            for k in range(1, 4 + 1):
+            for k in range(1, 4):
                 if i + k >= C4.M or j + k >= C4.N or self.board[i + k, j + k] != last_token:
                     break
                 total += 1            
             if total >= 3:
-                self.outcome = last_token
                 return last_token                                    
         if np.sum(self.board == 0) == 0: # draw
-            self.outcome = 0
-        return self.outcome    
+            return 0
+        return None    
     
     @staticmethod
     @jit(int8(int8, int8, int8, int8, int8, int8[:, :]), nopython=True, cache=True)  
-    def get_outcome_numba_jit(M, N, turn, last_i, last_j, board):
+    def compute_outcome_job_numba_jit(M, N, turn, last_i, last_j, board):
         last_token = -turn        
         i, j = last_i, last_j
         # N-S
         total = 0
-        for k in range(1, 4 + 1):
+        for k in range(1, 4):
             if i - k < 0 or board[i - k, j] != last_token:
                 break
             total += 1
-        for k in range(1, 4 + 1):
+        for k in range(1, 4):
             if i + k >= M or board[i + k, j] != last_token:
                 break            
             total += 1
@@ -141,11 +120,11 @@ class C4(State):
             return last_token        
         # E-W
         total = 0
-        for k in range(1, 4 + 1):
+        for k in range(1, 4):
             if j + k >= N or board[i, j + k] != last_token:
                 break
             total += 1
-        for k in range(1, 4 + 1):
+        for k in range(1, 4):
             if j - k < 0 or board[i, j - k] != last_token:
                 break            
             total += 1
@@ -153,11 +132,11 @@ class C4(State):
             return last_token
         # NE-SW
         total = 0
-        for k in range(1, 4 + 1):
+        for k in range(1, 4):
             if i - k < 0 or j + k >= N or board[i - k, j + k] != last_token:
                 break
             total += 1
-        for k in range(1, 4 + 1):
+        for k in range(1, 4):
             if i + k >= M or j - k < 0 or board[i + k, j - k] != last_token:
                 break
             total += 1            
@@ -165,11 +144,11 @@ class C4(State):
             return last_token
         # NW-SE
         total = 0
-        for k in range(1, 4 + 1):
+        for k in range(1, 4):
             if i - k < 0 or j - k < 0 or board[i - k, j - k] != last_token:
                 break
             total += 1
-        for k in range(1, 4 + 1):
+        for k in range(1, 4):
             if i + k >= M or j + k >= N or board[i + k, j + k] != last_token:
                 break
             total += 1            
@@ -178,18 +157,14 @@ class C4(State):
         return 0
     
     def expand(self):
-        if len(self.children) == 0 and self.get_outcome() is None:
+        if len(self.children) == 0 and self.compute_outcome() is None:
             for j in range(self.N):
-                child = C4(self)
-                if child.move(j):
-                    self.children[j] = child
+                self.take_action(j)
                         
     def expand_one_random_child(self):
         j_indexes = np.where(self.column_fills < C4.M)[0]
         j = np.random.choice(j_indexes) 
-        child = C4(self)
-        child.move(j)
-        self.children[j] = child
+        child = self.take_action(j)
         return child
     
     def get_board(self):
@@ -199,12 +174,12 @@ class C4(State):
         return self.column_fills    
     
     @staticmethod    
-    def move_name_to_index(name):
-        return int(name)
+    def action_name_to_index(action_name):
+        return int(action_name)
 
     @staticmethod
-    def move_index_to_name(move_index):
-        return str(move_index)
+    def action_index_to_name(action_index):
+        return str(action_index)
     
     @staticmethod
     def get_board_shape():
@@ -216,4 +191,4 @@ class C4(State):
 
     @staticmethod
     def get_max_actions():
-        return C4.N    
+        return C4.N
