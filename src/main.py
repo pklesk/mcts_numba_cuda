@@ -48,8 +48,8 @@ if __name__ == "__main__":
     t1 = time.time()
     n_games = 10
     outcomes = np.zeros(n_games, dtype=np.int8)
-    ai_A = AIS["mcts_3_inf_vanilla"]
-    ai_B = AIS["mctsnc_3_inf_4_128_acp_prodigal"]
+    ai_A = AIS["mcts_10_inf_vanilla"]
+    ai_B = AIS["mctsnc_1_inf_4_128_acp_prodigal"]
     
     print(LINE_SEPARATOR)
     print("MATCH-UP:")
