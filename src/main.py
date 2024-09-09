@@ -20,7 +20,7 @@ FOLDER_EXTRAS = "../extras/"
 
 # main settings
 STATE_CLASS = C4 # C4 or Gomoku
-N_GAMES = 2
+N_GAMES = 100
 AI_A_SHORTNAME = "mcts_4_inf_vanilla"
 AI_B_SHORTNAME = "mctsnc_1_inf_1_32_ocp_thrifty"
 REPRODUCE_EXPERIMENT = False
