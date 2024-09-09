@@ -16,6 +16,10 @@ class C4(State):
         else:
             self.board = np.zeros((C4.M, C4.N), dtype=np.int8)
             self.column_fills = np.zeros(C4.N, dtype=np.int8)
+
+    @staticmethod
+    def class_repr():
+        return f"{C4.__name__}_{C4.M}x{C4.N}"
             
     def __str__(self):
         s = ""

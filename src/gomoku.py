@@ -14,6 +14,10 @@ class Gomoku(State):
             self.board = np.copy(self.parent.board)
         else:
             self.board = np.zeros((Gomoku.M, Gomoku.N), dtype=np.int8)
+    
+    @staticmethod
+    def class_repr():
+        return f"{Gomoku.__name__}_{Gomoku.M}x{Gomoku.N}"    
             
     def __str__(self):
         s = "  "

@@ -114,3 +114,26 @@ def gpu_props():
     props["cores_per_SM"] = CC_CORES_PER_SM_DICT.get(gpu.compute_capability)
     props["cores_total"] = props["cores_per_SM"] * gpu.MULTIPROCESSOR_COUNT
     return props
+
+def hash_function(s):
+    """Returns a hash code (integer) for given string as a base 31 expansion."""
+    h = 0
+    for c in s:
+        h *= 31 
+        h += ord(c)
+    return h
+
+def hash_str(params, digits):
+    return str((hash_function(str(params)) & ((1 << 32) - 1)) % 10**digits).rjust(digits, "0") 
+
+class Logger:
+    def __init__(self, fname):
+        self.logfile = open(fname, "a", encoding="utf-8")  
+        
+    def write(self, message):
+        self.logfile.write(message)
+        self.logfile.flush() 
+        sys.__stdout__.write(message)
+
+    def flush(self):
+        pass  # Ta funkcja jest potrzebna do obsługi buforowania

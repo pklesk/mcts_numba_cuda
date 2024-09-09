@@ -203,10 +203,10 @@ class MCTSNC:
         if self.verbose_info:
             print(f"[MCTSNC._init_device_side_arrays() done; time: {t2_dev_arrays - t1_dev_arrays} s, per_state_memory: {per_state_memory} B,  calculated max_tree_size: {self.max_tree_size}]")
         
-    def run(self, root_board, root_extra_info, root_turn):
+    def run(self, root_board, root_extra_info, root_turn, forced_search_steps_limit=np.inf):
         print(f"MCTSNC RUN... [{self}]")        
         run_method = getattr(self, "_run_" + self.variant)
-        run_method(root_board, root_extra_info, root_turn)
+        run_method(root_board, root_extra_info, root_turn, forced_search_steps_limit)
         best_action_label = str(self.best_action)
         if self.action_index_to_name_function is not None:
             best_action_label += f" ({self.action_index_to_name_function(self.best_action)})"
@@ -226,24 +226,24 @@ class MCTSNC:
     
     def _make_performance_info(self):        
         performance_info = {}
-        performance_info["steps"] = self.steps
-        performance_info["steps per second"] = self.steps / self.time_total                
+        performance_info["steps"] = int(self.steps)
+        performance_info["steps_per_second"] = self.steps / self.time_total                
         root_ns = self.dev_root_ns.copy_to_host()
         playouts = root_ns[root_ns > 0][0]
-        performance_info["playouts"] = playouts 
-        performance_info["playouts per second"] = performance_info["playouts"] / self.time_total           
+        performance_info["playouts"] = int(playouts) 
+        performance_info["playouts_per_second"] = performance_info["playouts"] / self.time_total           
         ms_factor = 10.0**3
         times_info = {}
         times_info["total"] = ms_factor * self.time_total
         times_info["loop"] = ms_factor * self.time_loop
-        times_info["reduce over trees"] = ms_factor * self.time_reduce_over_trees
-        times_info["reduce over actions"] = ms_factor * self.time_reduce_over_actions
-        times_info["mean loop"] = times_info["loop"] / self.steps
-        times_info["mean select"] = ms_factor * self.time_select / self.steps
-        times_info["mean expand"] = ms_factor * self.time_expand / self.steps
-        times_info["mean playout"] = ms_factor * self.time_playout / self.steps
-        times_info["mean backup"] = ms_factor * self.time_backup / self.steps
-        performance_info["times [ms]"] = times_info                                                              
+        times_info["reduce_over_trees"] = ms_factor * self.time_reduce_over_trees
+        times_info["reduce_over_actions"] = ms_factor * self.time_reduce_over_actions
+        times_info["mean_loop"] = times_info["loop"] / self.steps
+        times_info["mean_select"] = ms_factor * self.time_select / self.steps
+        times_info["mean_expand"] = ms_factor * self.time_expand / self.steps
+        times_info["mean_playout"] = ms_factor * self.time_playout / self.steps
+        times_info["mean_backup"] = ms_factor * self.time_backup / self.steps
+        performance_info["times_[ms]"] = times_info                                                              
         trees_depths = np.empty_like(self.dev_trees_depths)
         trees_sizes = np.empty_like(self.dev_trees_sizes)
         self.dev_trees_depths.copy_to_host(ary=trees_depths)
@@ -259,12 +259,13 @@ class MCTSNC:
         mean_size = total_size / self.n_trees
         mean_depth /= total_size
         trees_info = {}
-        trees_info["count"] = self.n_trees
-        trees_info["mean depth"] = mean_depth
-        trees_info["max depth"] = max_depth
-        trees_info["mean size"] = mean_size
-        trees_info["max size"] = max_size
+        trees_info["count"] = int(self.n_trees)
+        trees_info["mean_depth"] = mean_depth
+        trees_info["max_depth"] = int(max_depth)
+        trees_info["mean_size"] = mean_size
+        trees_info["max_size"] = int(max_size)
         performance_info["trees"] = trees_info
+        self.performance_info = performance_info
         return performance_info
     
     def _make_actions_info_thrifty(self):
@@ -285,16 +286,17 @@ class MCTSNC:
             entry = {}                        
             a = root_actions_expanded[i] # for thrifty variants
             entry["name"] = self.action_index_to_name_function(a) if self.action_index_to_name_function else str(a)
-            entry["n_root"] = root_ns_thrifty[i]
-            entry["win_flag"] = actions_win_flags_thrifty[i]
-            entry["n"] = actions_ns_thrifty[i]
-            entry["n_wins"] = actions_ns_wins_thrifty[i]
+            entry["n_root"] = int(root_ns_thrifty[i])
+            entry["win_flag"] = bool(actions_win_flags_thrifty[i])
+            entry["n"] = int(actions_ns_thrifty[i])
+            entry["n_wins"] = int(actions_ns_wins_thrifty[i])
             entry["q"] = entry["n_wins"] / entry["n"] if entry["n"] > 0 else np.nan                          
             entry["ucb"] = entry["q"] + self.ucb_c * np.sqrt(np.log(entry["n_root"]) / entry["n"]) if entry["n"] > 0 else np.inf
             actions_info[a] = entry
             if a == self.best_action:
-                best_entry = {"index": a, **entry}
+                best_entry = {"index": int(a), **entry}
         actions_info["best"] = best_entry
+        self.actions_info = actions_info
         return actions_info
     
     def _make_actions_info_prodigal(self):
@@ -314,19 +316,20 @@ class MCTSNC:
             a = i # for prodigal variants
             entry = {}
             entry["name"] = self.action_index_to_name_function(a) if self.action_index_to_name_function else str(a)
-            entry["n_root"] = root_ns_prodigal[i]
-            entry["win_flag"] = actions_win_flags_prodigal[i]
-            entry["n"] = actions_ns_prodigal[i]
-            entry["n_wins"] = actions_ns_wins_prodigal[i]
+            entry["n_root"] = int(root_ns_prodigal[i])
+            entry["win_flag"] = bool(actions_win_flags_prodigal[i])
+            entry["n"] = int(actions_ns_prodigal[i])
+            entry["n_wins"] = int(actions_ns_wins_prodigal[i])
             entry["q"] = entry["n_wins"] / entry["n"] if entry["n"] > 0 else np.nan                          
             entry["ucb"] = entry["q"] + self.ucb_c * np.sqrt(np.log(entry["n_root"]) / entry["n"]) if entry["n"] > 0 else np.inf
             actions_info[a] = entry
             if a == self.best_action:
-                best_entry = {"index": a, **entry}
+                best_entry = {"index": int(a), **entry}
         actions_info["best"] = best_entry
+        self.actions_info = actions_info
         return actions_info
                                                    
-    def _run_ocp_thrifty(self, root_board, root_extra_info, root_turn):
+    def _run_ocp_thrifty(self, root_board, root_extra_info, root_turn, forced_search_steps_limit=np.inf):
         t1 = time.time()
         
         # reset
@@ -357,7 +360,10 @@ class MCTSNC:
         t1_loop = time.time()
         while True:
             t2_loop = time.time()            
-            if self.steps >= self.search_steps_limit or t2_loop - t1_loop >= self.search_time_limit:
+            if forced_search_steps_limit < np.inf: 
+                if self.steps >= forced_search_steps_limit:
+                    break
+            elif self.steps >= self.search_steps_limit or t2_loop - t1_loop >= self.search_time_limit:
                 break
             if self.verbose_debug:
                 print(f"[step: {self.steps + 1} starting, time used so far: {t2_loop - t1_loop} s]")     
@@ -492,7 +498,7 @@ class MCTSNC:
             print(f"[actions info:\n{dict_to_str(self._make_actions_info_thrifty())}]")
             print(f"[performance info:\n{dict_to_str(self._make_performance_info())}]")
                          
-    def _run_ocp_prodigal(self, root_board, root_extra_info, root_turn):
+    def _run_ocp_prodigal(self, root_board, root_extra_info, root_turn, forced_search_steps_limit=np.inf):
         t1 = time.time()
         
         # reset
@@ -521,8 +527,11 @@ class MCTSNC:
         
         t1_loop = time.time()
         while True:
-            t2_loop = time.time()            
-            if self.steps >= self.search_steps_limit or t2_loop - t1_loop >= self.search_time_limit:
+            t2_loop = time.time()
+            if forced_search_steps_limit < np.inf: 
+                if self.steps >= forced_search_steps_limit:
+                    break                        
+            elif self.steps >= self.search_steps_limit or t2_loop - t1_loop >= self.search_time_limit:
                 break
             if self.verbose_debug:
                 print(f"[step: {self.steps + 1} starting, time used so far: {t2_loop - t1_loop} s]")     
@@ -648,9 +657,8 @@ class MCTSNC:
         if self.verbose_info:
             print(f"[actions info:\n{dict_to_str(self._make_actions_info_prodigal())}]")
             print(f"[performance info:\n{dict_to_str(self._make_performance_info())}]")
-                         
-                         
-    def _run_acp_thrifty(self, root_board, root_extra_info, root_turn):
+                                                  
+    def _run_acp_thrifty(self, root_board, root_extra_info, root_turn, forced_search_steps_limit=np.inf):
         t1 = time.time()
         
         # reset
@@ -681,7 +689,10 @@ class MCTSNC:
         t1_loop = time.time()
         while True:
             t2_loop = time.time()
-            if self.steps >= self.search_steps_limit or t2_loop - t1_loop >= self.search_time_limit:
+            if forced_search_steps_limit < np.inf: 
+                if self.steps >= forced_search_steps_limit:
+                    break            
+            elif self.steps >= self.search_steps_limit or t2_loop - t1_loop >= self.search_time_limit:
                 break
             if self.verbose_debug:
                 print(f"[step: {self.steps + 1} starting, time used so far: {t2_loop - t1_loop} s]")     
@@ -831,7 +842,7 @@ class MCTSNC:
             print(f"[actions info:\n{dict_to_str(self._make_actions_info_thrifty())}]")
             print(f"[performance info:\n{dict_to_str(self._make_performance_info())}]")
             
-    def _run_acp_prodigal(self, root_board, root_extra_info, root_turn):
+    def _run_acp_prodigal(self, root_board, root_extra_info, root_turn, forced_search_steps_limit=np.inf):
         t1 = time.time()    
         
         # reset
@@ -861,7 +872,10 @@ class MCTSNC:
         t1_loop = time.time()
         while True:
             t2_loop = time.time()
-            if self.steps >= self.search_steps_limit or t2_loop - t1_loop >= self.search_time_limit:
+            if forced_search_steps_limit < np.inf: 
+                if self.steps >= forced_search_steps_limit:
+                    break            
+            elif self.steps >= self.search_steps_limit or t2_loop - t1_loop >= self.search_time_limit:
                 break
             if self.verbose_debug:
                 print(f"[step: {self.steps + 1} starting, time used so far: {t2_loop - t1_loop} s]")     

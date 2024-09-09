@@ -14,20 +14,30 @@ class State:
         self.outcome = None # None - ongoing, or {-1, 0, 1} - win for min player, draw, win for max player        
         self.turn = 1 if self.parent is None else self.parent.turn
         self.last_action_index = None
-        
+
+    @staticmethod        
+    def class_repr():
+        return f"{State.__name__}()"
+            
     def _subtree_size(self):
         size = 1
         for key in self.children:
             size += self.children[key]._subtree_size()
         return size
     
-    def _depth(self):
+    def _subtree_max_depth(self):
         d = 0
         for key in self.children:
-            temp_d = self.children[key]._depth()
+            temp_d = self.children[key]._subtree_max_depth()
             if 1 + temp_d > d:
                 d = 1 + temp_d 
-        return d        
+        return d
+    
+    def _subtree_depths(self, d=0, depths=[]):
+        depths.append(d)
+        for key in self.children:
+            self.children[key]._subtree_depths(d + 1, depths)
+        return depths            
         
     def take_action(self, action_index):        
         if action_index in self.children:            
@@ -142,33 +152,37 @@ class MCTS:
             best_key = self._best_action(children, actions_info)
             best_entry = {"index": best_key, **actions_info[best_key]}
             actions_info["best"] = best_entry
+        self.actions_info = actions_info
         return actions_info
 
     def _make_performance_info(self):
         performance_info = {}
         performance_info["steps"] = self.steps
-        performance_info["steps per second"] = self.steps / self.time_total                
+        performance_info["steps_per_second"] = self.steps / self.time_total                
         performance_info["playouts"] = self.root.n
-        performance_info["playouts per second"] = performance_info["playouts"] / self.time_total           
+        performance_info["playouts_per_second"] = performance_info["playouts"] / self.time_total           
         ms_factor = 10.0**3
         times_info = {}
         times_info["total"] = ms_factor * self.time_total
         times_info["loop"] = ms_factor * self.time_loop
-        times_info["reduce over actions"] = ms_factor * self.time_reduce_over_actions
-        times_info["mean loop"] = times_info["loop"] / self.steps
-        times_info["mean select"] = ms_factor * self.time_select / self.steps
-        times_info["mean expand"] = ms_factor * self.time_expand / self.steps
-        times_info["mean playout"] = ms_factor * self.time_playout / self.steps
-        times_info["mean backup"] = ms_factor * self.time_backup / self.steps
-        performance_info["times [ms]"] = times_info
-        trees_info = {}
-        trees_info["initial root n"] = self.initial_root_n        
-        trees_info["initial depth"] = self.initial_tree_depth
-        trees_info["depth now"] = self.root._depth()
-        trees_info["initial size"] = self.initial_tree_size
-        trees_info["size now"] = self.root._subtree_size()                
-        performance_info["tree"] = trees_info
-        
+        times_info["reduce_over_actions"] = ms_factor * self.time_reduce_over_actions
+        times_info["mean_loop"] = times_info["loop"] / self.steps
+        times_info["mean_select"] = ms_factor * self.time_select / self.steps
+        times_info["mean_expand"] = ms_factor * self.time_expand / self.steps
+        times_info["mean_playout"] = ms_factor * self.time_playout / self.steps
+        times_info["mean_backup"] = ms_factor * self.time_backup / self.steps
+        performance_info["times_[ms]"] = times_info
+        tree_info = {}
+        tree_info["initial_n_root"] = self.initial_n_root
+        tree_info["initial_mean_depth"] = self.initial_mean_depth        
+        tree_info["initial_max_depth"] = self.initial_max_depth
+        tree_info["initial_size"] = self.initial_size            
+        tree_info["n_root"] = self.root.n
+        tree_info["mean_depth"] = np.mean(self.root._subtree_depths(0, []))
+        tree_info["max_depth"] = self.root._subtree_max_depth()
+        tree_info["size"] = self.root._subtree_size()              
+        performance_info["tree"] = tree_info
+        self.performance_info = performance_info
         return performance_info
     
     def _best_action_ucb(self, children, actions_info): 
@@ -200,7 +214,7 @@ class MCTS:
         self.best_q = self.best_n_wins / self.best_n if self.best_n > 0 else np.nan                      
         return self.best_action
         
-    def run(self, root):
+    def run(self, root, forced_search_steps_limit=np.inf):
         print("MCTS RUN...")
         t1 = time.time()
         self.root = root
@@ -208,9 +222,12 @@ class MCTS:
         if self.vanilla:
             self.root.n = 0                       
             self.root.children = {}
-        self.initial_root_n = self.root.n
-        self.initial_tree_depth = self.root._depth()            
-        self.initial_tree_size = self.root._subtree_size()                         
+        
+        if self.verbose_info:
+            self.initial_n_root = self.root.n                    
+            self.initial_mean_depth = np.mean(self.root._subtree_depths(0, []))
+            self.initial_max_depth = self.root._subtree_max_depth()            
+            self.initial_size = self.root._subtree_size()                         
             
         self.time_select = 0.0
         self.time_expand = 0.0        
@@ -221,7 +238,10 @@ class MCTS:
         t1_loop = time.time()
         while True:
             t2_loop = time.time()
-            if self.steps >= self.search_steps_limit or t2_loop - t1_loop >= self.search_time_limit: # TODO epsilon involved here (as in mctsnc), or removed from mctsnc
+            if forced_search_steps_limit < np.inf:
+                if self.steps >= forced_search_steps_limit:
+                    break
+            elif self.steps >= self.search_steps_limit or t2_loop - t1_loop >= self.search_time_limit:
                 break            
             state = self.root
             
