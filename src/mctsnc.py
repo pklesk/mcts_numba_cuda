@@ -750,7 +750,7 @@ class MCTSNC:
             
             # playouts
             t1_playout = time.time()
-            bpg = trees_actions_expanded_total # thrifty number of blocks
+            bpg = trees_actions_expanded_flat.shape[0] # thrifty number of blocks
             tpb = self.n_playouts
             if self.verbose_debug:
                 print(f"[MCTSNC._playout_acp_thrifty()...; bpg: {bpg}, tpb: {tpb}]")
