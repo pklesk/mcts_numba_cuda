@@ -154,17 +154,17 @@ class MCTSNC:
         self.max_tree_size = (int(self.device_memory) - self.n_trees * per_tree_additional_memory) // (per_state_memory * self.n_trees)
         self.max_tree_size = min(self.max_tree_size, self.MAX_TREE_SIZE)
         # tpb 
-        board_tpb = int(2**np.ceil(np.log2(np.prod(self.state_board_shape))))
-        extra_info_tbp = int(2**np.ceil(np.log2(self.state_extra_info_memory))) if self.state_extra_info_memory > 0 else 1
-        max_actions_tpb = int(2**np.ceil(np.log2(self.state_max_actions)))        
-        self.tpb_r = min(max(board_tpb, extra_info_tbp), self.cuda_tpb_default)
+        tpb_board = int(2**np.ceil(np.log2(np.prod(self.state_board_shape))))
+        tpb_extra_info = int(2**np.ceil(np.log2(self.state_extra_info_memory))) if self.state_extra_info_memory > 0 else 1
+        tpb_max_actions = int(2**np.ceil(np.log2(self.state_max_actions)))        
+        self.tpb_r = min(max(tpb_board, tpb_extra_info), self.cuda_tpb_default)
         self.tpb_s = self.cuda_tpb_default
-        self.tpb_e1 = min(max(self.tpb_r, max_actions_tpb), self.cuda_tpb_default)        
+        self.tpb_e1 = min(max(self.tpb_r, tpb_max_actions), self.cuda_tpb_default)        
         self.tpb_e2 = self.tpb_r
-        self.tpb_b1 = max_actions_tpb                                                    
+        self.tpb_b1 = tpb_max_actions                                                    
         self.tpb_b2 = self.cuda_tpb_default
         self.tpb_rot = int(2**np.ceil(np.log2(self.n_trees))) # rot - reduce over trees 
-        self.tpb_roa = max_actions_tpb # roa - reduce over actions
+        self.tpb_roa = tpb_max_actions # roa - reduce over actions
         # device arrays
         self.dev_trees = cuda.device_array((self.n_trees, self.max_tree_size, 1 + self.state_max_actions), dtype=node_index_dtype) # each row of a tree represents a node consisting of: parent indexes and indexes of all children (associated with actions), -1 index for none parent or child 
         self.dev_trees_sizes = cuda.device_array(self.n_trees, dtype=size_dtype)
