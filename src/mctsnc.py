@@ -17,7 +17,6 @@ __email__ = "pklesk@zut.edu.pl"
 
 warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
 
-# TODO check verbosity printouts (2 levels)  
 class MCTSNC:
     
     VARIANTS = ["ocp_thrifty", "ocp_prodigal", "acp_thrifty", "acp_prodigal"] # ocp - one child playouts, acp - all children playouts; thrifty/prodigal - accurate/overhead usage of cuda blocks (pertains to expanded actions)  
@@ -1713,7 +1712,7 @@ class MCTSNC:
         shared_playout_outcomes = cuda.shared.array((512, 2), dtype=int16) # 1024 - assumed max tpb for playouts, two cells for a row (-1 win, +1 win), each flagged by 0 or 1 after playout        
         ti = cuda.blockIdx.x
         action = cuda.blockIdx.y
-        if trees_actions_expanded[ti, action] < int16(0):  
+        if trees_actions_expanded[ti, action] < int16(0): # prodigality
             return         
         local_board = cuda.local.array((32, 32), dtype=int8)
         local_extra_info = cuda.local.array(4096, dtype=int8)
