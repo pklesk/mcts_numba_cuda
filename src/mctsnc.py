@@ -25,9 +25,9 @@ class MCTSNC:
     DEFAULT_SEARCH_STEPS_LIMIT = np.inf # integer, np.inf possible
     DEFAULT_N_TREES = 8
     DEFAULT_N_PLAYOUTS = 128
-    DEFAULT_VARIANT = VARIANTS[-1]        
-    DEFAULT_UCB_C = 2.0
+    DEFAULT_VARIANT = VARIANTS[-1]            
     DEFAULT_DEVICE_MEMORY = 2.0 
+    DEFAULT_UCB_C = 2.0
     DEFAULT_SEED = 0 
     DEFAULT_VERBOSE_DEBUG = False
     DEFAULT_VERBOSE_INFO = True
@@ -1713,7 +1713,7 @@ class MCTSNC:
         ti = cuda.blockIdx.x
         action = cuda.blockIdx.y
         if trees_actions_expanded[ti, action] < int16(0): # prodigality
-            return         
+            return
         local_board = cuda.local.array((32, 32), dtype=int8)
         local_extra_info = cuda.local.array(4096, dtype=int8)
         local_legal_actions_with_count = cuda.local.array(512 + 1, dtype=int16) # 512 - assumed limit on max actions          

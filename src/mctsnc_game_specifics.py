@@ -21,7 +21,7 @@ def take_action_playout(m, n, board, extra_info, turn, action, action_ord, legal
     take_action_playout_c4(m, n, board, extra_info, turn, action, action_ord, legal_actions_with_count)
     
 @cuda.jit(device=True)
-def compute_outcome(m, n, board, extra_info, turn, last_action):
+def compute_outcome(m, n, board, extra_info, turn, last_action): # any outcome other than {-1, 0, 1} implies status: game ongoing
     #return compute_outcome_gomoku(m, n, board, extra_info, turn, last_action)
     return compute_outcome_c4(m, n, board, extra_info, turn, last_action)
 
@@ -110,7 +110,7 @@ def compute_outcome_c4(m, n, board, extra_info, turn, last_action):
             break
     if draw:
         return 0
-    return 2 # anything other than {-1, 0, 1} means game indecisive (ongoing)
+    return 2 # anything other than {-1, 0, 1} implies 'game ongoing'
 
 @cuda.jit(device=True)
 def is_action_legal_gomoku(m, n, board, extra_info, turn, action, legal_actions):
@@ -207,4 +207,4 @@ def compute_outcome_gomoku(m, n, board, extra_info, turn, last_action):
                 break
     if draw:
         return 0
-    return 2 # anything other than {-1, 0, 1} means game indecisive (ongoing)
+    return 2 # anything other than {-1, 0, 1} implies 'game ongoing'
