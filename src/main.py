@@ -6,6 +6,7 @@ from gomoku import Gomoku
 from game_runner import GameRunner
 import time
 from utils import cpu_and_system_props, gpu_props, hash_str, dict_to_str, Logger, experiment_hash_str, save_and_zip_experiment, unzip_and_load_experiment
+import sys
 
 
 __author__ = "Przemysław Klęsk"
@@ -19,7 +20,7 @@ FOLDER_EXTRAS = "../extras/"
 STATE_CLASS = C4 # C4 or Gomoku
 N_GAMES = 100
 AI_A_SHORTNAME = "mcts_4_inf_vanilla"
-AI_B_SHORTNAME = "mctsnc_1_inf_2_64_ocp_prodigal"
+AI_B_SHORTNAME = "mctsnc_1_inf_2_128_ocp_prodigal"
 REPRODUCE_EXPERIMENT = False
 _BOARD_SHAPE = STATE_CLASS.get_board_shape()
 _EXTRA_INFO_MEMORY = STATE_CLASS.get_extra_info_memory()
