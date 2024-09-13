@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator, FixedLocator
 import numpy as np
 from utils import unzip_and_load_experiment
 
@@ -7,9 +8,9 @@ FOLDER_EXPERIMENTS = "../../experiments/"
 def scores_plot(data, details, label_x, label_y, ticks_x, ticks_y, title_1, title_2):    
     figsize = (6, 6)
     fontsize_suptitle = 20
-    fontsize_title = 20
-    fontsize_ticks = 14
-    fontsize_labels = 19
+    fontsize_title = 23
+    fontsize_ticks = 16
+    fontsize_labels = 20
     fontsize_main = 20
     fontsize_details = 13       
     plt.figure(figsize=figsize)    
@@ -79,7 +80,64 @@ def scores_plot_ocp_thrifty_vs_vanilla():
          "0738078799_70586_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_128_ocp_thrifty;C4_6x7;100]",
          "0185918599_47826_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_256_ocp_thrifty;C4_6x7;100]"]
         ])
-    scores_plot_generator(experiments_hs_array, "n_playouts (m)", "n_trees (T)", [32, 64, 128, 256], [1, 2, 4, 8], None, "OCP-THRIFTY 1s (vs VANILLA MCTS 4s)")    
+    scores_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], None, "MCTS-NC OCP-THRIFTY (1s) \nvs MCTS VANILLA (4s)")    
+
+def best_action_plot(steps_black, qs_black, ucbs_black, steps_white, qs_white, ucbs_white, label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2):
+    figsize = (10, 6.5)        
+    fontsize_suptitle = 20
+    fontsize_title = 21
+    fontsize_ticks = 16
+    fontsize_labels = 18
+    fontsize_legend = 14
+    grid_color = (0.4, 0.4, 0.4) 
+    grid_dashes = (4.0, 4.0)
+    legend_loc = "best"
+    legend_handlelength = 4
+    legend_labelspacing = 0.1
+    alpha_ucb=0.25
+    markersize = 3
+    plt.figure(figsize=figsize)
+    if title_1:
+        plt.suptitle(title_1, fontsize=fontsize_suptitle)
+    if title_2:
+        plt.title(title_2, fontsize=fontsize_title)
+    markers = {"marker": "o", "markersize": markersize}
+    plt.plot(steps_black, qs_black, label=label_qs_black, color="red", **markers)    
+    plt.fill_between(steps_black, qs_black, ucbs_black, color="red", alpha=alpha_ucb, label=label_ucbs_black)
+    plt.plot(steps_white, qs_white, label=label_qs_white, color="blue", **markers)    
+    plt.fill_between(steps_white, qs_white, ucbs_white, color="blue", alpha=0.25, label=label_ucbs_white)
+    plt.xlabel(label_x, fontsize=fontsize_labels)
+    plt.ylabel(label_y, fontsize=fontsize_labels)
+    plt.legend(loc=legend_loc, prop={"size": fontsize_legend}, handlelength=legend_handlelength, labelspacing=legend_labelspacing)
+    plt.gca().xaxis.set_major_locator(MultipleLocator(1))
+    plt.gca().yaxis.set_major_locator(FixedLocator([0, 0.25, 0.5, 0.75, 1.0]))
+    plt.grid(color=grid_color, zorder=0, dashes=grid_dashes)  
+    plt.tight_layout(pad=0.4) 
+    plt.show()
+    
+def best_action_plot_generator(experiments_hs, game_index, label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2):
+    experiment_info = unzip_and_load_experiment(experiments_hs, FOLDER_EXPERIMENTS)
+    moves_rounds = experiment_info["games_infos"][str(game_index)]["moves_rounds"]
+    n_rounds = len(moves_rounds)
+    steps_black = []
+    qs_black = []
+    ucbs_black = []
+    steps_white = [] 
+    qs_white = []
+    ucbs_white = []
+    for m in range(n_rounds):
+        mr = moves_rounds[str(m + 1)]
+        steps_black.append(m + 1)
+        qs_black.append(mr["black_best_action_info"]["q"])
+        ucbs_black.append(mr["black_best_action_info"]["ucb"])
+        if "white_best_action_info" in mr:
+            steps_white.append(m + 1.5)
+            qs_white.append(mr["white_best_action_info"]["q"])
+            ucbs_white.append( mr["white_best_action_info"]["ucb"])
+    best_action_plot(steps_black, qs_black, ucbs_black, steps_white, qs_white, ucbs_white, label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2)
 
 if __name__ == "__main__":        
-    scores_plot_ocp_thrifty_vs_vanilla()
+    # scores_plot_ocp_thrifty_vs_vanilla()
+    best_action_plot_generator("2249034921_44724_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_64_ocp_thrifty;C4_6x7;100]", 25, #11, 25, 47 
+                               "BEST $\widehat{q}$ - MCTS-NC_1_INF_4_64_OCP_THRIFTY", "UCB - MCTS-NC_1_INF_4_64_OCP_THRIFTY", 
+                               "BEST $\widehat{q}$ - MCTS_4_INF_VANILLA", "UCB - MCTS_4_INF_VANILLA", "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4")

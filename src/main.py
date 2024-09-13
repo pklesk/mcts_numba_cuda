@@ -17,10 +17,10 @@ FOLDER_EXPERIMENTS = "../experiments/"
 FOLDER_EXTRAS = "../extras/"
 
 # main settings
-STATE_CLASS = C4 # C4 or Gomoku
+STATE_CLASS = Gomoku # C4 or Gomoku
 N_GAMES = 100
-AI_A_SHORTNAME = "mcts_4_inf_vanilla"
-AI_B_SHORTNAME = "mctsnc_1_inf_4_64_ocp_prodigal"
+AI_A_SHORTNAME = "mctsnc_8_inf_4_256_ocp_prodigal_16g"
+AI_B_SHORTNAME = "mctsnc_8_inf_4_256_acp_prodigal_16g"
 REPRODUCE_EXPERIMENT = False
 _BOARD_SHAPE = STATE_CLASS.get_board_shape()
 _EXTRA_INFO_MEMORY = STATE_CLASS.get_extra_info_memory()
@@ -95,7 +95,11 @@ AIS = {
     "mctsnc_1_inf_8_32_acp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=1.0, search_steps_limit=np.inf, n_trees=8, n_playouts=32, variant="acp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
     "mctsnc_1_inf_8_64_acp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=1.0, search_steps_limit=np.inf, n_trees=8, n_playouts=64, variant="acp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
     "mctsnc_1_inf_8_128_acp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=1.0, search_steps_limit=np.inf, n_trees=8, n_playouts=128, variant="acp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
-    "mctsnc_1_inf_8_256_acp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=1.0, search_steps_limit=np.inf, n_trees=8, n_playouts=256, variant="acp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION)        
+    "mctsnc_1_inf_8_256_acp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=1.0, search_steps_limit=np.inf, n_trees=8, n_playouts=256, variant="acp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
+    "mctsnc_8_inf_4_256_ocp_prodigal_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=8.0, search_steps_limit=np.inf, n_trees=4, n_playouts=256, variant="ocp_prodigal", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
+    "mctsnc_8_inf_4_256_acp_prodigal_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=8.0, search_steps_limit=np.inf, n_trees=4, n_playouts=256, variant="acp_prodigal", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
+    "mctsnc_30_inf_10_256_ocp_prodigal_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=30.0, search_steps_limit=np.inf, n_trees=4, n_playouts=256, variant="ocp_prodigal", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
+    "mctsnc_30_inf_10_256_acp_prodigal_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=30.0, search_steps_limit=np.inf, n_trees=4, n_playouts=256, variant="acp_prodigal", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION)                    
     }
 
 LINE_SEPARATOR = 208 * "="

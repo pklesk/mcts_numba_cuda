@@ -4,8 +4,8 @@ from numba import jit
 from numba import int8
 
 class Gomoku(State):
-    M = 11
-    N = 11
+    M = 15
+    N = 15
     SYMBOLS = ['\u25CB', '+', '\u25CF'] # or: [['O', '+', 'X']
     
     def __init__(self, parent=None):
