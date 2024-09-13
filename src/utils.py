@@ -11,8 +11,11 @@ import platform
 import psutil
 from numba import cuda
 import pickle
-import sys
 import time
+import zipfile as zf
+import os
+import json
+import sys
  
 __author__ = "Przemysław Klęsk"
 __email__ = "pklesk@zut.edu.pl"
@@ -137,3 +140,47 @@ class Logger:
 
     def flush(self):
         pass  # Ta funkcja jest potrzebna do obsługi buforowania
+    
+def experiment_hash_str(matchup_info, c_props, g_props, main_hs_digits=10, matchup_hs_digits=5, env_hs_digits=3):
+    """Returns a hash string for an experiment, based on its settings and properties."""
+    matchup_hs = hash_str(matchup_info, digits=matchup_hs_digits)
+    env_props = {**c_props, **g_props}    
+    env_hs =  hash_str(env_props, digits=env_hs_digits)
+    all_info = {**matchup_info, **env_props}
+    all_hs = hash_str(all_info, digits=main_hs_digits)
+    hs = f"{all_hs}_{matchup_hs}_{env_hs}_[{matchup_info['ai_a_shortname']};{matchup_info['ai_b_shortname']};{matchup_info['game_name']};{matchup_info['n_games']}]"
+    return hs
+
+def save_and_zip_experiment(experiment_hs, experiment_info, folder):
+    print(f"SAVE AND ZIP EXPERIMENT... [hash string: {experiment_hs}]")
+    t1 = time.time()
+    fpath = folder + experiment_hs    
+    try:        
+        f = open(fpath + ".json", "w+")
+        json.dump(experiment_info, f, indent=2)
+        f.close()
+        with zf.ZipFile(fpath + ".zip", mode="w", compression=zf.ZIP_DEFLATED) as archive:
+                archive.write(fpath + ".json", arcname=experiment_hs + ".json")
+                archive.write(fpath + ".log", arcname=experiment_hs + ".log")
+        os.remove(fpath + ".json")
+        os.remove(fpath + ".log") 
+    except IOError:
+        sys.exit(f"[error occurred when trying to save and zip experiment info: {fname}]")            
+    t2 = time.time()
+    print(f"SAVE AND ZIP EXPERIMENT DONE. [time: {t2 - t1} s]")
+
+def unzip_and_load_experiment(experiment_hs, folder):
+    print(f"UNZIP AND LOAD EXPERIMENT... [hash string: {experiment_hs}]")
+    t1 = time.time()
+    fpath = folder + experiment_hs    
+    try:        
+        with zf.ZipFile(fpath + ".zip", "r") as zip_ref:
+            zip_ref.extract(experiment_hs + ".json", path=os.path.dirname(fpath + ".json"))            
+        with open(fpath + ".json", 'r', encoding="utf-8") as json_file:
+            experiment_info = json.load(json_file) 
+        os.remove(fpath + ".json") # TODO uncomment this back, to have extracted file removed once used
+    except IOError:
+        sys.exit(f"[error occurred when trying to unzip and load experiment info: {experiment_hs}]")            
+    t2 = time.time()
+    print(f"UNZIP AND LOAD EXPERIMENT DONE. [time: {t2 - t1} s]")
+    return experiment_info    
