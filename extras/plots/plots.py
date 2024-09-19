@@ -325,14 +325,20 @@ if __name__ == "__main__":
     
     # scores_array_plot_ocp_prodigal_vs_vanilla()
     
-    scores_array_plot_acp_thrifty_vs_vanilla()
+    # scores_array_plot_acp_thrifty_vs_vanilla()
     
     # scores_array_plot_acp_prodigal_vs_vanilla()
+
+    best_action_plot_generator("2375874269_93352_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_64_ocp_prodigal;C4_6x7;100]", 33,
+                               "BEST $\widehat{q}$ - MCTS_4_INF_VANILLA", "UCB - MCTS_4_INF_VANILLA",      
+                               "BEST $\widehat{q}$ - MCTS-NC_1_INF_4_64_OCP_PRODIGAL", "UCB - MCTS-NC_1_INF_4_64_OCP_PRODIGAL",     
+                               "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 33/100)")
     
-    # best_action_plot_generator("2249034921_44724_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_64_ocp_thrifty;C4_6x7;100]", 25, #11, 25, 47
-    #                            "BEST $\widehat{q}$ - MCTS_4_INF_VANILLA", "UCB - MCTS_4_INF_VANILLA",      
-    #                            "BEST $\widehat{q}$ - MCTS-NC_1_INF_4_64_OCP_THRIFTY", "UCB - MCTS-NC_1_INF_4_64_OCP_THRIFTY",     
-    #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4")
+    # best_action_plot_generator("0500042733_17720_427_[mctsnc_30_inf_2_128_ocp_prodigal_16g;mctsnc_30_inf_2_128_acp_prodigal_16g;Gomoku_15x15;100]", 87,
+    #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_2_128_OCP_PRODIGAL", "UCB - MCTS-NC_30_INF_2_128_OCP_PRODIGAL",                               
+    #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_2_128_ACP_PRODIGAL", "UCB - MCTS-NC_30_INF_2_128_ACP_PRODIGAL",                                          
+    #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF GOMOKU")
+    
     
     # depths_plot_generator("2249034921_44724_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_64_ocp_thrifty;C4_6x7;100]", 25,  
     #                       "MEAN DEPTHS - MCTS_4_INF_VANILLA", "MAX DEPTHS - MCTS_4_INF_VANILLA",

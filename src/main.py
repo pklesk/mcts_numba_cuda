@@ -28,6 +28,7 @@ _MAX_ACTIONS = STATE_CLASS.get_max_actions()
 _ACTION_INDEX_TO_NAME_FUNCTION = STATE_CLASS.action_index_to_name
 
 # TODO remove later - the best players for C4 matchup (time limit 4 s for all):
+# "mcts_4_inf_vanilla"
 # "mctsnc_4_inf_8_256_ocp_thrifty" 
 # "mctsnc_4_inf_4_128_ocp_prodigal"
 # "mctsnc_4_inf_2_128_acp_thrifty"
