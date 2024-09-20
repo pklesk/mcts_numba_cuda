@@ -20,7 +20,7 @@ FOLDER_EXTRAS = "../extras/"
 STATE_CLASS = C4 # C4 or Gomoku
 N_GAMES = 100
 AI_A_SHORTNAME = "mcts_4_inf_vanilla"
-AI_B_SHORTNAME = "mctsnc_4_inf_1_32_acp_prodigal"
+AI_B_SHORTNAME = "mctsnc_4_inf_8_128_acp_prodigal_ucbc_8"
 REPRODUCE_EXPERIMENT = False
 _BOARD_SHAPE = STATE_CLASS.get_board_shape()
 _EXTRA_INFO_MEMORY = STATE_CLASS.get_extra_info_memory()
@@ -106,7 +106,7 @@ AIS = {
     "mctsnc_4_inf_4_128_ocp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=4.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, variant="ocp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
     "mctsnc_4_inf_2_128_acp_thrifty": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=4.0, search_steps_limit=np.inf, n_trees=2, n_playouts=128, variant="acp_thrifty", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
     "mctsnc_4_inf_8_128_acp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=4.0, search_steps_limit=np.inf, n_trees=8, n_playouts=128, variant="acp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),                            
-    "mctsnc_4_inf_1_32_acp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=4.0, search_steps_limit=np.inf, n_trees=1, n_playouts=32, variant="acp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),    
+    "mctsnc_4_inf_8_128_acp_prodigal_ucbc_8": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, ucb_c=8.0, search_time_limit=4.0, search_steps_limit=np.inf, n_trees=8, n_playouts=128, variant="acp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),    
     "mctsnc_30_inf_2_128_ocp_prodigal_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=30.0, search_steps_limit=np.inf, n_trees=2, n_playouts=128, variant="ocp_prodigal", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
     "mctsnc_30_inf_2_256_ocp_prodigal_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=30.0, search_steps_limit=np.inf, n_trees=2, n_playouts=256, variant="ocp_prodigal", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),        
     "mctsnc_30_inf_2_128_acp_prodigal_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=30.0, search_steps_limit=np.inf, n_trees=2, n_playouts=128, variant="acp_prodigal", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
