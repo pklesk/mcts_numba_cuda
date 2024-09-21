@@ -27,13 +27,6 @@ _EXTRA_INFO_MEMORY = STATE_CLASS.get_extra_info_memory()
 _MAX_ACTIONS = STATE_CLASS.get_max_actions()
 _ACTION_INDEX_TO_NAME_FUNCTION = STATE_CLASS.action_index_to_name
 
-# TODO remove later - the best players for C4 matchup (time limit 4 s for all):
-# "mcts_4_inf_vanilla"
-# "mctsnc_4_inf_8_256_ocp_thrifty" 
-# "mctsnc_4_inf_4_128_ocp_prodigal"
-# "mctsnc_4_inf_2_128_acp_thrifty"
-# "mctsnc_4_inf_8_128_acp_prodigal" 
-
 # dictionary of AIs
 AIS = {
     "mcts_1_inf_vanilla": MCTS(search_time_limit=1.0, search_steps_limit=np.inf, vanilla=True),
@@ -103,9 +96,6 @@ AIS = {
     "mctsnc_1_inf_8_64_acp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=1.0, search_steps_limit=np.inf, n_trees=8, n_playouts=64, variant="acp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
     "mctsnc_1_inf_8_128_acp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=1.0, search_steps_limit=np.inf, n_trees=8, n_playouts=128, variant="acp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
     "mctsnc_1_inf_8_256_acp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=1.0, search_steps_limit=np.inf, n_trees=8, n_playouts=256, variant="acp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
-    "mctsnc_4_inf_8_256_ocp_thrifty": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=4.0, search_steps_limit=np.inf, n_trees=8, n_playouts=256, variant="ocp_thrifty", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
-    "mctsnc_4_inf_4_128_ocp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=4.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, variant="ocp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
-    "mctsnc_4_inf_2_128_acp_thrifty": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=4.0, search_steps_limit=np.inf, n_trees=2, n_playouts=128, variant="acp_thrifty", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
     "mctsnc_5_inf_8_256_acp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=8, n_playouts=256, variant="acp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),                                
     "mctsnc_30_inf_2_128_ocp_prodigal_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=30.0, search_steps_limit=np.inf, n_trees=2, n_playouts=128, variant="ocp_prodigal", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
     "mctsnc_30_inf_2_256_ocp_prodigal_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=30.0, search_steps_limit=np.inf, n_trees=2, n_playouts=256, variant="ocp_prodigal", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),        
