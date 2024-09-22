@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mctsnc module &mdash; MCTS-NC 1.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mctsnc_game_specifics module" href="mctsnc_game_specifics.html" />
+    <link rel="prev" title="mcts module" href="mcts.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            MCTS-NC
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="c4.html">c4 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_runner.html">game_runner module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gomoku.html">gomoku module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcts.html">mcts module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mctsnc module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-usage">Example Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#link-to-project-repository">Link to project repository</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html">mctsnc_game_specifics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MCTS-NC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+      <li class="breadcrumb-item active">mctsnc module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/mctsnc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-mctsnc">
+<span id="mctsnc-module"></span><h1>mctsnc module<a class="headerlink" href="#module-mctsnc" title="Permalink to this headline"></a></h1>
+<p>This module contains the core functionalities of the project, embodied by the class <cite>MCTSNC</cite>, performing 
+a thorough GPU parallelization of Monte Carlo Tree Search implemented in Python via <cite>numba.cuda</cite>.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> class, private functions are named with single leading underscores . Among them, the kernel functions
+(executed on GPU) are additionally described  and some of them are additionally 
+described by <code class="docutils literal notranslate"><span class="pre">&#64;cuda.jit</span></code> decorators coming from <code class="docutils literal notranslate"><span class="pre">numba</span></code> module (intended to be compiled by <cite>Numba</cite>).</p>
+<p>Documentation note: this documentation was built with <cite>Sphinx</cite> tool, which does not correctly process docstrings for CUDA kernel functions, 
+i.e. functions decorated with <code class="docutils literal notranslate"><span class="pre">&#64;cuda.jit</span></code> that produce <code class="docutils literal notranslate"><span class="pre">numba.cuda.compiler.Dispatcher</span></code> objects as outcomes. 
+For actual docstrings associated with those functions see the source code.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install frbb</span>
+</pre></div>
+</div>
+<p>Note: for further usage, NVIDIA CUDA drivers must be present in the operating system.</p>
+</section>
+<section id="example-usage">
+<h2>Example Usage<a class="headerlink" href="#example-usage" title="Permalink to this headline"></a></h2>
+<p>With <code class="docutils literal notranslate"><span class="pre">frbb</span></code> module installed, one can write e.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">frbb</span> <span class="kn">import</span> <span class="n">FastRealBoostBins</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_breast_cancer</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>    
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>    
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">load_breast_cancer</span><span class="p">(</span><span class="n">return_X_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">FastRealBoostBins</span><span class="p">()</span>
+    <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CLF: </span><span class="si">{</span><span class="n">clf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TRAIN ACC: </span><span class="si">{</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="w"> </span><span class="n">y_train</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TEST ACC: </span><span class="si">{</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_test</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Running the script above produces the following output:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">CLF: FastRealBoostBins(T=256, B=8, outliers_ratio=0.05, logit_max: 2.0, fit_mode=&#39;numba_cuda&#39;, decision_function_mode=&#39;numba_cuda&#39;)</span>
+<span class="go">TRAIN ACC: 1.0</span>
+<span class="go">TEST ACC: 0.958041958041958</span>
+</pre></div>
+</div>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">math</span></code>: required for mathematical computations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numba</span></code>: required for just-in-time compilation of crucial computational functions and CUDA kernels (decorated by <code class="docutils literal notranslate"><span class="pre">&#64;jit</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;cuda.jit</span></code> imported from <code class="docutils literal notranslate"><span class="pre">numba</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sklearn</span></code>: required for inheritence and other sklearn API purposes.</p></li>
+</ul>
+</section>
+<section id="link-to-project-repository">
+<h2>Link to project repository<a class="headerlink" href="#link-to-project-repository" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://github.com/pklesk/fast_rboost_bins">https://github.com/pklesk/fast_rboost_bins</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">mctsnc.</span></span><span class="sig-name descname"><span class="pre">MCTSNC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_board_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_extra_info_memory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_max_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_time_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_trees</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_playouts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'acp_prodigal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_memory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucb_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_index_to_name_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.VARIANTS">
+<span class="sig-name descname"><span class="pre">VARIANTS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">['ocp_thrifty',</span> <span class="pre">'ocp_prodigal',</span> <span class="pre">'acp_thrifty',</span> <span class="pre">'acp_prodigal']</span></em><a class="headerlink" href="#mctsnc.MCTSNC.VARIANTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.DEFAULT_SEARCH_TIME_LIMIT">
+<span class="sig-name descname"><span class="pre">DEFAULT_SEARCH_TIME_LIMIT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">5.0</span></em><a class="headerlink" href="#mctsnc.MCTSNC.DEFAULT_SEARCH_TIME_LIMIT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.DEFAULT_SEARCH_STEPS_LIMIT">
+<span class="sig-name descname"><span class="pre">DEFAULT_SEARCH_STEPS_LIMIT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">inf</span></em><a class="headerlink" href="#mctsnc.MCTSNC.DEFAULT_SEARCH_STEPS_LIMIT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.DEFAULT_N_TREES">
+<span class="sig-name descname"><span class="pre">DEFAULT_N_TREES</span></span><em class="property"> <span class="pre">=</span> <span class="pre">8</span></em><a class="headerlink" href="#mctsnc.MCTSNC.DEFAULT_N_TREES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.DEFAULT_N_PLAYOUTS">
+<span class="sig-name descname"><span class="pre">DEFAULT_N_PLAYOUTS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">128</span></em><a class="headerlink" href="#mctsnc.MCTSNC.DEFAULT_N_PLAYOUTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.DEFAULT_VARIANT">
+<span class="sig-name descname"><span class="pre">DEFAULT_VARIANT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'acp_prodigal'</span></em><a class="headerlink" href="#mctsnc.MCTSNC.DEFAULT_VARIANT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.DEFAULT_DEVICE_MEMORY">
+<span class="sig-name descname"><span class="pre">DEFAULT_DEVICE_MEMORY</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2.0</span></em><a class="headerlink" href="#mctsnc.MCTSNC.DEFAULT_DEVICE_MEMORY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.DEFAULT_UCB_C">
+<span class="sig-name descname"><span class="pre">DEFAULT_UCB_C</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2.0</span></em><a class="headerlink" href="#mctsnc.MCTSNC.DEFAULT_UCB_C" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.DEFAULT_SEED">
+<span class="sig-name descname"><span class="pre">DEFAULT_SEED</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#mctsnc.MCTSNC.DEFAULT_SEED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.DEFAULT_VERBOSE_DEBUG">
+<span class="sig-name descname"><span class="pre">DEFAULT_VERBOSE_DEBUG</span></span><em class="property"> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#mctsnc.MCTSNC.DEFAULT_VERBOSE_DEBUG" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.DEFAULT_VERBOSE_INFO">
+<span class="sig-name descname"><span class="pre">DEFAULT_VERBOSE_INFO</span></span><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#mctsnc.MCTSNC.DEFAULT_VERBOSE_INFO" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.MAX_STATE_BOARD_SHAPE">
+<span class="sig-name descname"><span class="pre">MAX_STATE_BOARD_SHAPE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">(32,</span> <span class="pre">32)</span></em><a class="headerlink" href="#mctsnc.MCTSNC.MAX_STATE_BOARD_SHAPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.MAX_STATE_EXTRA_INFO_MEMORY">
+<span class="sig-name descname"><span class="pre">MAX_STATE_EXTRA_INFO_MEMORY</span></span><em class="property"> <span class="pre">=</span> <span class="pre">4096</span></em><a class="headerlink" href="#mctsnc.MCTSNC.MAX_STATE_EXTRA_INFO_MEMORY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.MAX_STATE_MAX_ACTIONS">
+<span class="sig-name descname"><span class="pre">MAX_STATE_MAX_ACTIONS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">512</span></em><a class="headerlink" href="#mctsnc.MCTSNC.MAX_STATE_MAX_ACTIONS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.MAX_TREE_SIZE">
+<span class="sig-name descname"><span class="pre">MAX_TREE_SIZE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">16777216</span></em><a class="headerlink" href="#mctsnc.MCTSNC.MAX_TREE_SIZE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.MAX_N_TREES">
+<span class="sig-name descname"><span class="pre">MAX_N_TREES</span></span><em class="property"> <span class="pre">=</span> <span class="pre">512</span></em><a class="headerlink" href="#mctsnc.MCTSNC.MAX_N_TREES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.MAX_N_PLAYOUTS">
+<span class="sig-name descname"><span class="pre">MAX_N_PLAYOUTS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">512</span></em><a class="headerlink" href="#mctsnc.MCTSNC.MAX_N_PLAYOUTS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.MAX_TREE_DEPTH">
+<span class="sig-name descname"><span class="pre">MAX_TREE_DEPTH</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2048</span></em><a class="headerlink" href="#mctsnc.MCTSNC.MAX_TREE_DEPTH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_board_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_extra_info_memory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_max_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_time_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_trees</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_playouts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'acp_prodigal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_memory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucb_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_index_to_name_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._set_cuda_constants">
+<span class="sig-name descname"><span class="pre">_set_cuda_constants</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._set_cuda_constants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._set_cuda_constants" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._validate_param">
+<span class="sig-name descname"><span class="pre">_validate_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ptype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._validate_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._validate_param" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC.__str__" title="Permalink to this definition"></a></dt>
+<dd><p>Return str(self).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC.__repr__" title="Permalink to this definition"></a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.init_device_side_arrays">
+<span class="sig-name descname"><span class="pre">init_device_side_arrays</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC.init_device_side_arrays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC.init_device_side_arrays" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_extra_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC.run" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._flatten_trees_actions_expanded_thrifty">
+<span class="sig-name descname"><span class="pre">_flatten_trees_actions_expanded_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._flatten_trees_actions_expanded_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._flatten_trees_actions_expanded_thrifty" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._make_performance_info">
+<span class="sig-name descname"><span class="pre">_make_performance_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._make_performance_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._make_performance_info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._make_actions_info_thrifty">
+<span class="sig-name descname"><span class="pre">_make_actions_info_thrifty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._make_actions_info_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._make_actions_info_thrifty" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._make_actions_info_prodigal">
+<span class="sig-name descname"><span class="pre">_make_actions_info_prodigal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._make_actions_info_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._make_actions_info_prodigal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._run_ocp_thrifty">
+<span class="sig-name descname"><span class="pre">_run_ocp_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_extra_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._run_ocp_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._run_ocp_thrifty" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._run_ocp_prodigal">
+<span class="sig-name descname"><span class="pre">_run_ocp_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_extra_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._run_ocp_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._run_ocp_prodigal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._run_acp_thrifty">
+<span class="sig-name descname"><span class="pre">_run_acp_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_extra_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._run_acp_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._run_acp_thrifty" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._run_acp_prodigal">
+<span class="sig-name descname"><span class="pre">_run_acp_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_extra_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._run_acp_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._run_acp_prodigal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._reset">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_extra_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_depths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._reset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._select">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ucb_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_selected_paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._select" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._expand_1_ocp_thrifty">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_expand_1_ocp_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_tree_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_generators_expand_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._expand_1_ocp_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._expand_1_ocp_thrifty" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._expand_1_ocp_prodigal">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_expand_1_ocp_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_tree_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_generators_expand_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._expand_1_ocp_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._expand_1_ocp_prodigal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._expand_1_acp_thrifty">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_expand_1_acp_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_tree_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._expand_1_acp_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._expand_1_acp_thrifty" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._expand_1_acp_prodigal">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_expand_1_acp_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_tree_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._expand_1_acp_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._expand_1_acp_prodigal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._memorize_root_actions_expanded">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_memorize_root_actions_expanded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dev_trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dev_root_actions_expanded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._memorize_root_actions_expanded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._memorize_root_actions_expanded" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._expand_2_thrifty">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_expand_2_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_depths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded_flat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._expand_2_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._expand_2_thrifty" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._expand_2_prodigal">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_expand_2_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_depths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._expand_2_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._expand_2_prodigal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._playout_ocp">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_playout_ocp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_generators_playout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._playout_ocp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._playout_ocp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._playout_acp_thrifty">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_playout_acp_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded_flat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_generators_playout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes_children</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._playout_acp_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._playout_acp_thrifty" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._playout_acp_prodigal">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_playout_acp_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_generators_playout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes_children</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._playout_acp_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._playout_acp_prodigal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._backup_ocp">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_backup_ocp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_playouts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_selected_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._backup_ocp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._backup_ocp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._backup_1_acp_thrifty">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_backup_1_acp_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_playouts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes_children</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._backup_1_acp_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._backup_1_acp_thrifty" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._backup_1_acp_prodigal">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_backup_1_acp_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_playouts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes_children</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._backup_1_acp_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._backup_1_acp_prodigal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._backup_2_acp">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_backup_2_acp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_playouts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_selected_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._backup_2_acp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._backup_2_acp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._reduce_over_trees_thrifty">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_reduce_over_trees_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_win_flags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_ns_wins</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._reduce_over_trees_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._reduce_over_trees_thrifty" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._reduce_over_trees_prodigal">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_reduce_over_trees_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_win_flags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_ns_wins</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._reduce_over_trees_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._reduce_over_trees_prodigal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._reduce_over_actions_thrifty">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_reduce_over_actions_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_root_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_win_flags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_win_flag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_n_wins</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._reduce_over_actions_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._reduce_over_actions_thrifty" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._reduce_over_actions_prodigal">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">_reduce_over_actions_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions_win_flags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_win_flag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_n_wins</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._reduce_over_actions_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._reduce_over_actions_prodigal" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC._json_dump">
+<span class="sig-name descname"><span class="pre">_json_dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._json_dump"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._json_dump" title="Permalink to this definition"></a></dt>
+<dd><p>Dumps (saves) device-side arrays, copied to host, representing trees and MCTS elements from the last run to a text file in json format.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mctsnc.MCTSNC.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'mctsnc'</span></em><a class="headerlink" href="#mctsnc.MCTSNC.__module__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mcts.html" class="btn btn-neutral float-left" title="mcts module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mctsnc_game_specifics.html" class="btn btn-neutral float-right" title="mctsnc_game_specifics module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Przemysław Klęsk.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
