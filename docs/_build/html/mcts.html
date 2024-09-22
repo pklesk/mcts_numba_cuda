@@ -1,20 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mcts module &mdash; MCTS-NC 1.0.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8d563738"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -51,7 +54,55 @@
 <li class="toctree-l2"><a class="reference internal" href="game_runner.html">game_runner module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gomoku.html">gomoku module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">mcts module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mcts module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mcts.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.__init__"><code class="docutils literal notranslate"><span class="pre">State.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.class_repr"><code class="docutils literal notranslate"><span class="pre">State.class_repr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State._subtree_size"><code class="docutils literal notranslate"><span class="pre">State._subtree_size()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State._subtree_max_depth"><code class="docutils literal notranslate"><span class="pre">State._subtree_max_depth()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State._subtree_depths"><code class="docutils literal notranslate"><span class="pre">State._subtree_depths()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.take_action"><code class="docutils literal notranslate"><span class="pre">State.take_action()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.take_action_job"><code class="docutils literal notranslate"><span class="pre">State.take_action_job()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.compute_outcome"><code class="docutils literal notranslate"><span class="pre">State.compute_outcome()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.compute_outcome_job"><code class="docutils literal notranslate"><span class="pre">State.compute_outcome_job()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.get_board"><code class="docutils literal notranslate"><span class="pre">State.get_board()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.get_extra_info"><code class="docutils literal notranslate"><span class="pre">State.get_extra_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.expand"><code class="docutils literal notranslate"><span class="pre">State.expand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.expand_one_random_child"><code class="docutils literal notranslate"><span class="pre">State.expand_one_random_child()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.action_name_to_index"><code class="docutils literal notranslate"><span class="pre">State.action_name_to_index()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.action_index_to_name"><code class="docutils literal notranslate"><span class="pre">State.action_index_to_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.get_board_shape"><code class="docutils literal notranslate"><span class="pre">State.get_board_shape()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.get_extra_info_memory"><code class="docutils literal notranslate"><span class="pre">State.get_extra_info_memory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.get_max_actions"><code class="docutils literal notranslate"><span class="pre">State.get_max_actions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.__module__"><code class="docutils literal notranslate"><span class="pre">State.__module__</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mcts.MCTS"><code class="docutils literal notranslate"><span class="pre">MCTS</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.DEFAULT_SEARCH_TIME_LIMIT"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_SEARCH_TIME_LIMIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.DEFAULT_SEARCH_STEPS_LIMIT"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_SEARCH_STEPS_LIMIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.DEFAULT_VANILLA"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_VANILLA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.DEFAULT_UCB_C"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_UCB_C</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.DEFAULT_SEED"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_SEED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.DEFAULT_VERBOSE_DEBUG"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_VERBOSE_DEBUG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.DEFAULT_VERBOSE_INFO"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_VERBOSE_INFO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.__init__"><code class="docutils literal notranslate"><span class="pre">MCTS.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.__str__"><code class="docutils literal notranslate"><span class="pre">MCTS.__str__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.__repr__"><code class="docutils literal notranslate"><span class="pre">MCTS.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._make_actions_info"><code class="docutils literal notranslate"><span class="pre">MCTS._make_actions_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._make_performance_info"><code class="docutils literal notranslate"><span class="pre">MCTS._make_performance_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._best_action_ucb"><code class="docutils literal notranslate"><span class="pre">MCTS._best_action_ucb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._best_action"><code class="docutils literal notranslate"><span class="pre">MCTS._best_action()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.run"><code class="docutils literal notranslate"><span class="pre">MCTS.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._select"><code class="docutils literal notranslate"><span class="pre">MCTS._select()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._expand"><code class="docutils literal notranslate"><span class="pre">MCTS._expand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._playout"><code class="docutils literal notranslate"><span class="pre">MCTS._playout()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._backup"><code class="docutils literal notranslate"><span class="pre">MCTS._backup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._reduce_over_actions"><code class="docutils literal notranslate"><span class="pre">MCTS._reduce_over_actions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.__module__"><code class="docutils literal notranslate"><span class="pre">MCTS.__module__</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="mctsnc.html">mctsnc module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html">mctsnc_game_specifics module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">utils module</a></li>
@@ -85,217 +136,217 @@
            <div itemprop="articleBody">
              
   <section id="module-mcts">
-<span id="mcts-module"></span><h1>mcts module<a class="headerlink" href="#module-mcts" title="Permalink to this headline"></a></h1>
+<span id="mcts-module"></span><h1>mcts module<a class="headerlink" href="#module-mcts" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="mcts.State">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">mcts.</span></span><span class="sig-name descname"><span class="pre">State</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mcts.</span></span><span class="sig-name descname"><span class="pre">State</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.class_repr">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">class_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.class_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.class_repr" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.class_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.class_repr" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State._subtree_size">
-<span class="sig-name descname"><span class="pre">_subtree_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State._subtree_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State._subtree_size" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_subtree_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State._subtree_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State._subtree_size" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State._subtree_max_depth">
-<span class="sig-name descname"><span class="pre">_subtree_max_depth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State._subtree_max_depth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State._subtree_max_depth" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_subtree_max_depth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State._subtree_max_depth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State._subtree_max_depth" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State._subtree_depths">
-<span class="sig-name descname"><span class="pre">_subtree_depths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State._subtree_depths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State._subtree_depths" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_subtree_depths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State._subtree_depths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State._subtree_depths" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.take_action">
-<span class="sig-name descname"><span class="pre">take_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.take_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.take_action" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">take_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.take_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.take_action" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.take_action_job">
-<span class="sig-name descname"><span class="pre">take_action_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.take_action_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.take_action_job" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">take_action_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.take_action_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.take_action_job" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.compute_outcome">
-<span class="sig-name descname"><span class="pre">compute_outcome</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.compute_outcome"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.compute_outcome" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_outcome</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.compute_outcome"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.compute_outcome" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.compute_outcome_job">
-<span class="sig-name descname"><span class="pre">compute_outcome_job</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.compute_outcome_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.compute_outcome_job" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_outcome_job</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.compute_outcome_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.compute_outcome_job" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.get_board">
-<span class="sig-name descname"><span class="pre">get_board</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_board"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_board" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_board</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_board"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_board" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.get_extra_info">
-<span class="sig-name descname"><span class="pre">get_extra_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_extra_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_extra_info" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_extra_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_extra_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_extra_info" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.expand">
-<span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.expand" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.expand" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.expand_one_random_child">
-<span class="sig-name descname"><span class="pre">expand_one_random_child</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.expand_one_random_child"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.expand_one_random_child" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">expand_one_random_child</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.expand_one_random_child"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.expand_one_random_child" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.action_name_to_index">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">action_name_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.action_name_to_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.action_name_to_index" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_name_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.action_name_to_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.action_name_to_index" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.action_index_to_name">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">action_index_to_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.action_index_to_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.action_index_to_name" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_index_to_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.action_index_to_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.action_index_to_name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.get_board_shape">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_board_shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_board_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_board_shape" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_board_shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_board_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_board_shape" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.get_extra_info_memory">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_extra_info_memory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_extra_info_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_extra_info_memory" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_extra_info_memory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_extra_info_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_extra_info_memory" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.get_max_actions">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_max_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_max_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_max_actions" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_max_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_max_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_max_actions" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcts.State.__module__">
-<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'mcts'</span></em><a class="headerlink" href="#mcts.State.__module__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mcts'</span></em><a class="headerlink" href="#mcts.State.__module__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mcts.MCTS">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">mcts.</span></span><span class="sig-name descname"><span class="pre">MCTS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_time_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vanilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucb_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mcts.</span></span><span class="sig-name descname"><span class="pre">MCTS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_time_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vanilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucb_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcts.MCTS.DEFAULT_SEARCH_TIME_LIMIT">
-<span class="sig-name descname"><span class="pre">DEFAULT_SEARCH_TIME_LIMIT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">5.0</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_SEARCH_TIME_LIMIT" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DEFAULT_SEARCH_TIME_LIMIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5.0</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_SEARCH_TIME_LIMIT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcts.MCTS.DEFAULT_SEARCH_STEPS_LIMIT">
-<span class="sig-name descname"><span class="pre">DEFAULT_SEARCH_STEPS_LIMIT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">inf</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_SEARCH_STEPS_LIMIT" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DEFAULT_SEARCH_STEPS_LIMIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">inf</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_SEARCH_STEPS_LIMIT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcts.MCTS.DEFAULT_VANILLA">
-<span class="sig-name descname"><span class="pre">DEFAULT_VANILLA</span></span><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_VANILLA" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DEFAULT_VANILLA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_VANILLA" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcts.MCTS.DEFAULT_UCB_C">
-<span class="sig-name descname"><span class="pre">DEFAULT_UCB_C</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2.0</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_UCB_C" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DEFAULT_UCB_C</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2.0</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_UCB_C" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcts.MCTS.DEFAULT_SEED">
-<span class="sig-name descname"><span class="pre">DEFAULT_SEED</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_SEED" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DEFAULT_SEED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_SEED" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcts.MCTS.DEFAULT_VERBOSE_DEBUG">
-<span class="sig-name descname"><span class="pre">DEFAULT_VERBOSE_DEBUG</span></span><em class="property"> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_VERBOSE_DEBUG" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DEFAULT_VERBOSE_DEBUG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_VERBOSE_DEBUG" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcts.MCTS.DEFAULT_VERBOSE_INFO">
-<span class="sig-name descname"><span class="pre">DEFAULT_VERBOSE_INFO</span></span><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_VERBOSE_INFO" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DEFAULT_VERBOSE_INFO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_VERBOSE_INFO" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_time_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vanilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucb_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_time_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vanilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucb_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS.__str__">
-<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS.__str__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS.__str__" title="Link to this definition"></a></dt>
 <dd><p>Return str(self).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS.__repr__">
-<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS.__repr__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS.__repr__" title="Link to this definition"></a></dt>
 <dd><p>Return repr(self).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._make_actions_info">
-<span class="sig-name descname"><span class="pre">_make_actions_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">children</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_action_entry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._make_actions_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._make_actions_info" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_make_actions_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">children</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_action_entry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._make_actions_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._make_actions_info" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._make_performance_info">
-<span class="sig-name descname"><span class="pre">_make_performance_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._make_performance_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._make_performance_info" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_make_performance_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._make_performance_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._make_performance_info" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._best_action_ucb">
-<span class="sig-name descname"><span class="pre">_best_action_ucb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">children</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._best_action_ucb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._best_action_ucb" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_best_action_ucb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">children</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._best_action_ucb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._best_action_ucb" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._best_action">
-<span class="sig-name descname"><span class="pre">_best_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_children</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_actions_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._best_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._best_action" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_best_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_children</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_actions_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._best_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._best_action" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS.run" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS.run" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._select">
-<span class="sig-name descname"><span class="pre">_select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._select" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._select" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._expand">
-<span class="sig-name descname"><span class="pre">_expand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._expand" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_expand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._expand" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._playout">
-<span class="sig-name descname"><span class="pre">_playout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._playout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._playout" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_playout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._playout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._playout" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._backup">
-<span class="sig-name descname"><span class="pre">_backup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">playout_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._backup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._backup" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_backup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">playout_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._backup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._backup" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._reduce_over_actions">
-<span class="sig-name descname"><span class="pre">_reduce_over_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._reduce_over_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._reduce_over_actions" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_reduce_over_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._reduce_over_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._reduce_over_actions" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcts.MCTS.__module__">
-<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'mcts'</span></em><a class="headerlink" href="#mcts.MCTS.__module__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mcts'</span></em><a class="headerlink" href="#mcts.MCTS.__module__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

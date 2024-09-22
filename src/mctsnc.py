@@ -21,29 +21,7 @@ Note: for further usage, NVIDIA CUDA drivers must be present in the operating sy
 
 Example Usage
 -------------
-With ``frbb`` module installed, one can write e.g.:
-
-.. code-block:: python
-
-    from frbb import FastRealBoostBins
-    from sklearn.datasets import load_breast_cancer
-    from sklearn.model_selection import train_test_split    
-    if __name__ == "__main__":    
-        X, y = load_breast_cancer(return_X_y=True)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, stratify=y, random_state=0)
-        clf = FastRealBoostBins()
-        clf.fit(X_train, y_train)
-        print(f"CLF: {clf}")
-        print(f"TRAIN ACC: {clf.score(X_train, y_train)}")
-        print(f"TEST ACC: {clf.score(X_test, y_test)}")
-
-Running the script above produces the following output:
-        
-.. code-block:: console
-
-    CLF: FastRealBoostBins(T=256, B=8, outliers_ratio=0.05, logit_max: 2.0, fit_mode='numba_cuda', decision_function_mode='numba_cuda')
-    TRAIN ACC: 1.0
-    TEST ACC: 0.958041958041958
+TODO
 
 Dependencies
 ------------

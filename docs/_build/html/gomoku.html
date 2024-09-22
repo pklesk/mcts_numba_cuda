@@ -1,20 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gomoku module &mdash; MCTS-NC 1.0.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8d563738"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -49,7 +52,31 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="c4.html">c4 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="game_runner.html">game_runner module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">gomoku module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">gomoku module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gomoku.Gomoku"><code class="docutils literal notranslate"><span class="pre">Gomoku</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.M"><code class="docutils literal notranslate"><span class="pre">Gomoku.M</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.N"><code class="docutils literal notranslate"><span class="pre">Gomoku.N</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.SYMBOLS"><code class="docutils literal notranslate"><span class="pre">Gomoku.SYMBOLS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.__init__"><code class="docutils literal notranslate"><span class="pre">Gomoku.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.class_repr"><code class="docutils literal notranslate"><span class="pre">Gomoku.class_repr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.__str__"><code class="docutils literal notranslate"><span class="pre">Gomoku.__str__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.take_action_job"><code class="docutils literal notranslate"><span class="pre">Gomoku.take_action_job()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.compute_outcome_job"><code class="docutils literal notranslate"><span class="pre">Gomoku.compute_outcome_job()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.compute_outcome_job_numba_jit"><code class="docutils literal notranslate"><span class="pre">Gomoku.compute_outcome_job_numba_jit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.expand"><code class="docutils literal notranslate"><span class="pre">Gomoku.expand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.expand_one_random_child"><code class="docutils literal notranslate"><span class="pre">Gomoku.expand_one_random_child()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.get_board"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_board()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.get_extra_info"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_extra_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.action_name_to_index"><code class="docutils literal notranslate"><span class="pre">Gomoku.action_name_to_index()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.action_index_to_name"><code class="docutils literal notranslate"><span class="pre">Gomoku.action_index_to_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.get_board_shape"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_board_shape()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.get_extra_info_memory"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_extra_info_memory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.__module__"><code class="docutils literal notranslate"><span class="pre">Gomoku.__module__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.get_max_actions"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_max_actions()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mcts.html">mcts module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mctsnc.html">mctsnc module</a></li>
@@ -85,105 +112,105 @@
            <div itemprop="articleBody">
              
   <section id="module-gomoku">
-<span id="gomoku-module"></span><h1>gomoku module<a class="headerlink" href="#module-gomoku" title="Permalink to this headline"></a></h1>
+<span id="gomoku-module"></span><h1>gomoku module<a class="headerlink" href="#module-gomoku" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="gomoku.Gomoku">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gomoku.</span></span><span class="sig-name descname"><span class="pre">Gomoku</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="mcts.html#mcts.State" title="mcts.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">mcts.State</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gomoku.</span></span><span class="sig-name descname"><span class="pre">Gomoku</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mcts.html#mcts.State" title="mcts.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gomoku.Gomoku.M">
-<span class="sig-name descname"><span class="pre">M</span></span><em class="property"> <span class="pre">=</span> <span class="pre">15</span></em><a class="headerlink" href="#gomoku.Gomoku.M" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">M</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#gomoku.Gomoku.M" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gomoku.Gomoku.N">
-<span class="sig-name descname"><span class="pre">N</span></span><em class="property"> <span class="pre">=</span> <span class="pre">15</span></em><a class="headerlink" href="#gomoku.Gomoku.N" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">N</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#gomoku.Gomoku.N" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gomoku.Gomoku.SYMBOLS">
-<span class="sig-name descname"><span class="pre">SYMBOLS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">['○',</span> <span class="pre">'+',</span> <span class="pre">'●']</span></em><a class="headerlink" href="#gomoku.Gomoku.SYMBOLS" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">SYMBOLS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['○',</span> <span class="pre">'+',</span> <span class="pre">'●']</span></em><a class="headerlink" href="#gomoku.Gomoku.SYMBOLS" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.class_repr">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">class_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.class_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.class_repr" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.class_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.class_repr" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.__str__">
-<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.__str__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.__str__" title="Link to this definition"></a></dt>
 <dd><p>Return str(self).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.take_action_job">
-<span class="sig-name descname"><span class="pre">take_action_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.take_action_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.take_action_job" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">take_action_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.take_action_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.take_action_job" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.compute_outcome_job">
-<span class="sig-name descname"><span class="pre">compute_outcome_job</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.compute_outcome_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.compute_outcome_job" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_outcome_job</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.compute_outcome_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.compute_outcome_job" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.compute_outcome_job_numba_jit">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">compute_outcome_job_numba_jit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.compute_outcome_job_numba_jit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.compute_outcome_job_numba_jit" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_outcome_job_numba_jit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.compute_outcome_job_numba_jit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.compute_outcome_job_numba_jit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.expand">
-<span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.expand" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.expand" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.expand_one_random_child">
-<span class="sig-name descname"><span class="pre">expand_one_random_child</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.expand_one_random_child"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.expand_one_random_child" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">expand_one_random_child</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.expand_one_random_child"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.expand_one_random_child" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_board">
-<span class="sig-name descname"><span class="pre">get_board</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_board"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_board" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_board</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_board"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_board" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_extra_info">
-<span class="sig-name descname"><span class="pre">get_extra_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_extra_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_extra_info" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_extra_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_extra_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_extra_info" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.action_name_to_index">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">action_name_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.action_name_to_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.action_name_to_index" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_name_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.action_name_to_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.action_name_to_index" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.action_index_to_name">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">action_index_to_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.action_index_to_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.action_index_to_name" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_index_to_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.action_index_to_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.action_index_to_name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_board_shape">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_board_shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_board_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_board_shape" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_board_shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_board_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_board_shape" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_extra_info_memory">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_extra_info_memory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_extra_info_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_extra_info_memory" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_extra_info_memory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_extra_info_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_extra_info_memory" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gomoku.Gomoku.__module__">
-<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'gomoku'</span></em><a class="headerlink" href="#gomoku.Gomoku.__module__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gomoku'</span></em><a class="headerlink" href="#gomoku.Gomoku.__module__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_max_actions">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_max_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_max_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_max_actions" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_max_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_max_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_max_actions" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
