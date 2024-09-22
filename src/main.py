@@ -147,7 +147,6 @@ if __name__ == "__main__":
     
     score_a = 0.0
     score_b = 0.0
-    c4_runner = None
     black_player_ai = None
     white_player_ai = None
     
