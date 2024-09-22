@@ -1,39 +1,30 @@
 """
-This module contains the core functionalities of the project, embodied by the class `MCTSNC`, performing 
-a thorough GPU parallelization of Monte Carlo Tree Search implemented in Python via `numba.cuda`.
+This module contains the core functionalities of the project, embodied by the class `MCTSNC`. 
+It represents and performs a thorough GPU parallelization of Monte Carlo Tree Search implemented in Python via `numba.cuda`.
 
-In ``MCTSNC`` class, private functions are named with single leading underscores . Among them, the kernel functions
-(executed on GPU) are additionally described  and some of them are additionally 
-described by ``@cuda.jit`` decorators coming from ``numba`` module (intended to be compiled by `Numba`).
+Private functions of ``MCTSNC`` class are named with a single leading underscore (e.g.: ``_set_cuda_constants``, 
+``_make_performance_info``, ``_playout_acp_prodigal``, etc.). Among them, the kernel functions are additionally 
+described by ``@cuda.jit`` decorators coming from ``numba`` module. Exact specifications of types come along with the decorators.
+
+Note: for further usage, NVIDIA CUDA drivers must be present in the operating system.
 
 Documentation note: this documentation was built with `Sphinx` tool, which does not correctly process docstrings for CUDA kernel functions, 
 i.e. functions decorated with ``@cuda.jit`` that produce ``numba.cuda.compiler.Dispatcher`` objects as outcomes. 
-For actual docstrings associated with those functions see the source code. 
-
-Installation
-------------
-
-.. code-block:: console
-    
-    pip install frbb
-    
-Note: for further usage, NVIDIA CUDA drivers must be present in the operating system.
+For actual docstrings associated with those functions see the source code.
 
 Example Usage
 -------------
-TODO
-
+TODO 
+     
 Dependencies
 ------------
 - ``numpy``, ``math``: required for mathematical computations.
 
-- ``numba``: required for just-in-time compilation of crucial computational functions and CUDA kernels (decorated by ``@jit`` and ``@cuda.jit`` imported from ``numba``). 
-
-- ``sklearn``: required for inheritence and other sklearn API purposes.
+- ``numba``: required for just-in-time compilation of CUDA kernels (decorated by ``@cuda.jit``). 
 
 Link to project repository
 --------------------------
-`https://github.com/pklesk/fast_rboost_bins <https://github.com/pklesk/fast_rboost_bins>`_
+`https://github.com/pklesk/mcts_numba_cuda <https://github.com/pklesk/mcts_numba_cuda>`_
 """
 
 import numpy as np
@@ -56,6 +47,35 @@ __email__ = "pklesk@zut.edu.pl"
 warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
 
 class MCTSNC:
+    """
+    Monte Carlo Tree Search (GPU-parallelized) implemented via `numba.cuda`.
+    
+    Parameters:
+        state_board_shape (tuple(int, int)):
+            shape of board for states in a given game, at most ``(32, 32)``.
+        state_extra_info_memory (int):
+            number of bytes for extra information on states, at most ``4096``.        
+        state_max_actions (int): 
+            maximum branching factor, at most ``512``.            
+        search_time_limit (float):
+            time limit in seconds (computational budget), ``np.inf`` if no limit, defaults to ``5.0``.             
+        search_steps_limit (float): 
+            steps limit (computational budget), ``np.inf`` if no limit, defaults to ``np.inf``.
+        n_trees (int): 
+            number of independent trees, defaults to ``8``.                                    
+        n_playouts (int):
+            number of independent playouts from an expanded child (corresponds to m), must be a power of two, defaults to ``128``.            
+        variant (str):
+            choice of algorithmic variant from {``"ocp_thrifty"``, ``"ocp_prodigal"``, ``"acp_thrifty``, ``"acp_prodigal``}, defaults to ``"acp_prodigal"``}.        
+        device_memory (float): 
+            GPU memory in gigabytes to be available for this instance, defaults to ``2.0``.            
+        verbose_debug (bool):
+            debug verbosity flag, if ``True`` then detailed information about each kernel invocation are printed to console (in each iteration), defaults to ``False``.
+        verbose_info (bool): 
+            verbosity flag, if ``True`` then standard information on actions and performance are printed to console (after a full run), defaults to ``True``.
+        action_index_to_name_function (callable):
+            pointer to user-provided function converting action indexes to a human-friendly names (e.g. ``"e2:e4"`` for chess), defaults to ``None``.                    
+    """    
     
     VARIANTS = ["ocp_thrifty", "ocp_prodigal", "acp_thrifty", "acp_prodigal"] # ocp - one child playouts, acp - all children playouts; thrifty/prodigal - accurate/overhead usage of cuda blocks (pertains to expanded actions)  
     
@@ -84,6 +104,35 @@ class MCTSNC:
                  ucb_c=DEFAULT_UCB_C, seed=DEFAULT_SEED,
                  verbose_debug=DEFAULT_VERBOSE_DEBUG, verbose_info=DEFAULT_VERBOSE_INFO,
                  action_index_to_name_function=None):
+        """
+        Constructor of ``MCTSNC`` instances.
+         
+        Args:
+            state_board_shape (tuple(int, int)):
+                shape of board for states in a given game, at most ``(32, 32)``.
+            state_extra_info_memory (int):
+                number of bytes for extra information on states, at most ``4096``.        
+            state_max_actions (int): 
+                maximum branching factor, at most ``512``.            
+            search_time_limit (float):
+                time limit in seconds (computational budget), ``np.inf`` if no limit, defaults to ``5.0``.             
+            search_steps_limit (float): 
+                steps limit (computational budget), ``np.inf`` if no limit, defaults to ``np.inf``.
+            n_trees (int): 
+                number of independent trees, defaults to ``8``.                                    
+            n_playouts (int):
+                number of independent playouts from an expanded child (corresponds to m), must be a power of 2, defaults to ``128``.            
+            variant (str):
+                choice of algorithmic variant from {``"ocp_thrifty"``, ``"ocp_prodigal"``, ``"acp_thrifty``, ``"acp_prodigal``}, defaults to ``"acp_prodigal"``.        
+            device_memory (float): 
+                GPU memory in gigabytes to be available for this instance, defaults to ``2.0``.            
+            verbose_debug (bool):
+                debug verbosity flag, if ``True`` then detailed information about each kernel invocation are printed to console (in each iteration), defaults to ``False``.
+            verbose_info (bool): 
+                verbosity flag, if ``True`` then standard information on actions and performance are printed to console (after a full run), defaults to ``True``.
+            action_index_to_name_function (callable):
+                pointer to user-provided function converting action indexes to a human-friendly names (e.g. ``"e2:e4"`` for chess), defaults to ``None``.            
+        """        
         self._set_cuda_constants()
         if not self.cuda_available:
             sys.exit(f"[MCTSNC.__init__(): exiting due to cuda computations not available]")        
@@ -126,11 +175,13 @@ class MCTSNC:
         self._validate_param("verbose_info", bool, False, False, False, True, self.DEFAULT_VERBOSE_INFO)        
         self.action_index_to_name_function = action_index_to_name_function                                                                           
     
-    def _set_cuda_constants(self):    
+    def _set_cuda_constants(self):
+        """Investigates (via ``numba`` module) if CUDA-based computations are available and, if so, sets suitable constants."""
         self.cuda_available = cuda.is_available() 
         self.cuda_tpb_default = cuda.get_current_device().MAX_THREADS_PER_BLOCK // 2 if self.cuda_available else None
     
     def _validate_param(self, name, ptype, leq, low, geq, high, default):
+        """Validates a parameter - is it of correct type and within given range (either end of the range can be open or closed)."""
         value = getattr(self, name)
         invalid = value <= low if leq else value < low
         if not invalid:
@@ -144,15 +195,30 @@ class MCTSNC:
             setattr(self, name, default)
             print(f"[invalid param {name}: {value} changed to default: {default}; correct range: {correct_range_str}, correct type: {ptype}]")
             
-    def __str__(self):         
+    def __str__(self):
+        """
+        Returns a string representation of this ``MCTSNC`` instance.
+        
+        Returns:
+            str: string representation of this ``MCTSNC`` instance.
+        """   
         return f"MCTSNC(search_time_limit={self.search_time_limit}, search_steps_limit={self.search_steps_limit}, n_trees={self.n_trees}, n_playouts={self.n_playouts}, variant='{self.variant}', device_memory={np.round(self.device_memory / 1024**3, 2)}, ucb_c={self.ucb_c}, seed: {self.seed})"
         
     def __repr__(self):
+        """
+        Returns a detailed string representation of this ``MCTSNC`` instance.
+        
+        Returns:
+            str: detailed string representation of this ``MCTSNC`` instance.
+        """        
         repr_str = f"{str(self)}, "
         repr_str += f"state_board_shape={self.state_board_shape}, state_extra_info_memory={self.state_extra_info_memory}, state_max_actions={self.state_max_actions})"
         return repr_str            
         
     def init_device_side_arrays(self):
+        """
+        Allocates all the necessary device arrays based on relevant constants and available memory.
+        """
         if self.verbose_info:
             print(f"[MCTSNC._init_device_side_arrays()... for {self}]")
         t1_dev_arrays = time.time()
@@ -241,6 +307,21 @@ class MCTSNC:
             print(f"[MCTSNC._init_device_side_arrays() done; time: {t2_dev_arrays - t1_dev_arrays} s, per_state_memory: {per_state_memory} B,  calculated max_tree_size: {self.max_tree_size}]")
         
     def run(self, root_board, root_extra_info, root_turn, forced_search_steps_limit=np.inf):
+        """
+        Performs the Monte Carlo Tree Search on GPU using multiple independent trees and playouts.                 
+        Computations are carried out according to the formerly chosen algorithmic ``variant`` i.e. one of {``"ocp_thrifty"``, ``"ocp_prodigal"``, ``"acp_thrifty``, ``"acp_prodigal``}, defaults to ``"acp_prodigal"``}.
+        
+        Args:
+            root_board (ndarray): 
+                two-dimensional array with board (or other representation) of root state from which search starts.
+            root_extra_info (ndarray): 
+                any additional information not implied by the contents of the board itself (e.g. possibilities of castling or en-passant captures in chess, the contract in double dummy bridge, etc.), or technical information useful to generate legal actions faster.
+            root_turn {-1, 1}:
+                indicator of player, minimizing or maximizing, to act first.
+        Returns:
+            self.best_action:
+                best action resulting from search.
+        """
         print(f"MCTSNC RUN... [{self}]")        
         run_method = getattr(self, "_run_" + self.variant)
         run_method(root_board, root_extra_info, root_turn, forced_search_steps_limit)
@@ -250,7 +331,8 @@ class MCTSNC:
         print(f"MCTSNC RUN DONE. [time: {self.time_total} s; best action: {best_action_label}, best win_flag: {self.best_win_flag} best n: {self.best_n}, best n_wins: {self.best_n_wins}, best q: {self.best_q}]")
         return self.best_action
     
-    def _flatten_trees_actions_expanded_thrifty(self, trees_actions_expanded):            
+    def _flatten_trees_actions_expanded_thrifty(self, trees_actions_expanded):
+        """TODO"""            
         actions_expanded_cumsum = np.cumsum(trees_actions_expanded[:, -1])
         trees_actions_expanded_flat = -np.ones((actions_expanded_cumsum[-1], 2), dtype=np.int16)
         shift = 0
@@ -261,7 +343,8 @@ class MCTSNC:
             shift = actions_expanded_cumsum[ti]                                        
         return trees_actions_expanded_flat
     
-    def _make_performance_info(self):        
+    def _make_performance_info(self):
+        """TODO"""        
         performance_info = {}
         performance_info["steps"] = int(self.steps)
         performance_info["steps_per_second"] = self.steps / self.time_total                
@@ -306,6 +389,7 @@ class MCTSNC:
         return performance_info
     
     def _make_actions_info_thrifty(self):
+        """TODO"""
         root_actions_expanded = np.empty_like(self.dev_root_actions_expanded)        
         root_ns_thrifty = np.empty_like(self.dev_root_ns)                
         actions_win_flags_thrifty = np.empty_like(self.dev_actions_win_flags)
@@ -337,6 +421,7 @@ class MCTSNC:
         return actions_info
     
     def _make_actions_info_prodigal(self):
+        """TODO"""
         root_ns_prodigal = np.empty_like(self.dev_root_ns)            
         actions_win_flags_prodigal = np.empty_like(self.dev_actions_win_flags)
         actions_ns_prodigal = np.empty_like(self.dev_actions_ns)
@@ -367,6 +452,7 @@ class MCTSNC:
         return actions_info
                                                    
     def _run_ocp_thrifty(self, root_board, root_extra_info, root_turn, forced_search_steps_limit=np.inf):
+        """TODO"""
         t1 = time.time()
         
         # reset
@@ -536,6 +622,7 @@ class MCTSNC:
             print(f"[performance info:\n{dict_to_str(self._make_performance_info())}]")
                          
     def _run_ocp_prodigal(self, root_board, root_extra_info, root_turn, forced_search_steps_limit=np.inf):
+        """TODO"""
         t1 = time.time()
         
         # reset
@@ -696,6 +783,7 @@ class MCTSNC:
             print(f"[performance info:\n{dict_to_str(self._make_performance_info())}]")
                                                   
     def _run_acp_thrifty(self, root_board, root_extra_info, root_turn, forced_search_steps_limit=np.inf):
+        """TODO"""
         t1 = time.time()
         
         # reset
@@ -880,6 +968,7 @@ class MCTSNC:
             print(f"[performance info:\n{dict_to_str(self._make_performance_info())}]")
             
     def _run_acp_prodigal(self, root_board, root_extra_info, root_turn, forced_search_steps_limit=np.inf):
+        """TODO"""
         t1 = time.time()    
         
         # reset
@@ -1058,7 +1147,8 @@ class MCTSNC:
 
     @staticmethod
     @cuda.jit(void(int8[:, :], int8[:], int8, int32[:, :, :], int32[:], int16[:, :], int8[:, :], boolean[:, :], boolean[:, :], int32[:, :], int32[:, :], int8[:, :, :, :], int8[:, :, :]))
-    def _reset(root_board, root_extra_info, root_turn, trees, trees_sizes, trees_depths, trees_turns, trees_leaves, trees_terminals, trees_ns, trees_ns_wins, trees_boards, trees_extra_infos):        
+    def _reset(root_board, root_extra_info, root_turn, trees, trees_sizes, trees_depths, trees_turns, trees_leaves, trees_terminals, trees_ns, trees_ns_wins, trees_boards, trees_extra_infos):
+        """CUDA kernel responsible for reseting root nodes of trees to new root state."""         
         ti = cuda.blockIdx.x # tree index 
         tpb = cuda.blockDim.x
         t = cuda.threadIdx.x                
@@ -1091,6 +1181,7 @@ class MCTSNC:
     @staticmethod
     @cuda.jit(void(float32, int32[:, :, :], boolean[:, :], int32[:, :], int32[:, :], int32[:], int32[:, :]))        
     def _select(ucb_c, trees, trees_leaves, trees_ns, trees_ns_wins, trees_nodes_selected, trees_selected_paths):
+        """CUDA kernel responsible for computations of stage: selections."""
         shared_ucbs = cuda.shared.array(512, dtype=float32) # 512 - assumed limit on max actions
         shared_best_child = cuda.shared.array(512, dtype=int32) # 512 - assumed limit on max actions (array instead of one index due to max-argmax reduction pattern)
         shared_selected_path = cuda.shared.array(2048 + 2, dtype=int32) # 2048 - assumed equal to MAX_TREE_DEPTH 
@@ -1145,6 +1236,7 @@ class MCTSNC:
     @cuda.jit(void(int32, int32[:, :, :], int32[:], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], xoroshiro128p_type[:], int16[:, :]))
     def _expand_1_ocp_thrifty(max_tree_size, trees, trees_sizes, trees_turns, trees_leaves, trees_terminals, trees_boards, trees_extra_infos, 
                                    trees_nodes_selected, random_generators_expand_1, trees_actions_expanded):
+        """CUDA kernel responsible for computations of stage: expansions (substage 1, ``ocp_thrifty`` variant)."""
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         shared_legal_actions = cuda.shared.array(512, dtype=boolean) # 512 - assumed limit on max actions
@@ -1216,6 +1308,7 @@ class MCTSNC:
     @cuda.jit(void(int32, int32[:, :, :], int32[:], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], xoroshiro128p_type[:], int16[:, :]))
     def _expand_1_ocp_prodigal(max_tree_size, trees, trees_sizes, trees_turns, trees_leaves, trees_terminals, trees_boards, trees_extra_infos, 
                                    trees_nodes_selected, random_generators_expand_1, trees_actions_expanded):
+        """CUDA kernel responsible for computations of stage: expansions (substage 1, ``ocp_prodigal`` variant)."""        
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         shared_legal_actions = cuda.shared.array(512, dtype=boolean) # 512 - assumed limit on max actions
@@ -1292,6 +1385,7 @@ class MCTSNC:
     @cuda.jit(void(int32, int32[:, :, :], int32[:], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :]))
     def _expand_1_acp_thrifty(max_tree_size, trees, trees_sizes, trees_turns, trees_leaves, trees_terminals, trees_boards, trees_extra_infos, 
                            trees_nodes_selected, trees_actions_expanded):
+        """CUDA kernel responsible for computations of stage: expansions (substage 1, ``acp_thrifty`` variant)."""
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         shared_legal_actions = cuda.shared.array(512, dtype=boolean) # 512 - assumed limit on max actions
@@ -1364,6 +1458,7 @@ class MCTSNC:
     @cuda.jit(void(int32, int32[:, :, :], int32[:], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :]))
     def _expand_1_acp_prodigal(max_tree_size, trees, trees_sizes, trees_turns, trees_leaves, trees_terminals, trees_boards, trees_extra_infos, 
                                     trees_nodes_selected, trees_actions_expanded):
+        """CUDA kernel responsible for computations of stage: expansions (substage 1, ``acp_prodigal`` variant)."""
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         shared_legal_actions = cuda.shared.array(512, dtype=boolean) # 512 - assumed limit on max actions
@@ -1439,12 +1534,14 @@ class MCTSNC:
     @staticmethod
     @cuda.jit(void(int16[:, :], int16[:]))
     def _memorize_root_actions_expanded(dev_trees_actions_expanded, dev_root_actions_expanded):
+        """CUDA kernel responsible for memorizing actions expanded at root node(s)."""
         t = cuda.threadIdx.x
         dev_root_actions_expanded[t] = dev_trees_actions_expanded[0, t]                
         
     @staticmethod
     @cuda.jit(void(int32[:, :, :], int16[:, :], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :], int32[:, :], int32[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :]))
     def _expand_2_thrifty(trees, trees_depths, trees_turns, trees_leaves, trees_terminals, trees_outcomes, trees_ns, trees_ns_wins, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded_flat):
+        """CUDA kernel responsible for computations of stage: expansions (substage 2, thrifty number of blocks - variant ``ocp_thrifty`` or ``acp_thrifty``)."""
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         tai = cuda.blockIdx.x # tree-action pair index
@@ -1510,6 +1607,7 @@ class MCTSNC:
     @staticmethod
     @cuda.jit(void(int32[:, :, :], int16[:, :], int8[:, :], boolean[:, :], boolean[:, :], int8[:, :], int32[:, :], int32[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :]))
     def _expand_2_prodigal(trees, trees_depths, trees_turns, trees_leaves, trees_terminals, trees_outcomes, trees_ns, trees_ns_wins, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded):
+        """CUDA kernel responsible for computations of stage: expansions (substage 2, prodigal number of blocks - variant ``ocp_prodigal`` or ``acp_prodigal``)."""
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         ti = cuda.blockIdx.x
@@ -1576,6 +1674,7 @@ class MCTSNC:
     @staticmethod
     @cuda.jit(void(int32[:, :, :], int8[:, :], boolean[:, :], int8[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :], xoroshiro128p_type[:], int32[:, :]))
     def _playout_ocp(trees, trees_turns, trees_terminals, trees_outcomes, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded, random_generators_playout, trees_playout_outcomes):
+        """CUDA kernel responsible for computations of stage: playouts (variant ``ocp_thrifty`` or ``ocp_prodigal``)."""
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         shared_playout_outcomes = cuda.shared.array((512, 2), dtype=int16) # 512 - assumed max tpb for playouts, two cells for a row (-1 win, +1 win), each flagged by 0 or 1 after playout 
@@ -1657,6 +1756,7 @@ class MCTSNC:
     @cuda.jit(void(int32[:, :, :], int8[:, :], boolean[:, :], int8[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :], int16[:, :], xoroshiro128p_type[:], int32[:, :], int32[:, :, :]))
     def _playout_acp_thrifty(trees, trees_turns, trees_terminals, trees_outcomes, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded, trees_actions_expanded_flat, random_generators_playout, trees_playout_outcomes, 
                              trees_playout_outcomes_children):
+        """CUDA kernel responsible for computations of stage: playouts (variant ``acp_thrifty``)."""
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         shared_playout_outcomes = cuda.shared.array((512, 2), dtype=int16) # 1024 - assumed max tpb for playouts, two cells for a row (-1 win, +1 win), each flagged by 0 or 1 after playout 
@@ -1745,6 +1845,7 @@ class MCTSNC:
     @cuda.jit(void(int32[:, :, :], int8[:, :], boolean[:, :], int8[:, :], int8[:, :, :, :], int8[:, :, :], int32[:], int16[:, :], xoroshiro128p_type[:], int32[:, :], int32[:, :, :]))
     def _playout_acp_prodigal(trees, trees_turns, trees_terminals, trees_outcomes, trees_boards, trees_extra_infos, trees_nodes_selected, trees_actions_expanded,  random_generators_playout, trees_playout_outcomes, 
                               trees_playout_outcomes_children):
+        """CUDA kernel responsible for computations of stage: playouts (variant ``acp_prodigal``)."""
         shared_board = cuda.shared.array((32, 32), dtype=int8) # assumed max board size (for selected node in tree associated with block)
         shared_extra_info = cuda.shared.array(4096, dtype=int8) # 4096 - assumed limit on max extra info
         shared_playout_outcomes = cuda.shared.array((512, 2), dtype=int16) # 1024 - assumed max tpb for playouts, two cells for a row (-1 win, +1 win), each flagged by 0 or 1 after playout        
@@ -1833,6 +1934,7 @@ class MCTSNC:
     @staticmethod
     @cuda.jit(void(int16, int32[:, :, :], int8[:, :], int32[:, :], int32[:, :], int32[:], int32[:, :], int16[:, :], int32[:, :]))
     def _backup_ocp(n_playouts, trees, trees_turns, trees_ns, trees_ns_wins, trees_nodes_selected, trees_selected_paths, trees_actions_expanded, trees_playout_outcomes):
+        """CUDA kernel responsible for computations of stage: backups (variant ``ocp_thrifty`` or ``ocp_prodigal``)."""        
         ti = cuda.blockIdx.x
         t = cuda.threadIdx.x
         tpb = cuda.blockDim.x
@@ -1865,6 +1967,7 @@ class MCTSNC:
     @staticmethod
     @cuda.jit(void(int16, int32[:, :, :], int8[:, :], int32[:, :], int32[:, :], int32[:], int16[:, :], int32[:, :], int32[:, :, :]))
     def _backup_1_acp_thrifty(n_playouts, trees, trees_turns, trees_ns, trees_ns_wins, trees_nodes_selected, trees_actions_expanded, trees_playout_outcomes, trees_playout_outcomes_children):
+        """CUDA kernel responsible for computations of stage: backups (substage 1, variant ``acp_thrifty``)."""
         shared_playout_outcomes_children = cuda.shared.array((512, 2), dtype=int32) # 512 - assumed limit on max actions, two cells for a row (-1 win, +1 win), each flagged by 0 or 1 after playout 
         ti = cuda.blockIdx.x # tree index
         tpb = cuda.blockDim.x
@@ -1904,6 +2007,7 @@ class MCTSNC:
     @staticmethod
     @cuda.jit(void(int16, int32[:, :, :], int8[:, :], int32[:, :], int32[:, :], int32[:], int16[:, :], int32[:, :], int32[:, :, :]))
     def _backup_1_acp_prodigal(n_playouts, trees, trees_turns, trees_ns, trees_ns_wins, trees_nodes_selected, trees_actions_expanded, trees_playout_outcomes, trees_playout_outcomes_children):
+        """CUDA kernel responsible for computations of stage: backups (substage 1, variant ``acp_prodigal``)."""
         shared_playout_outcomes_children = cuda.shared.array((512, 2), dtype=int32) # 512 - assumed limit on max actions, two cells for a row (-1 win, +1 win), each flagged by 0 or 1 after playout 
         ti = cuda.blockIdx.x # tree index
         tpb = cuda.blockDim.x
@@ -1943,6 +2047,7 @@ class MCTSNC:
     @staticmethod
     @cuda.jit(void(int16, int8[:, :], int32[:, :], int32[:, :], int32[:, :], int16[:, :], int32[:, :]))
     def _backup_2_acp(n_playouts, trees_turns, trees_ns, trees_ns_wins, trees_selected_paths, trees_actions_expanded, trees_playout_outcomes):
+        """CUDA kernel responsible for computations of stage: backups (substage 2, variant ``acp_thrifty`` or ``acp_prodigal``)."""
         ti = cuda.blockIdx.x
         t = cuda.threadIdx.x
         tpb = cuda.blockDim.x
@@ -1968,6 +2073,7 @@ class MCTSNC:
     @staticmethod
     @cuda.jit(void(int32[:, :, :], boolean[:, :], int8[:, :], int32[:, :], int32[:, :], int16[:], int8, int64[:], boolean[:], int64[:], int64[:]))
     def _reduce_over_trees_thrifty(trees, trees_terminals, trees_outcomes, trees_ns, trees_ns_wins, root_actions_expanded, root_turn, root_ns, actions_win_flags, actions_ns, actions_ns_wins):
+        """CUDA kernel responsible for sum-reduction over trees (thrifty number of blocks, variant ``ocp_thrifty`` or ``acp_thrifty``)."""
         shared_root_ns = cuda.shared.array(512, dtype=int64) # 512 - assumed max of n_trees
         shared_actions_ns = cuda.shared.array(512, dtype=int64)
         shared_actions_ns_wins = cuda.shared.array(512, dtype=int64)
@@ -2005,6 +2111,7 @@ class MCTSNC:
     @staticmethod
     @cuda.jit(void(int32[:, :, :], boolean[:, :], int8[:, :], int32[:, :], int32[:, :], int16[:], int8, int64[:], boolean[:], int64[:], int64[:]))
     def _reduce_over_trees_prodigal(trees, trees_terminals, trees_outcomes, trees_ns, trees_ns_wins, root_actions_expanded, root_turn, root_ns, actions_win_flags, actions_ns, actions_ns_wins):
+        """CUDA kernel responsible for sum-reduction over trees (prodigal number of blocks, variant ``ocp_prodigal`` or ``acp_prodigal``)."""
         shared_root_ns = cuda.shared.array(512, dtype=int64) # 512 - assumed max of n_trees
         shared_actions_ns = cuda.shared.array(512, dtype=int64)
         shared_actions_ns_wins = cuda.shared.array(512, dtype=int64)
@@ -2042,6 +2149,7 @@ class MCTSNC:
     @staticmethod
     @cuda.jit(void(int16, boolean[:], int64[:], int64[:], int16[:], boolean[:], int64[:], int64[:]))
     def _reduce_over_actions_thrifty(n_root_actions, actions_win_flags, actions_ns, actions_ns_wins, best_action, best_win_flag, best_n, best_n_wins):
+        """CUDA kernel responsible for max/argmax-reduction over actions (thrifty number of blocks, variant ``ocp_thrifty`` or ``acp_thrifty``)."""
         shared_actions = cuda.shared.array(512, dtype=int16) # 512 - assumed max state actions
         shared_actions_win_flags = cuda.shared.array(512, dtype=boolean) 
         shared_actions_ns = cuda.shared.array(512, dtype=int64) 
@@ -2080,6 +2188,7 @@ class MCTSNC:
     @staticmethod
     @cuda.jit(void(boolean[:], int64[:], int64[:], int16[:], boolean[:], int64[:], int64[:]))
     def _reduce_over_actions_prodigal(actions_win_flags, actions_ns, actions_ns_wins, best_action, best_win_flag, best_n, best_n_wins):
+        """CUDA kernel responsible for max/argmax-reduction over actions (prodigal number of blocks, variant ``ocp_prodigal`` or ``acp_prodigal``)."""
         shared_actions = cuda.shared.array(512, dtype=int16) # 512 - assumed max state actions
         shared_actions_win_flags = cuda.shared.array(512, dtype=boolean) 
         shared_actions_ns = cuda.shared.array(512, dtype=int64) 
