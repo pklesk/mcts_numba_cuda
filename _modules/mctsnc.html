@@ -94,29 +94,7 @@
 
 <span class="sd">Example Usage</span>
 <span class="sd">-------------</span>
-<span class="sd">With ``frbb`` module installed, one can write e.g.:</span>
-
-<span class="sd">.. code-block:: python</span>
-
-<span class="sd">    from frbb import FastRealBoostBins</span>
-<span class="sd">    from sklearn.datasets import load_breast_cancer</span>
-<span class="sd">    from sklearn.model_selection import train_test_split    </span>
-<span class="sd">    if __name__ == &quot;__main__&quot;:    </span>
-<span class="sd">        X, y = load_breast_cancer(return_X_y=True)</span>
-<span class="sd">        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, stratify=y, random_state=0)</span>
-<span class="sd">        clf = FastRealBoostBins()</span>
-<span class="sd">        clf.fit(X_train, y_train)</span>
-<span class="sd">        print(f&quot;CLF: {clf}&quot;)</span>
-<span class="sd">        print(f&quot;TRAIN ACC: {clf.score(X_train, y_train)}&quot;)</span>
-<span class="sd">        print(f&quot;TEST ACC: {clf.score(X_test, y_test)}&quot;)</span>
-
-<span class="sd">Running the script above produces the following output:</span>
-<span class="sd">        </span>
-<span class="sd">.. code-block:: console</span>
-
-<span class="sd">    CLF: FastRealBoostBins(T=256, B=8, outliers_ratio=0.05, logit_max: 2.0, fit_mode=&#39;numba_cuda&#39;, decision_function_mode=&#39;numba_cuda&#39;)</span>
-<span class="sd">    TRAIN ACC: 1.0</span>
-<span class="sd">    TEST ACC: 0.958041958041958</span>
+<span class="sd">TODO</span>
 
 <span class="sd">Dependencies</span>
 <span class="sd">------------</span>

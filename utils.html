@@ -1,20 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>utils module &mdash; MCTS-NC 1.0.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8d563738"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -55,6 +58,24 @@
 <li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html">mctsnc_game_specifics module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">utils module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#link-to-project-repository">Link to project repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.dict_to_str"><code class="docutils literal notranslate"><span class="pre">dict_to_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.list_to_str"><code class="docutils literal notranslate"><span class="pre">list_to_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.pickle_objects"><code class="docutils literal notranslate"><span class="pre">pickle_objects()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.unpickle_objects"><code class="docutils literal notranslate"><span class="pre">unpickle_objects()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.cpu_and_system_props"><code class="docutils literal notranslate"><span class="pre">cpu_and_system_props()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.gpu_props"><code class="docutils literal notranslate"><span class="pre">gpu_props()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.hash_function"><code class="docutils literal notranslate"><span class="pre">hash_function()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.hash_str"><code class="docutils literal notranslate"><span class="pre">hash_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.Logger"><code class="docutils literal notranslate"><span class="pre">Logger</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#utils.Logger.__init__"><code class="docutils literal notranslate"><span class="pre">Logger.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utils.Logger.write"><code class="docutils literal notranslate"><span class="pre">Logger.write()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utils.Logger.flush"><code class="docutils literal notranslate"><span class="pre">Logger.flush()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utils.Logger.__module__"><code class="docutils literal notranslate"><span class="pre">Logger.__module__</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.experiment_hash_str"><code class="docutils literal notranslate"><span class="pre">experiment_hash_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.save_and_zip_experiment"><code class="docutils literal notranslate"><span class="pre">save_and_zip_experiment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.unzip_and_load_experiment"><code class="docutils literal notranslate"><span class="pre">unzip_and_load_experiment()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -87,101 +108,101 @@
            <div itemprop="articleBody">
              
   <section id="module-utils">
-<span id="utils-module"></span><h1>utils module<a class="headerlink" href="#module-utils" title="Permalink to this headline"></a></h1>
+<span id="utils-module"></span><h1>utils module<a class="headerlink" href="#module-utils" title="Link to this heading"></a></h1>
 <p>Auxiliary module with simple utility and informative functions.</p>
 <section id="link-to-project-repository">
-<h2>Link to project repository<a class="headerlink" href="#link-to-project-repository" title="Permalink to this headline"></a></h2>
+<h2>Link to project repository<a class="headerlink" href="#link-to-project-repository" title="Link to this heading"></a></h2>
 <p><a class="reference external" href="https://github.com/pklesk/mcts_numba_cuda">https://github.com/pklesk/mcts_numba_cuda</a></p>
+</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.dict_to_str">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">dict_to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#dict_to_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.dict_to_str" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">dict_to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#dict_to_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.dict_to_str" title="Link to this definition"></a></dt>
 <dd><p>Returns a vertically formatted string representation of a dictionary.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.list_to_str">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">list_to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#list_to_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.list_to_str" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">list_to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#list_to_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.list_to_str" title="Link to this definition"></a></dt>
 <dd><p>Returns a vertically formatted string representation of a list.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.pickle_objects">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">pickle_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">some_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#pickle_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.pickle_objects" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">pickle_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">some_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#pickle_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.pickle_objects" title="Link to this definition"></a></dt>
 <dd><p>Pickles a list of objects to a binary file.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.unpickle_objects">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">unpickle_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#unpickle_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.unpickle_objects" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">unpickle_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#unpickle_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.unpickle_objects" title="Link to this definition"></a></dt>
 <dd><p>Returns an a list of objects from a binary file.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.cpu_and_system_props">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">cpu_and_system_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#cpu_and_system_props"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cpu_and_system_props" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">cpu_and_system_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#cpu_and_system_props"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cpu_and_system_props" title="Link to this definition"></a></dt>
 <dd><p>Returns a dictionary with properties of CPU and OS.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.gpu_props">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">gpu_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#gpu_props"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.gpu_props" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">gpu_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#gpu_props"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.gpu_props" title="Link to this definition"></a></dt>
 <dd><p>Returns a dictionary with properties of GPU device.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.hash_function">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">hash_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#hash_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.hash_function" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">hash_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#hash_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.hash_function" title="Link to this definition"></a></dt>
 <dd><p>Returns a hash code (integer) for given string as a base 31 expansion.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.hash_str">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">hash_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#hash_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.hash_str" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">hash_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#hash_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.hash_str" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.Logger">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">Logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Logger" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">Logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Logger" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.Logger.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Logger.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Logger.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Logger.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Logger.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.Logger.write">
-<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Logger.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Logger.write" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Logger.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Logger.write" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.Logger.flush">
-<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Logger.flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Logger.flush" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Logger.flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Logger.flush" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="utils.Logger.__module__">
-<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'utils'</span></em><a class="headerlink" href="#utils.Logger.__module__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'utils'</span></em><a class="headerlink" href="#utils.Logger.__module__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.experiment_hash_str">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">experiment_hash_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matchup_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_props</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_props</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_hs_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matchup_hs_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_hs_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#experiment_hash_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.experiment_hash_str" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">experiment_hash_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matchup_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_props</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_props</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_hs_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matchup_hs_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_hs_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#experiment_hash_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.experiment_hash_str" title="Link to this definition"></a></dt>
 <dd><p>Returns a hash string for an experiment, based on its settings and properties.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.save_and_zip_experiment">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">save_and_zip_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_hs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#save_and_zip_experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.save_and_zip_experiment" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">save_and_zip_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_hs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#save_and_zip_experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.save_and_zip_experiment" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.unzip_and_load_experiment">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">unzip_and_load_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_hs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#unzip_and_load_experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.unzip_and_load_experiment" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">unzip_and_load_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_hs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#unzip_and_load_experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.unzip_and_load_experiment" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
-</section>
 </section>
 
 
