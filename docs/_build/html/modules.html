@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src &mdash; MCTS-NC 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8d563738"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="c4 module" href="c4.html" />
+    <link rel="prev" title="Welcome to MCTS-NC’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            MCTS-NC
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">src</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="c4.html">c4 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_runner.html">game_runner module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gomoku.html">gomoku module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcts.html">mcts module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc.html">mctsnc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html">mctsnc_game_specifics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MCTS-NC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">src</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="src">
+<h1>src<a class="headerlink" href="#src" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="c4.html">c4 module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="c4.html#c4.C4"><code class="docutils literal notranslate"><span class="pre">C4</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.M"><code class="docutils literal notranslate"><span class="pre">C4.M</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.N"><code class="docutils literal notranslate"><span class="pre">C4.N</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.SYMBOLS"><code class="docutils literal notranslate"><span class="pre">C4.SYMBOLS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.__init__"><code class="docutils literal notranslate"><span class="pre">C4.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.class_repr"><code class="docutils literal notranslate"><span class="pre">C4.class_repr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.__str__"><code class="docutils literal notranslate"><span class="pre">C4.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.take_action_job"><code class="docutils literal notranslate"><span class="pre">C4.take_action_job()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.compute_outcome_job"><code class="docutils literal notranslate"><span class="pre">C4.compute_outcome_job()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.compute_outcome_job_numba_jit"><code class="docutils literal notranslate"><span class="pre">C4.compute_outcome_job_numba_jit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.expand"><code class="docutils literal notranslate"><span class="pre">C4.expand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.expand_one_random_child"><code class="docutils literal notranslate"><span class="pre">C4.expand_one_random_child()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.get_board"><code class="docutils literal notranslate"><span class="pre">C4.get_board()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.get_extra_info"><code class="docutils literal notranslate"><span class="pre">C4.get_extra_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.action_name_to_index"><code class="docutils literal notranslate"><span class="pre">C4.action_name_to_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.action_index_to_name"><code class="docutils literal notranslate"><span class="pre">C4.action_index_to_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.get_board_shape"><code class="docutils literal notranslate"><span class="pre">C4.get_board_shape()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.__module__"><code class="docutils literal notranslate"><span class="pre">C4.__module__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.get_extra_info_memory"><code class="docutils literal notranslate"><span class="pre">C4.get_extra_info_memory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.get_max_actions"><code class="docutils literal notranslate"><span class="pre">C4.get_max_actions()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="game_runner.html">game_runner module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="game_runner.html#game_runner.GameRunner"><code class="docutils literal notranslate"><span class="pre">GameRunner</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="game_runner.html#game_runner.GameRunner.OUTCOME_MESSAGES"><code class="docutils literal notranslate"><span class="pre">GameRunner.OUTCOME_MESSAGES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_runner.html#game_runner.GameRunner.__init__"><code class="docutils literal notranslate"><span class="pre">GameRunner.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_runner.html#game_runner.GameRunner.run"><code class="docutils literal notranslate"><span class="pre">GameRunner.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_runner.html#game_runner.GameRunner.__module__"><code class="docutils literal notranslate"><span class="pre">GameRunner.__module__</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gomoku.html">gomoku module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gomoku.html#gomoku.Gomoku"><code class="docutils literal notranslate"><span class="pre">Gomoku</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.M"><code class="docutils literal notranslate"><span class="pre">Gomoku.M</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.N"><code class="docutils literal notranslate"><span class="pre">Gomoku.N</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.SYMBOLS"><code class="docutils literal notranslate"><span class="pre">Gomoku.SYMBOLS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.__init__"><code class="docutils literal notranslate"><span class="pre">Gomoku.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.class_repr"><code class="docutils literal notranslate"><span class="pre">Gomoku.class_repr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.__str__"><code class="docutils literal notranslate"><span class="pre">Gomoku.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.take_action_job"><code class="docutils literal notranslate"><span class="pre">Gomoku.take_action_job()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.compute_outcome_job"><code class="docutils literal notranslate"><span class="pre">Gomoku.compute_outcome_job()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.compute_outcome_job_numba_jit"><code class="docutils literal notranslate"><span class="pre">Gomoku.compute_outcome_job_numba_jit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.expand"><code class="docutils literal notranslate"><span class="pre">Gomoku.expand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.expand_one_random_child"><code class="docutils literal notranslate"><span class="pre">Gomoku.expand_one_random_child()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.get_board"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_board()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.get_extra_info"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_extra_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.action_name_to_index"><code class="docutils literal notranslate"><span class="pre">Gomoku.action_name_to_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.action_index_to_name"><code class="docutils literal notranslate"><span class="pre">Gomoku.action_index_to_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.get_board_shape"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_board_shape()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.get_extra_info_memory"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_extra_info_memory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.__module__"><code class="docutils literal notranslate"><span class="pre">Gomoku.__module__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.get_max_actions"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_max_actions()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcts.html">mcts module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mcts.html#mcts.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.__init__"><code class="docutils literal notranslate"><span class="pre">State.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.class_repr"><code class="docutils literal notranslate"><span class="pre">State.class_repr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State._subtree_size"><code class="docutils literal notranslate"><span class="pre">State._subtree_size()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State._subtree_max_depth"><code class="docutils literal notranslate"><span class="pre">State._subtree_max_depth()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State._subtree_depths"><code class="docutils literal notranslate"><span class="pre">State._subtree_depths()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.take_action"><code class="docutils literal notranslate"><span class="pre">State.take_action()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.take_action_job"><code class="docutils literal notranslate"><span class="pre">State.take_action_job()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.compute_outcome"><code class="docutils literal notranslate"><span class="pre">State.compute_outcome()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.compute_outcome_job"><code class="docutils literal notranslate"><span class="pre">State.compute_outcome_job()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.get_board"><code class="docutils literal notranslate"><span class="pre">State.get_board()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.get_extra_info"><code class="docutils literal notranslate"><span class="pre">State.get_extra_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.expand"><code class="docutils literal notranslate"><span class="pre">State.expand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.expand_one_random_child"><code class="docutils literal notranslate"><span class="pre">State.expand_one_random_child()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.action_name_to_index"><code class="docutils literal notranslate"><span class="pre">State.action_name_to_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.action_index_to_name"><code class="docutils literal notranslate"><span class="pre">State.action_index_to_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.get_board_shape"><code class="docutils literal notranslate"><span class="pre">State.get_board_shape()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.get_extra_info_memory"><code class="docutils literal notranslate"><span class="pre">State.get_extra_info_memory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.get_max_actions"><code class="docutils literal notranslate"><span class="pre">State.get_max_actions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.__module__"><code class="docutils literal notranslate"><span class="pre">State.__module__</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mcts.html#mcts.MCTS"><code class="docutils literal notranslate"><span class="pre">MCTS</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS.DEFAULT_SEARCH_TIME_LIMIT"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_SEARCH_TIME_LIMIT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS.DEFAULT_SEARCH_STEPS_LIMIT"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_SEARCH_STEPS_LIMIT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS.DEFAULT_VANILLA"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_VANILLA</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS.DEFAULT_UCB_C"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_UCB_C</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS.DEFAULT_SEED"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_SEED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS.DEFAULT_VERBOSE_DEBUG"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_VERBOSE_DEBUG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS.DEFAULT_VERBOSE_INFO"><code class="docutils literal notranslate"><span class="pre">MCTS.DEFAULT_VERBOSE_INFO</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS.__init__"><code class="docutils literal notranslate"><span class="pre">MCTS.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS.__str__"><code class="docutils literal notranslate"><span class="pre">MCTS.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS.__repr__"><code class="docutils literal notranslate"><span class="pre">MCTS.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS._make_actions_info"><code class="docutils literal notranslate"><span class="pre">MCTS._make_actions_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS._make_performance_info"><code class="docutils literal notranslate"><span class="pre">MCTS._make_performance_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS._best_action_ucb"><code class="docutils literal notranslate"><span class="pre">MCTS._best_action_ucb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS._best_action"><code class="docutils literal notranslate"><span class="pre">MCTS._best_action()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS.run"><code class="docutils literal notranslate"><span class="pre">MCTS.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS._select"><code class="docutils literal notranslate"><span class="pre">MCTS._select()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS._expand"><code class="docutils literal notranslate"><span class="pre">MCTS._expand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS._playout"><code class="docutils literal notranslate"><span class="pre">MCTS._playout()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS._backup"><code class="docutils literal notranslate"><span class="pre">MCTS._backup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS._reduce_over_actions"><code class="docutils literal notranslate"><span class="pre">MCTS._reduce_over_actions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.MCTS.__module__"><code class="docutils literal notranslate"><span class="pre">MCTS.__module__</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mctsnc.html">mctsnc module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc.html#example-usage">Example Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc.html#link-to-project-repository">Link to project repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC"><code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.VARIANTS"><code class="docutils literal notranslate"><span class="pre">MCTSNC.VARIANTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.DEFAULT_SEARCH_TIME_LIMIT"><code class="docutils literal notranslate"><span class="pre">MCTSNC.DEFAULT_SEARCH_TIME_LIMIT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.DEFAULT_SEARCH_STEPS_LIMIT"><code class="docutils literal notranslate"><span class="pre">MCTSNC.DEFAULT_SEARCH_STEPS_LIMIT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.DEFAULT_N_TREES"><code class="docutils literal notranslate"><span class="pre">MCTSNC.DEFAULT_N_TREES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.DEFAULT_N_PLAYOUTS"><code class="docutils literal notranslate"><span class="pre">MCTSNC.DEFAULT_N_PLAYOUTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.DEFAULT_VARIANT"><code class="docutils literal notranslate"><span class="pre">MCTSNC.DEFAULT_VARIANT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.DEFAULT_DEVICE_MEMORY"><code class="docutils literal notranslate"><span class="pre">MCTSNC.DEFAULT_DEVICE_MEMORY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.DEFAULT_UCB_C"><code class="docutils literal notranslate"><span class="pre">MCTSNC.DEFAULT_UCB_C</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.DEFAULT_SEED"><code class="docutils literal notranslate"><span class="pre">MCTSNC.DEFAULT_SEED</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.DEFAULT_VERBOSE_DEBUG"><code class="docutils literal notranslate"><span class="pre">MCTSNC.DEFAULT_VERBOSE_DEBUG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.DEFAULT_VERBOSE_INFO"><code class="docutils literal notranslate"><span class="pre">MCTSNC.DEFAULT_VERBOSE_INFO</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.MAX_STATE_BOARD_SHAPE"><code class="docutils literal notranslate"><span class="pre">MCTSNC.MAX_STATE_BOARD_SHAPE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.MAX_STATE_EXTRA_INFO_MEMORY"><code class="docutils literal notranslate"><span class="pre">MCTSNC.MAX_STATE_EXTRA_INFO_MEMORY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.MAX_STATE_MAX_ACTIONS"><code class="docutils literal notranslate"><span class="pre">MCTSNC.MAX_STATE_MAX_ACTIONS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.MAX_TREE_SIZE"><code class="docutils literal notranslate"><span class="pre">MCTSNC.MAX_TREE_SIZE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.MAX_N_TREES"><code class="docutils literal notranslate"><span class="pre">MCTSNC.MAX_N_TREES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.MAX_N_PLAYOUTS"><code class="docutils literal notranslate"><span class="pre">MCTSNC.MAX_N_PLAYOUTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.MAX_TREE_DEPTH"><code class="docutils literal notranslate"><span class="pre">MCTSNC.MAX_TREE_DEPTH</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.__init__"><code class="docutils literal notranslate"><span class="pre">MCTSNC.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._set_cuda_constants"><code class="docutils literal notranslate"><span class="pre">MCTSNC._set_cuda_constants()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._validate_param"><code class="docutils literal notranslate"><span class="pre">MCTSNC._validate_param()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.__str__"><code class="docutils literal notranslate"><span class="pre">MCTSNC.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.__repr__"><code class="docutils literal notranslate"><span class="pre">MCTSNC.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.init_device_side_arrays"><code class="docutils literal notranslate"><span class="pre">MCTSNC.init_device_side_arrays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.run"><code class="docutils literal notranslate"><span class="pre">MCTSNC.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._flatten_trees_actions_expanded_thrifty"><code class="docutils literal notranslate"><span class="pre">MCTSNC._flatten_trees_actions_expanded_thrifty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._make_performance_info"><code class="docutils literal notranslate"><span class="pre">MCTSNC._make_performance_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._make_actions_info_thrifty"><code class="docutils literal notranslate"><span class="pre">MCTSNC._make_actions_info_thrifty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._make_actions_info_prodigal"><code class="docutils literal notranslate"><span class="pre">MCTSNC._make_actions_info_prodigal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._run_ocp_thrifty"><code class="docutils literal notranslate"><span class="pre">MCTSNC._run_ocp_thrifty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._run_ocp_prodigal"><code class="docutils literal notranslate"><span class="pre">MCTSNC._run_ocp_prodigal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._run_acp_thrifty"><code class="docutils literal notranslate"><span class="pre">MCTSNC._run_acp_thrifty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._run_acp_prodigal"><code class="docutils literal notranslate"><span class="pre">MCTSNC._run_acp_prodigal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._reset"><code class="docutils literal notranslate"><span class="pre">MCTSNC._reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._select"><code class="docutils literal notranslate"><span class="pre">MCTSNC._select()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._expand_1_ocp_thrifty"><code class="docutils literal notranslate"><span class="pre">MCTSNC._expand_1_ocp_thrifty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._expand_1_ocp_prodigal"><code class="docutils literal notranslate"><span class="pre">MCTSNC._expand_1_ocp_prodigal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._expand_1_acp_thrifty"><code class="docutils literal notranslate"><span class="pre">MCTSNC._expand_1_acp_thrifty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._expand_1_acp_prodigal"><code class="docutils literal notranslate"><span class="pre">MCTSNC._expand_1_acp_prodigal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._memorize_root_actions_expanded"><code class="docutils literal notranslate"><span class="pre">MCTSNC._memorize_root_actions_expanded()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._expand_2_thrifty"><code class="docutils literal notranslate"><span class="pre">MCTSNC._expand_2_thrifty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._expand_2_prodigal"><code class="docutils literal notranslate"><span class="pre">MCTSNC._expand_2_prodigal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._playout_ocp"><code class="docutils literal notranslate"><span class="pre">MCTSNC._playout_ocp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._playout_acp_thrifty"><code class="docutils literal notranslate"><span class="pre">MCTSNC._playout_acp_thrifty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._playout_acp_prodigal"><code class="docutils literal notranslate"><span class="pre">MCTSNC._playout_acp_prodigal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._backup_ocp"><code class="docutils literal notranslate"><span class="pre">MCTSNC._backup_ocp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._backup_1_acp_thrifty"><code class="docutils literal notranslate"><span class="pre">MCTSNC._backup_1_acp_thrifty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._backup_1_acp_prodigal"><code class="docutils literal notranslate"><span class="pre">MCTSNC._backup_1_acp_prodigal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._backup_2_acp"><code class="docutils literal notranslate"><span class="pre">MCTSNC._backup_2_acp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._reduce_over_trees_thrifty"><code class="docutils literal notranslate"><span class="pre">MCTSNC._reduce_over_trees_thrifty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._reduce_over_trees_prodigal"><code class="docutils literal notranslate"><span class="pre">MCTSNC._reduce_over_trees_prodigal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._reduce_over_actions_thrifty"><code class="docutils literal notranslate"><span class="pre">MCTSNC._reduce_over_actions_thrifty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._reduce_over_actions_prodigal"><code class="docutils literal notranslate"><span class="pre">MCTSNC._reduce_over_actions_prodigal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC._json_dump"><code class="docutils literal notranslate"><span class="pre">MCTSNC._json_dump()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.__module__"><code class="docutils literal notranslate"><span class="pre">MCTSNC.__module__</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mctsnc_game_specifics.html">mctsnc_game_specifics module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.is_action_legal"><code class="docutils literal notranslate"><span class="pre">is_action_legal()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.take_action"><code class="docutils literal notranslate"><span class="pre">take_action()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.legal_actions_playout"><code class="docutils literal notranslate"><span class="pre">legal_actions_playout()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.take_action_playout"><code class="docutils literal notranslate"><span class="pre">take_action_playout()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.compute_outcome"><code class="docutils literal notranslate"><span class="pre">compute_outcome()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.is_action_legal_c4"><code class="docutils literal notranslate"><span class="pre">is_action_legal_c4()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.take_action_c4"><code class="docutils literal notranslate"><span class="pre">take_action_c4()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.legal_actions_playout_c4"><code class="docutils literal notranslate"><span class="pre">legal_actions_playout_c4()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.take_action_playout_c4"><code class="docutils literal notranslate"><span class="pre">take_action_playout_c4()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.compute_outcome_c4"><code class="docutils literal notranslate"><span class="pre">compute_outcome_c4()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.is_action_legal_gomoku"><code class="docutils literal notranslate"><span class="pre">is_action_legal_gomoku()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.take_action_gomoku"><code class="docutils literal notranslate"><span class="pre">take_action_gomoku()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.legal_actions_playout_gomoku"><code class="docutils literal notranslate"><span class="pre">legal_actions_playout_gomoku()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.take_action_playout_gomoku"><code class="docutils literal notranslate"><span class="pre">take_action_playout_gomoku()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.compute_outcome_gomoku"><code class="docutils literal notranslate"><span class="pre">compute_outcome_gomoku()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#link-to-project-repository">Link to project repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.dict_to_str"><code class="docutils literal notranslate"><span class="pre">dict_to_str()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.list_to_str"><code class="docutils literal notranslate"><span class="pre">list_to_str()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.pickle_objects"><code class="docutils literal notranslate"><span class="pre">pickle_objects()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.unpickle_objects"><code class="docutils literal notranslate"><span class="pre">unpickle_objects()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.cpu_and_system_props"><code class="docutils literal notranslate"><span class="pre">cpu_and_system_props()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.gpu_props"><code class="docutils literal notranslate"><span class="pre">gpu_props()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.hash_function"><code class="docutils literal notranslate"><span class="pre">hash_function()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.hash_str"><code class="docutils literal notranslate"><span class="pre">hash_str()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.Logger"><code class="docutils literal notranslate"><span class="pre">Logger</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#utils.Logger.__init__"><code class="docutils literal notranslate"><span class="pre">Logger.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#utils.Logger.write"><code class="docutils literal notranslate"><span class="pre">Logger.write()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#utils.Logger.flush"><code class="docutils literal notranslate"><span class="pre">Logger.flush()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#utils.Logger.__module__"><code class="docutils literal notranslate"><span class="pre">Logger.__module__</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.experiment_hash_str"><code class="docutils literal notranslate"><span class="pre">experiment_hash_str()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.save_and_zip_experiment"><code class="docutils literal notranslate"><span class="pre">save_and_zip_experiment()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.unzip_and_load_experiment"><code class="docutils literal notranslate"><span class="pre">unzip_and_load_experiment()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to MCTS-NC’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="c4.html" class="btn btn-neutral float-right" title="c4 module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Przemysław Klęsk.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

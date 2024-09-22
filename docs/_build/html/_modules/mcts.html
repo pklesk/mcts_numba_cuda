@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mcts &mdash; MCTS-NC 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=8d563738"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MCTS-NC
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MCTS-NC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mcts</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mcts</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">dict_to_str</span>
+
+<div class="viewcode-block" id="State">
+<a class="viewcode-back" href="../mcts.html#mcts.State">[docs]</a>
+<span class="k">class</span> <span class="nc">State</span><span class="p">:</span>
+    
+<div class="viewcode-block" id="State.__init__">
+<a class="viewcode-back" href="../mcts.html#mcts.State.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">win_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_wins</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outcome_computed</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># has outcome value been already prepared within last call of get_outcome  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># None - ongoing, or {-1, 0, 1} - win for min player, draw, win for max player        </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">turn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_action_index</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="State.class_repr">
+<a class="viewcode-back" href="../mcts.html#mcts.State.class_repr">[docs]</a>
+    <span class="nd">@staticmethod</span>        
+    <span class="k">def</span> <span class="nf">class_repr</span><span class="p">():</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">State</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">()&quot;</span></div>
+
+            
+<div class="viewcode-block" id="State._subtree_size">
+<a class="viewcode-back" href="../mcts.html#mcts.State._subtree_size">[docs]</a>
+    <span class="k">def</span> <span class="nf">_subtree_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">_subtree_size</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">size</span></div>
+
+    
+<div class="viewcode-block" id="State._subtree_max_depth">
+<a class="viewcode-back" href="../mcts.html#mcts.State._subtree_max_depth">[docs]</a>
+    <span class="k">def</span> <span class="nf">_subtree_max_depth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="n">temp_d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">_subtree_max_depth</span><span class="p">()</span>
+            <span class="k">if</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">temp_d</span> <span class="o">&gt;</span> <span class="n">d</span><span class="p">:</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">temp_d</span> 
+        <span class="k">return</span> <span class="n">d</span></div>
+
+    
+<div class="viewcode-block" id="State._subtree_depths">
+<a class="viewcode-back" href="../mcts.html#mcts.State._subtree_depths">[docs]</a>
+    <span class="k">def</span> <span class="nf">_subtree_depths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">depths</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="n">depths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">_subtree_depths</span><span class="p">(</span><span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">depths</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">depths</span>            </div>
+
+        
+<div class="viewcode-block" id="State.take_action">
+<a class="viewcode-back" href="../mcts.html#mcts.State.take_action">[docs]</a>
+    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_index</span><span class="p">):</span>        
+        <span class="k">if</span> <span class="n">action_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>            
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">action_index</span><span class="p">]</span>
+        <span class="n">child</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="bp">self</span><span class="p">)</span> <span class="c1"># copying constructor</span>
+        <span class="n">action_legal</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">take_action_job</span><span class="p">(</span><span class="n">action_index</span><span class="p">)</span> 
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">action_legal</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span> <span class="c1"># no effect takes place</span>
+        <span class="n">child</span><span class="o">.</span><span class="n">last_action_index</span> <span class="o">=</span> <span class="n">action_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">action_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">child</span>
+        <span class="k">return</span> <span class="n">child</span></div>
+
+    
+<div class="viewcode-block" id="State.take_action_job">
+<a class="viewcode-back" href="../mcts.html#mcts.State.take_action_job">[docs]</a>
+    <span class="k">def</span> <span class="nf">take_action_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_index</span><span class="p">):</span>
+        <span class="k">pass</span>            </div>
+
+    
+<div class="viewcode-block" id="State.compute_outcome">
+<a class="viewcode-back" href="../mcts.html#mcts.State.compute_outcome">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_outcome</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">outcome_computed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_action_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_outcome_job</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outcome_computed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span> <span class="o">==</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">turn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">win_flag</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span></div>
+
+
+<div class="viewcode-block" id="State.compute_outcome_job">
+<a class="viewcode-back" href="../mcts.html#mcts.State.compute_outcome_job">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_outcome_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+                
+<div class="viewcode-block" id="State.get_board">
+<a class="viewcode-back" href="../mcts.html#mcts.State.get_board">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_board</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>    </div>
+
+
+<div class="viewcode-block" id="State.get_extra_info">
+<a class="viewcode-back" href="../mcts.html#mcts.State.get_extra_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+            
+<div class="viewcode-block" id="State.expand">
+<a class="viewcode-back" href="../mcts.html#mcts.State.expand">[docs]</a>
+    <span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+    
+<div class="viewcode-block" id="State.expand_one_random_child">
+<a class="viewcode-back" href="../mcts.html#mcts.State.expand_one_random_child">[docs]</a>
+    <span class="k">def</span> <span class="nf">expand_one_random_child</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>  </div>
+
+    
+<div class="viewcode-block" id="State.action_name_to_index">
+<a class="viewcode-back" href="../mcts.html#mcts.State.action_name_to_index">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">action_name_to_index</span><span class="p">(</span><span class="n">action_name</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="State.action_index_to_name">
+<a class="viewcode-back" href="../mcts.html#mcts.State.action_index_to_name">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">action_index_to_name</span><span class="p">(</span><span class="n">action_index</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+    
+<div class="viewcode-block" id="State.get_board_shape">
+<a class="viewcode-back" href="../mcts.html#mcts.State.get_board_shape">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_board_shape</span><span class="p">():</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="State.get_extra_info_memory">
+<a class="viewcode-back" href="../mcts.html#mcts.State.get_extra_info_memory">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_extra_info_memory</span><span class="p">():</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="State.get_max_actions">
+<a class="viewcode-back" href="../mcts.html#mcts.State.get_max_actions">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_max_actions</span><span class="p">():</span>
+        <span class="k">pass</span></div>
+</div>
+
+    
+                                 
+<div class="viewcode-block" id="MCTS">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS">[docs]</a>
+<span class="k">class</span> <span class="nc">MCTS</span><span class="p">:</span>
+    
+    <span class="n">DEFAULT_SEARCH_TIME_LIMIT</span> <span class="o">=</span> <span class="mf">5.0</span> <span class="c1"># [s], np.inf possible</span>
+    <span class="n">DEFAULT_SEARCH_STEPS_LIMIT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="c1"># integer, np.inf possible</span>
+    <span class="n">DEFAULT_VANILLA</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">DEFAULT_UCB_C</span> <span class="o">=</span> <span class="mf">2.0</span>
+    <span class="n">DEFAULT_SEED</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">DEFAULT_VERBOSE_DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">DEFAULT_VERBOSE_INFO</span> <span class="o">=</span> <span class="kc">True</span>
+    
+<div class="viewcode-block" id="MCTS.__init__">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                 <span class="n">search_time_limit</span><span class="o">=</span><span class="n">DEFAULT_SEARCH_TIME_LIMIT</span><span class="p">,</span> <span class="n">search_steps_limit</span><span class="o">=</span><span class="n">DEFAULT_SEARCH_STEPS_LIMIT</span><span class="p">,</span>
+                 <span class="n">vanilla</span><span class="o">=</span><span class="n">DEFAULT_VANILLA</span><span class="p">,</span>                  
+                 <span class="n">ucb_c</span><span class="o">=</span><span class="n">DEFAULT_UCB_C</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">DEFAULT_SEED</span><span class="p">,</span>
+                 <span class="n">verbose_debug</span><span class="o">=</span><span class="n">DEFAULT_VERBOSE_DEBUG</span><span class="p">,</span> <span class="n">verbose_info</span><span class="o">=</span><span class="n">DEFAULT_VERBOSE_INFO</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_time_limit</span> <span class="o">=</span> <span class="n">search_time_limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_steps_limit</span> <span class="o">=</span> <span class="n">search_steps_limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vanilla</span> <span class="o">=</span> <span class="n">vanilla</span> <span class="c1"># if True, statistics from previous runs (searches) are not reused         </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ucb_c</span> <span class="o">=</span> <span class="n">ucb_c</span>                 
+        <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose_debug</span> <span class="o">=</span> <span class="n">verbose_debug</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose_info</span> <span class="o">=</span> <span class="n">verbose_info</span></div>
+
+
+<div class="viewcode-block" id="MCTS.__str__">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS.__str__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>         
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(search_time_limit=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">search_time_limit</span><span class="si">}</span><span class="s2">, search_steps_limit=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">search_steps_limit</span><span class="si">}</span><span class="s2">, vanilla=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vanilla</span><span class="si">}</span><span class="s2">, ucb_c=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ucb_c</span><span class="si">}</span><span class="s2">, seed: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+        
+<div class="viewcode-block" id="MCTS.__repr__">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS.__repr__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> </div>
+
+                
+<div class="viewcode-block" id="MCTS._make_actions_info">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS._make_actions_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">_make_actions_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">children</span><span class="p">,</span> <span class="n">best_action_entry</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">actions_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">children</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">n_root</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">n</span>
+            <span class="n">win_flag</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">win_flag</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">n</span>
+            <span class="n">n_wins</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">n_wins</span>        
+            <span class="n">q</span> <span class="o">=</span> <span class="n">n_wins</span> <span class="o">/</span> <span class="n">n</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span> <span class="c1"># 2nd case does not affect ucb</span>
+            <span class="n">ucb</span> <span class="o">=</span> <span class="n">q</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ucb_c</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n_root</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> 
+            <span class="n">entry</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">action_index_to_name</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;n_root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_root</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;win_flag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">win_flag</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;n_wins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_wins</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_wins</span> <span class="o">/</span> <span class="n">n</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;ucb&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ucb</span>
+            <span class="n">actions_info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">entry</span>
+        <span class="k">if</span> <span class="n">best_action_entry</span><span class="p">:</span>
+            <span class="n">best_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_best_action</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="n">actions_info</span><span class="p">)</span>
+            <span class="n">best_entry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">best_key</span><span class="p">,</span> <span class="o">**</span><span class="n">actions_info</span><span class="p">[</span><span class="n">best_key</span><span class="p">]}</span>
+            <span class="n">actions_info</span><span class="p">[</span><span class="s2">&quot;best&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_entry</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions_info</span> <span class="o">=</span> <span class="n">actions_info</span>
+        <span class="k">return</span> <span class="n">actions_info</span></div>
+
+
+<div class="viewcode-block" id="MCTS._make_performance_info">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS._make_performance_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">_make_performance_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">performance_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">performance_info</span><span class="p">[</span><span class="s2">&quot;steps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span>
+        <span class="n">performance_info</span><span class="p">[</span><span class="s2">&quot;steps_per_second&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_total</span>                
+        <span class="n">performance_info</span><span class="p">[</span><span class="s2">&quot;playouts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">n</span>
+        <span class="n">performance_info</span><span class="p">[</span><span class="s2">&quot;playouts_per_second&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">performance_info</span><span class="p">[</span><span class="s2">&quot;playouts&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_total</span>           
+        <span class="n">ms_factor</span> <span class="o">=</span> <span class="mf">10.0</span><span class="o">**</span><span class="mi">3</span>
+        <span class="n">times_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">times_info</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ms_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_total</span>
+        <span class="n">times_info</span><span class="p">[</span><span class="s2">&quot;loop&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ms_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_loop</span>
+        <span class="n">times_info</span><span class="p">[</span><span class="s2">&quot;reduce_over_actions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ms_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_reduce_over_actions</span>
+        <span class="n">times_info</span><span class="p">[</span><span class="s2">&quot;mean_loop&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">times_info</span><span class="p">[</span><span class="s2">&quot;loop&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span>
+        <span class="n">times_info</span><span class="p">[</span><span class="s2">&quot;mean_select&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ms_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_select</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span>
+        <span class="n">times_info</span><span class="p">[</span><span class="s2">&quot;mean_expand&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ms_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_expand</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span>
+        <span class="n">times_info</span><span class="p">[</span><span class="s2">&quot;mean_playout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ms_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_playout</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span>
+        <span class="n">times_info</span><span class="p">[</span><span class="s2">&quot;mean_backup&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ms_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_backup</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span>
+        <span class="n">performance_info</span><span class="p">[</span><span class="s2">&quot;times_[ms]&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">times_info</span>
+        <span class="n">tree_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">tree_info</span><span class="p">[</span><span class="s2">&quot;initial_n_root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_n_root</span>
+        <span class="n">tree_info</span><span class="p">[</span><span class="s2">&quot;initial_mean_depth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_mean_depth</span>        
+        <span class="n">tree_info</span><span class="p">[</span><span class="s2">&quot;initial_max_depth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_max_depth</span>
+        <span class="n">tree_info</span><span class="p">[</span><span class="s2">&quot;initial_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_size</span>            
+        <span class="n">tree_info</span><span class="p">[</span><span class="s2">&quot;n_root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">n</span>
+        <span class="n">tree_info</span><span class="p">[</span><span class="s2">&quot;mean_depth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">_subtree_depths</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="n">tree_info</span><span class="p">[</span><span class="s2">&quot;max_depth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">_subtree_max_depth</span><span class="p">()</span>
+        <span class="n">tree_info</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">_subtree_size</span><span class="p">()</span>              
+        <span class="n">performance_info</span><span class="p">[</span><span class="s2">&quot;tree&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tree_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">performance_info</span> <span class="o">=</span> <span class="n">performance_info</span>
+        <span class="k">return</span> <span class="n">performance_info</span></div>
+
+    
+<div class="viewcode-block" id="MCTS._best_action_ucb">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS._best_action_ucb">[docs]</a>
+    <span class="k">def</span> <span class="nf">_best_action_ucb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">children</span><span class="p">,</span> <span class="n">actions_info</span><span class="p">):</span> 
+        <span class="n">best_key</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">best_ucb</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">children</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">ucb</span> <span class="o">=</span> <span class="n">actions_info</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;ucb&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ucb</span> <span class="o">&gt;</span> <span class="n">best_ucb</span><span class="p">:</span>
+                <span class="n">best_ucb</span> <span class="o">=</span> <span class="n">ucb</span>
+                <span class="n">best_key</span> <span class="o">=</span> <span class="n">key</span>                        
+        <span class="k">return</span> <span class="n">best_key</span>    </div>
+
+    
+<div class="viewcode-block" id="MCTS._best_action">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS._best_action">[docs]</a>
+    <span class="k">def</span> <span class="nf">_best_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_children</span><span class="p">,</span> <span class="n">root_actions_info</span><span class="p">):</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_action</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_win_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_n</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_n_wins</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">root_children</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>            
+            <span class="n">win_flag</span> <span class="o">=</span> <span class="n">root_actions_info</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;win_flag&quot;</span><span class="p">]</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">root_actions_info</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;n&quot;</span><span class="p">]</span>
+            <span class="n">n_wins</span> <span class="o">=</span> <span class="n">root_actions_info</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;n_wins&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">win_flag</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_win_flag</span><span class="p">)</span> <span class="ow">or</span>\
+             <span class="p">((</span><span class="n">win_flag</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_win_flag</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">n</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_n</span><span class="p">))</span> <span class="ow">or</span>\
+             <span class="p">((</span><span class="n">win_flag</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_win_flag</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_n</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">n_wins</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_n_wins</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">best_win_flag</span> <span class="o">=</span> <span class="n">win_flag</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">best_n</span> <span class="o">=</span> <span class="n">n</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">best_n_wins</span> <span class="o">=</span> <span class="n">n_wins</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">best_action</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_n_wins</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_n</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>                      
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_action</span></div>
+
+        
+<div class="viewcode-block" id="MCTS.run">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">forced_search_steps_limit</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MCTS RUN...&quot;</span><span class="p">)</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vanilla</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>                       
+            <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose_info</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_n_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">n</span>                    
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_mean_depth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">_subtree_depths</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_max_depth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">_subtree_max_depth</span><span class="p">()</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">_subtree_size</span><span class="p">()</span>                         
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_select</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_expand</span> <span class="o">=</span> <span class="mf">0.0</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_playout</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_backup</span> <span class="o">=</span> <span class="mf">0.0</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="mi">0</span>
+                
+        <span class="n">t1_loop</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">t2_loop</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">forced_search_steps_limit</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">&gt;=</span> <span class="n">forced_search_steps_limit</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_steps_limit</span> <span class="ow">or</span> <span class="n">t2_loop</span> <span class="o">-</span> <span class="n">t1_loop</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_time_limit</span><span class="p">:</span>
+                <span class="k">break</span>            
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
+            
+            <span class="c1"># selection</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose_debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[MCTS._select()...]&quot;</span><span class="p">)</span>            
+            <span class="n">t1_select</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="n">t2_select</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose_debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[MCTS._select() done; time: </span><span class="si">{</span><span class="n">t2_select</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t1_select</span><span class="si">}</span><span class="s2"> s]&quot;</span><span class="p">)</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_select</span> <span class="o">+=</span> <span class="n">t2_select</span> <span class="o">-</span> <span class="n">t1_select</span>
+            
+            <span class="c1"># expansion</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose_debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[MCTS._expand()...]&quot;</span><span class="p">)</span>
+            <span class="n">t1_expand</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expand</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="n">t2_expand</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose_debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[MCTS._expand() done; time: </span><span class="si">{</span><span class="n">t2_expand</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t1_expand</span><span class="si">}</span><span class="s2"> s]&quot;</span><span class="p">)</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_expand</span> <span class="o">+=</span> <span class="n">t2_expand</span> <span class="o">-</span> <span class="n">t1_expand</span>            
+            
+            <span class="c1"># playout</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose_debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[MCTS._playout()...]&quot;</span><span class="p">)</span>
+            <span class="n">t1_playout</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">playout_root</span> <span class="o">=</span> <span class="n">state</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_playout</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="n">t2_playout</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose_debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[MCTS._playout() done; time: </span><span class="si">{</span><span class="n">t2_playout</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t1_playout</span><span class="si">}</span><span class="s2"> s]&quot;</span><span class="p">)</span>                        
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_playout</span> <span class="o">+=</span> <span class="n">t2_playout</span> <span class="o">-</span> <span class="n">t1_playout</span>                            
+            
+            <span class="c1"># backup</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose_debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[MCTS._backup()...]&quot;</span><span class="p">)</span>           
+            <span class="n">t1_backup</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_backup</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">playout_root</span><span class="p">)</span>
+            <span class="n">t2_backup</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose_debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[MCTS._backup() done; time: </span><span class="si">{</span><span class="n">t2_backup</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t1_backup</span><span class="si">}</span><span class="s2"> s]&quot;</span><span class="p">)</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_backup</span> <span class="o">+=</span> <span class="n">t2_backup</span> <span class="o">-</span> <span class="n">t1_backup</span>                                
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">+=</span> <span class="mi">1</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_loop</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t1_loop</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose_debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[MCTS._reduce_over_actions()...]&quot;</span><span class="p">)</span>        
+        <span class="n">t1_reduce_over_actions</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reduce_over_actions</span><span class="p">()</span>
+        <span class="n">best_action_label</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">best_action</span><span class="p">)</span>
+        <span class="n">best_action_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">action_index_to_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">best_action</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="n">t2_reduce_over_actions</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose_debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[MCTS._reduce_over_actions() done; time: </span><span class="si">{</span><span class="n">t2_reduce_over_actions</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t1_reduce_over_actions</span><span class="si">}</span><span class="s2"> s]&quot;</span><span class="p">)</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_reduce_over_actions</span> <span class="o">=</span> <span class="n">t2_reduce_over_actions</span> <span class="o">-</span> <span class="n">t1_reduce_over_actions</span>     
+        
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_total</span> <span class="o">=</span> <span class="n">t2</span> <span class="o">-</span> <span class="n">t1</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose_info</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[actions info:</span><span class="se">\n</span><span class="si">{</span><span class="n">dict_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_actions_info</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[performance info:</span><span class="se">\n</span><span class="si">{</span><span class="n">dict_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_performance_info</span><span class="p">())</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+                                             
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MCTS RUN DONE. [time: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">time_total</span><span class="si">}</span><span class="s2"> s; best action: </span><span class="si">{</span><span class="n">best_action_label</span><span class="si">}</span><span class="s2">, best win_flag: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_win_flag</span><span class="si">}</span><span class="s2"> best n: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_n</span><span class="si">}</span><span class="s2">, best n_wins: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_n_wins</span><span class="si">}</span><span class="s2">, best q: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_q</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>                      
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_action</span></div>
+
+    
+<div class="viewcode-block" id="MCTS._select">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS._select">[docs]</a>
+    <span class="k">def</span> <span class="nf">_select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">actions_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_actions_info</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
+            <span class="n">best_ucb_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_best_action_ucb</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">children</span><span class="p">,</span> <span class="n">actions_info</span><span class="p">)</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">best_ucb_action</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">state</span>     </div>
+
+    
+<div class="viewcode-block" id="MCTS._expand">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS._expand">[docs]</a>
+    <span class="k">def</span> <span class="nf">_expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">expand</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">random_child_key</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">random_child_key</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">state</span></div>
+
+    
+<div class="viewcode-block" id="MCTS._playout">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS._playout">[docs]</a>
+    <span class="k">def</span> <span class="nf">_playout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">outcome</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">compute_outcome</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">outcome</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">break</span>        
+            <span class="n">state</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">expand_one_random_child</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">state</span>        </div>
+
+    
+<div class="viewcode-block" id="MCTS._backup">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS._backup">[docs]</a>
+    <span class="k">def</span> <span class="nf">_backup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">playout_root</span><span class="p">):</span>
+        <span class="n">outcome</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">compute_outcome</span><span class="p">()</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">playout_root</span>
+        <span class="k">del</span> <span class="n">state</span><span class="o">.</span><span class="n">children</span> <span class="c1"># getting rid of playout branch</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">while</span> <span class="n">state</span><span class="p">:</span>
+            <span class="n">state</span><span class="o">.</span><span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">turn</span> <span class="o">==</span> <span class="o">-</span><span class="n">outcome</span><span class="p">:</span>
+                <span class="n">state</span><span class="o">.</span><span class="n">n_wins</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">parent</span></div>
+
+            
+<div class="viewcode-block" id="MCTS._reduce_over_actions">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS._reduce_over_actions">[docs]</a>
+    <span class="k">def</span> <span class="nf">_reduce_over_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_actions_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_actions_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">children</span><span class="p">,</span> <span class="n">best_action_entry</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_best_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">children</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_actions_info</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Przemysław Klęsk.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
