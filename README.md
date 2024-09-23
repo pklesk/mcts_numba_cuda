@@ -13,7 +13,7 @@ Assuming `c4` represents a state of Connect 4 game - an instance of class `C4(St
 ```
 running the code
 ```python
-ai = MCTSNC(C4.get_board_shape(), c4.get_extra_info_memory(), c4.get_max_actions())
+ai = MCTSNC(C4.get_board_shape(), C4.get_extra_info_memory(), C4.get_max_actions())
 ai.init_device_side_arrays()
 best_action = ai.run(c4.get_board(), c4.get_extra_info(), c4.turn)
 ```
