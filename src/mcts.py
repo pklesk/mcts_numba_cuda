@@ -310,7 +310,7 @@ class MCTS:
             print(f"[actions info:\n{dict_to_str(self.root_actions_info)}]")
             print(f"[performance info:\n{dict_to_str(self._make_performance_info())}]")
                                              
-        print(f"MCTS RUN DONE. [time: {self.time_total} s; best action: {best_action_label}, best win_flag: {self.best_win_flag} best n: {self.best_n}, best n_wins: {self.best_n_wins}, best q: {self.best_q}]")                      
+        print(f"MCTS RUN DONE. [time: {self.time_total} s; best action: {best_action_label}, best win_flag: {self.best_win_flag}, best n: {self.best_n}, best n_wins: {self.best_n_wins}, best q: {self.best_q}]")                      
         return self.best_action
     
     def _select(self, state):
