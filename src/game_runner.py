@@ -44,7 +44,7 @@ class GameRunner:
                 if self.experiment_info_old is not None:
                     forced_search_steps_limit = self.experiment_info_old["games_infos"][str(self.game_index)]["moves_rounds"][str(move_count + 1)]["black_performance_info"]["steps"] 
                 if isinstance(self.black_ai, MCTSNC):
-                    move_index = self.black_ai.run(game.get_board(), game.get_extra_info(), game.turn, forced_search_steps_limit)
+                    move_index = self.black_ai.run(game.get_board(), game.get_extra_info(), game.get_turn(), forced_search_steps_limit)
                 else:
                     move_index = self.black_ai.run(game, forced_search_steps_limit)
                 move_name = self.game_class.action_index_to_name(move_index)
@@ -82,7 +82,7 @@ class GameRunner:
                 if self.experiment_info_old is not None:
                     forced_search_steps_limit = self.experiment_info_old["games_infos"][str(self.game_index)]["moves_rounds"][str(move_count + 1)]["white_performance_info"]["steps"]                
                 if isinstance(self.white_ai, MCTSNC):
-                    move_index = self.white_ai.run(game.get_board(), game.get_extra_info(), game.turn, forced_search_steps_limit)
+                    move_index = self.white_ai.run(game.get_board(), game.get_extra_info(), game.get_turn(), forced_search_steps_limit)
                 else:
                     move_index = self.white_ai.run(game, forced_search_steps_limit)
                 move_name = self.game_class.action_index_to_name(move_index)

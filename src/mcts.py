@@ -37,7 +37,10 @@ class State:
         depths.append(d)
         for key in self.children:
             self.children[key]._subtree_depths(d + 1, depths)
-        return depths            
+        return depths
+    
+    def get_turn(self):
+        return self.turn            
         
     def take_action(self, action_index):        
         if action_index in self.children:            

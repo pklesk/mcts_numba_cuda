@@ -3,11 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to MCTS-NC's documentation!
-===================================
-
 MCTS-NC: A thorough GPU parallelization of Monte Carlo Tree Search implemented in Python via numba.cuda
--------------------------------------------------------------------------------------------------------
+=======================================================================================================
+
+Welcome to MCTS-NC's documentation!
+-----------------------------------
 
 The core machine functionalities of this project are embodied by the class `MCTSNC` present in :doc:`mctsnc`. 
 Other modules play the role of auxiliary utilities or demonstrators. 
