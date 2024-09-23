@@ -20,27 +20,27 @@ best_action = ai.run(c4.get_board(), c4.get_extra_info(), c4.turn)
 results in the following printout and finds the best action - move 4 - for black (to move now):
 ```bash
 [MCTSNC._init_device_side_arrays()... for MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant='acp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)]
-[MCTSNC._init_device_side_arrays() done; time: 0.7248117923736572 s, per_state_memory: 95 B,  calculated max_tree_size: 2825549]
+[MCTSNC._init_device_side_arrays() done; time: 0.5193691253662109 s, per_state_memory: 95 B,  calculated max_tree_size: 2825549]
 MCTSNC RUN... [MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant='acp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)]
 [actions info:
 {
-  0: {'name': '0', 'n_root': 3195776, 'win_flag': False, 'n': 1070464, 'n_wins': 996419, 'q': 0.930829061042688, 'ucb': 0.9383100896251532},
-  1: {'name': '1', 'n_root': 3195776, 'win_flag': False, 'n': 185344, 'n_wins': 164757, 'q': 0.8889254575276243, 'ucb': 0.9069041490759143},
-  4: {'name': '4', 'n_root': 3195776, 'win_flag': False, 'n': 1754880, 'n_wins': 1721240, 'q': 0.980830598103574, 'ucb': 0.9866734332771923},
-  5: {'name': '5', 'n_root': 3195776, 'win_flag': False, 'n': 105472, 'n_wins': 91863, 'q': 0.8709704945388349, 'ucb': 0.8948034969310324},
-  6: {'name': '6', 'n_root': 3195776, 'win_flag': False, 'n': 79616, 'n_wins': 68403, 'q': 0.8591614750803859, 'ucb': 0.8865928243658935},
-  best: {'index': 4, 'name': '4', 'n_root': 3195776, 'win_flag': False, 'n': 1754880, 'n_wins': 1721240, 'q': 0.980830598103574, 'ucb': 0.9866734332771923}
+  0: {'name': '0', 'n_root': 7474304, 'win_flag': False, 'n': 2182400, 'n_wins': 2100454, 'q': 0.9624514296187683, 'ucb': 0.9678373740384631},
+  1: {'name': '1', 'n_root': 7474304, 'win_flag': False, 'n': 185344, 'n_wins': 164757, 'q': 0.8889254575276243, 'ucb': 0.9074070665330406},
+  4: {'name': '4', 'n_root': 7474304, 'win_flag': False, 'n': 4921472, 'n_wins': 4885924, 'q': 0.9927769577882389, 'ucb': 0.9963635461474457},
+  5: {'name': '5', 'n_root': 7474304, 'win_flag': False, 'n': 105472, 'n_wins': 91863, 'q': 0.8709704945388349, 'ucb': 0.8954701768685893},
+  6: {'name': '6', 'n_root': 7474304, 'win_flag': False, 'n': 79616, 'n_wins': 68403, 'q': 0.8591614750803859, 'ucb': 0.8873601607647162},
+  best: {'index': 4, 'name': '4', 'n_root': 7474304, 'win_flag': False, 'n': 4921472, 'n_wins': 4885924, 'q': 0.9927769577882389, 'ucb': 0.9963635461474457}
 }]
 [performance info:
 {
-  steps: 2268,
-  steps_per_second: 453.20508967358137,
-  playouts: 3195776,
-  playouts_per_second: 638598.7427939503,
-  times_[ms]: {'total': 5004.356861114502, 'loop': 5000.383615493774, 'reduce_over_trees': 0.9992122650146484, 'reduce_over_actions': 0.9791851043701172, 'mean_loop': 2.2047546805528104, 'mean_select': 0.23814662633959788, 'mean_expand': 0.45445472054590835, 'mean_playout': 1.0848981993538993, 'mean_backup': 0.4192572842619827},
-  trees: {'count': 8, 'mean_depth': 4.948057713651498, 'max_depth': 10, 'mean_size': 1126.25, 'max_size': 2322}
+  steps: 6373,
+  steps_per_second: 1274.0076324260813,
+  playouts: 7474304,
+  playouts_per_second: 1494166.0666990099,
+  times_[ms]: {'total': 5002.324819564819, 'loop': 5000.642776489258, 'reduce_over_trees': 0.29015541076660156, 'reduce_over_actions': 0.4520416259765625, 'mean_loop': 0.7846607212441955, 'mean_select': 0.11222893376562147, 'mean_expand': 0.2786097114284054, 'mean_playout': 0.17186361935680036, 'mean_backup': 0.2193056618645448},
+  trees: {'count': 8, 'mean_depth': 5.176703163017032, 'max_depth': 12, 'mean_size': 1233.0, 'max_size': 2736}
 }]
-MCTSNC RUN DONE. [time: 5.004356861114502 s; best action: 4, best win_flag: False best n: 1754880, best n_wins: 1721240, best q: 0.980830598103574]
+MCTSNC RUN DONE. [time: 5.002324819564819 s; best action: 4, best win_flag: False best n: 4921472, best n_wins: 4885924, best q: 0.9927769577882389]
 BEST ACTION: 4
 ```
 
