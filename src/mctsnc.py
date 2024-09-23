@@ -328,7 +328,7 @@ class MCTSNC:
         best_action_label = str(self.best_action)
         if self.action_index_to_name_function is not None:
             best_action_label += f" ({self.action_index_to_name_function(self.best_action)})"
-        print(f"MCTSNC RUN DONE. [time: {self.time_total} s; best action: {best_action_label}, best win_flag: {self.best_win_flag} best n: {self.best_n}, best n_wins: {self.best_n_wins}, best q: {self.best_q}]")
+        print(f"MCTSNC RUN DONE. [time: {self.time_total} s; best action: {best_action_label}, best win_flag: {self.best_win_flag}, best n: {self.best_n}, best n_wins: {self.best_n_wins}, best q: {self.best_q}]")
         return self.best_action
     
     def _flatten_trees_actions_expanded_thrifty(self, trees_actions_expanded):

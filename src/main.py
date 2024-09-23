@@ -19,8 +19,8 @@ FOLDER_EXTRAS = "../extras/"
 # main settings
 STATE_CLASS = C4 # C4 or Gomoku
 N_GAMES = 100
-AI_A_SHORTNAME = "mctsnc_1_inf_8_128_acp_prodigal" # TODO: "mcts_1_inf_vanilla"
-AI_B_SHORTNAME = "mcts_1_inf_vanilla" # TODO : "mctsnc_1_inf_1_128_ocp_prodigal" 
+AI_A_SHORTNAME = "mcts_1_inf_vanilla"
+AI_B_SHORTNAME = "mctsnc_1_inf_1_256_ocp_prodigal" 
 REPRODUCE_EXPERIMENT = False
 _BOARD_SHAPE = STATE_CLASS.get_board_shape()
 _EXTRA_INFO_MEMORY = STATE_CLASS.get_extra_info_memory()
@@ -196,8 +196,8 @@ if __name__ == "__main2__":
         save_and_zip_experiment(experiment_hs, experiment_info, FOLDER_EXPERIMENTS)
 
 
-if __name__ == "__main__":
-    print("USAGE EXAMPLE")
+if __name__ == "__main_usage_example__":
+    print("USAGE EXAMPLE")    
     
     c4 = C4()
     c4 = c4.take_action(3)
@@ -225,8 +225,7 @@ if __name__ == "__main__":
     c4 = c4.take_action(6)
     c4 = c4.take_action(6)
     c4 = c4.take_action(2)
-    c4 = c4.take_action(0)
-    
+    c4 = c4.take_action(0)    
     print(c4)
     
     ai = MCTSNC(C4.get_board_shape(), C4.get_extra_info_memory(), C4.get_max_actions())
