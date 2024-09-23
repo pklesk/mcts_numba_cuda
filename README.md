@@ -11,13 +11,13 @@ Assuming `c4` represents a state of Connect 4 game - an instance of `C4(State)` 
 |○|○|○|●|●|○|○|
  0 1 2 3 4 5 6 
 ```
-with black's turn now, running the code
+running the code
 ```python
 ai = MCTSNC(C4.get_board_shape(), c4.get_extra_info_memory(), c4.get_max_actions())
 ai.init_device_side_arrays()
 best_action = ai.run(c4.get_board(), c4.get_extra_info(), c4.turn)
 ```
-results in the following printout and finds the best action (move 4) for black:
+results in the following printout and finds the best action - move 4 - for black (to move now):
 ```bash
 [MCTSNC._init_device_side_arrays()... for MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant='acp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)]
 [MCTSNC._init_device_side_arrays() done; time: 0.7248117923736572 s, per_state_memory: 95 B,  calculated max_tree_size: 2825549]
