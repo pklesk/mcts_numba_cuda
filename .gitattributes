@@ -1,1 +1,2 @@
-*.nb linguist-vendored
+# *.nb linguist-vendored
+*.nb linguist-generated
