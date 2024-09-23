@@ -106,7 +106,7 @@ AIS = {
 
 LINE_SEPARATOR = 208 * "="
 
-if __name__ == "__main2__":    
+if __name__ == "__main__":    
     ai_a = AIS[AI_A_SHORTNAME]
     ai_b = AIS[AI_B_SHORTNAME]    
     matchup_info = {
