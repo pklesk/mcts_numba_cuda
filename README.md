@@ -1,7 +1,7 @@
 UNDER CONSTRUCTION.
 
 ## Example usage 1
-Assuming `c4` represents a state of Connect 4 game (instance of `C4(State)` class) shown below:
+Assuming `c4` represents a state of Connect 4 game - an instance of `C4(State)` class - shown below:
 ```bash
 |.|.|●|○|.|.|.|
 |.|.|●|○|.|.|○|
