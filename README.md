@@ -15,7 +15,8 @@ running the code
 ```python
 ai = MCTSNC(C4.get_board_shape(), C4.get_extra_info_memory(), C4.get_max_actions())
 ai.init_device_side_arrays()
-best_action = ai.run(c4.get_board(), c4.get_extra_info(), c4.turn)
+best_action = ai.run(c4.get_board(), c4.get_extra_info(), c4.get_turn())
+print(f"BEST ACTION: {best_action}")
 ```
 results in the following printout and finds the best action - move 4 - for black (to move now):
 ```bash
