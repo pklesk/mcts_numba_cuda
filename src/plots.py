@@ -3,7 +3,7 @@ from matplotlib.ticker import MultipleLocator, FixedLocator
 import numpy as np
 from utils import unzip_and_load_experiment
 
-FOLDER_EXPERIMENTS = "../../experiments/"
+FOLDER_EXPERIMENTS = "../experiments/"
 
 def scores_array_plot(data, details, label_x, label_y, ticks_x, ticks_y, title):    
     figsize = (6, 6)
@@ -77,28 +77,27 @@ def scores_array_plot_generator(experiments_hs_array, label_x, label_y, ticks_x,
     print(f"[reference player details: {np.mean(ref_playouts)}/{np.mean(ref_steps)}; {np.mean(ref_mean_depths)}/{np.mean(ref_max_depths)}]")
     print("SCORES-ARRAY-PLOT GENERATOR DONE.")        
     scores_array_plot(data, details, label_x, label_y, ticks_x, ticks_y, title)
-    
 
 def scores_array_plot_ocp_thrifty_vs_vanilla():
     experiments_hs_array = np.array([
-        ["0295905193_59892_427_[mcts_4_inf_vanilla;mctsnc_1_inf_1_32_ocp_thrifty;C4_6x7;100]",
-         "3448791497_42324_427_[mcts_4_inf_vanilla;mctsnc_1_inf_1_64_ocp_thrifty;C4_6x7;100]",
-         "0885591745_06572_427_[mcts_4_inf_vanilla;mctsnc_1_inf_1_128_ocp_thrifty;C4_6x7;100]",
-         "0333431545_83812_427_[mcts_4_inf_vanilla;mctsnc_1_inf_1_256_ocp_thrifty;C4_6x7;100]"],
-        ["2759297865_05556_427_[mcts_4_inf_vanilla;mctsnc_1_inf_2_32_ocp_thrifty;C4_6x7;100]",
-         "1617216873_20692_427_[mcts_4_inf_vanilla;mctsnc_1_inf_2_64_ocp_thrifty;C4_6x7;100]",
-         "0864518467_53902_427_[mcts_4_inf_vanilla;mctsnc_1_inf_2_128_ocp_thrifty;C4_6x7;100]",
-         "0312358267_31142_427_[mcts_4_inf_vanilla;mctsnc_1_inf_2_256_ocp_thrifty;C4_6x7;100]"],
-        ["3391115913_62292_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_32_ocp_thrifty;C4_6x7;100]",
-         "2249034921_44724_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_64_ocp_thrifty;C4_6x7;100]",
-         "0822371911_48562_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_128_ocp_thrifty;C4_6x7;100]",
-         "0270211711_58506_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_256_ocp_thrifty;C4_6x7;100]"],
-        ["0359784713_10356_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_32_ocp_thrifty;C4_6x7;100]",
-         "3512671017_25492_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_64_ocp_thrifty;C4_6x7;100]",
-         "0738078799_70586_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_128_ocp_thrifty;C4_6x7;100]",
-         "0185918599_47826_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_256_ocp_thrifty;C4_6x7;100]"]
+        ["2325695625_84404_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_ocp_thrifty;C4_6x7;100]",
+         "1183614633_99540_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_ocp_thrifty;C4_6x7;100]",
+         "1599044513_98220_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_ocp_thrifty;C4_6x7;100]",
+         "1046884313_08164_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_ocp_thrifty;C4_6x7;100]"],
+        ["0494121001_62772_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_ocp_thrifty;C4_6x7;100]",
+         "3647007305_45204_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_ocp_thrifty;C4_6x7;100]",
+         "1577971235_45550_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_ocp_thrifty;C4_6x7;100]",
+         "1025811035_55494_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_ocp_thrifty;C4_6x7;100]"],
+        ["1125939049_86804_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_ocp_thrifty;C4_6x7;100]",
+         "4278825353_01940_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_ocp_thrifty;C4_6x7;100]",
+         "1535824679_72914_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_ocp_thrifty;C4_6x7;100]",
+         "0983664479_50154_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_thrifty;C4_6x7;100]"],
+        ["2389575145_67572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_ocp_thrifty;C4_6x7;100]",
+         "1247494153_50004_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_ocp_thrifty;C4_6x7;100]",
+         "1451531567_62234_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_ocp_thrifty;C4_6x7;100]",
+         "0899371367_72178_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_thrifty;C4_6x7;100]"]
         ])
-    scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "OCP-THRIFTY (1s) vs VANILLA (4s)")    
+    scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "OCP-THRIFTY (1s) vs VANILLA (5s)")    
 
 def scores_array_plot_ocp_prodigal_vs_vanilla():
     experiments_hs_array = np.array([
@@ -321,7 +320,7 @@ def depths_plot_generator(experiments_hs, game_index,
 
 if __name__ == "__main__":        
     
-    # scores_array_plot_ocp_thrifty_vs_vanilla()
+    scores_array_plot_ocp_thrifty_vs_vanilla()
     
     # scores_array_plot_ocp_prodigal_vs_vanilla()
     
@@ -329,10 +328,10 @@ if __name__ == "__main__":
     
     # scores_array_plot_acp_prodigal_vs_vanilla()
 
-    best_action_plot_generator("2375874269_93352_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_64_ocp_prodigal;C4_6x7;100]", 33,
-                               "BEST $\widehat{q}$ - MCTS_4_INF_VANILLA", "UCB - MCTS_4_INF_VANILLA",      
-                               "BEST $\widehat{q}$ - MCTS-NC_1_INF_4_64_OCP_PRODIGAL", "UCB - MCTS-NC_1_INF_4_64_OCP_PRODIGAL",     
-                               "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 33/100)")
+    # best_action_plot_generator("2375874269_93352_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_64_ocp_prodigal;C4_6x7;100]", 33,
+    #                            "BEST $\widehat{q}$ - MCTS_4_INF_VANILLA", "UCB - MCTS_4_INF_VANILLA",      
+    #                            "BEST $\widehat{q}$ - MCTS-NC_1_INF_4_64_OCP_PRODIGAL", "UCB - MCTS-NC_1_INF_4_64_OCP_PRODIGAL",     
+    #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 33/100)")
     
     # best_action_plot_generator("0500042733_17720_427_[mctsnc_30_inf_2_128_ocp_prodigal_16g;mctsnc_30_inf_2_128_acp_prodigal_16g;Gomoku_15x15;100]", 87,
     #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_2_128_OCP_PRODIGAL", "UCB - MCTS-NC_30_INF_2_128_OCP_PRODIGAL",                               
