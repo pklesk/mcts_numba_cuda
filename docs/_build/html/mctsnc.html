@@ -56,7 +56,8 @@
 <li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mcts.html">mcts module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">mctsnc module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#example-usage">Example Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-usage-1-connect-4">Example usage 1 (Connect 4)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-usage-2-gomoku">Example usage 2 (Gomoku)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#link-to-project-repository">Link to project repository</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#mctsnc.MCTSNC"><code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code></a><ul>
@@ -152,17 +153,65 @@
              
   <section id="module-mctsnc">
 <span id="mctsnc-module"></span><h1>mctsnc module<a class="headerlink" href="#module-mctsnc" title="Link to this heading"></a></h1>
-<p>This module contains the core functionalities of the project, embodied by the class <cite>MCTSNC</cite>. 
-It represents and performs a thorough GPU parallelization of Monte Carlo Tree Search implemented in Python via <cite>numba.cuda</cite>.</p>
+<p>This module contains the core algorithmic functionalities of the project, embodied by the class <cite>MCTSNC</cite>. 
+With CUDA computational model in mind, we have proposed and implemented four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm
+in this class. The provided implementation takes advantage of Numba (a just-in-time Python compiler) and its <cite>numba.cuda</cite> package. 
+By <cite>thoroughly parallel</cite> we understand an algorithmic design that applies to both: (1) the structural elements of trees — leaf-/root-/tree-level parallelization 
+(all those three are combined), and (2) the stages of MCTS — each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. 
+We apply suitable <cite>reduction</cite> patterns to carry out summations or max / argmax operations. Cooperation of threads   
+helps to transfer information between global and shared memory. The implementation uses: no atomic operations, no mutexes (lock-free), and very few host-device memory transfers.</p>
+<p>Note: for further usage, NVIDIA CUDA drivers must be present in the operating system.</p>
 <p>Private functions of <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> class are named with a single leading underscore (e.g.: <code class="docutils literal notranslate"><span class="pre">_set_cuda_constants</span></code>, 
 <code class="docutils literal notranslate"><span class="pre">_make_performance_info</span></code>, <code class="docutils literal notranslate"><span class="pre">_playout_acp_prodigal</span></code>, etc.). Among them, the kernel functions are additionally 
 described by <code class="docutils literal notranslate"><span class="pre">&#64;cuda.jit</span></code> decorators coming from <code class="docutils literal notranslate"><span class="pre">numba</span></code> module. Exact specifications of types come along with the decorators.</p>
-<p>Note: for further usage, NVIDIA CUDA drivers must be present in the operating system.</p>
-<p>Documentation note: this documentation was built with <cite>Sphinx</cite> tool, which does not correctly process docstrings for CUDA kernel functions, 
-i.e. functions decorated with <code class="docutils literal notranslate"><span class="pre">&#64;cuda.jit</span></code> that produce <code class="docutils literal notranslate"><span class="pre">numba.cuda.compiler.Dispatcher</span></code> objects as outcomes. 
-For actual docstrings associated with those functions see the source code.</p>
-<section id="example-usage">
-<h2>Example Usage<a class="headerlink" href="#example-usage" title="Link to this heading"></a></h2>
+<section id="example-usage-1-connect-4">
+<h2>Example usage 1 (Connect 4)<a class="headerlink" href="#example-usage-1-connect-4" title="Link to this heading"></a></h2>
+<p>Assuming <code class="docutils literal notranslate"><span class="pre">c4</span></code> represents a state of Connect 4 game - an instance of class <code class="docutils literal notranslate"><span class="pre">C4(State)</span></code> - shown below:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">|.|.|●|○|.|.|.|</span>
+<span class="go">|.|.|●|○|.|.|○|</span>
+<span class="go">|.|.|●|●|.|●|●|</span>
+<span class="go">|.|●|○|●|.|○|●|</span>
+<span class="go">|.|○|●|○|.|●|○|</span>
+<span class="go">|○|○|○|●|●|○|○|</span>
+<span class="go"> 0 1 2 3 4 5 6      </span>
+</pre></div>
+</div>
+<p>running the following code</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ai</span> <span class="o">=</span> <span class="n">MCTSNC</span><span class="p">(</span><span class="n">C4</span><span class="o">.</span><span class="n">get_board_shape</span><span class="p">(),</span> <span class="n">C4</span><span class="o">.</span><span class="n">get_extra_info_memory</span><span class="p">(),</span> <span class="n">C4</span><span class="o">.</span><span class="n">get_max_actions</span><span class="p">())</span>
+<span class="n">ai</span><span class="o">.</span><span class="n">init_device_side_arrays</span><span class="p">()</span>
+<span class="n">best_action</span> <span class="o">=</span> <span class="n">ai</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">c4</span><span class="o">.</span><span class="n">get_board</span><span class="p">(),</span> <span class="n">c4</span><span class="o">.</span><span class="n">get_extra_info</span><span class="p">(),</span> <span class="n">c4</span><span class="o">.</span><span class="n">get_turn</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BEST ACTION: </span><span class="si">{</span><span class="n">best_action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>results in finding the best action - move 4 - for black, and the following printout:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[MCTSNC._init_device_side_arrays()... for MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant=&#39;acp_prodigal&#39;, device_memory=2.0, ucb_c=2.0, seed: 0)]</span>
+<span class="go">[MCTSNC._init_device_side_arrays() done; time: 0.5193691253662109 s, per_state_memory: 95 B,  calculated max_tree_size: 2825549]</span>
+<span class="go">MCTSNC RUN... [MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant=&#39;acp_prodigal&#39;, device_memory=2.0, ucb_c=2.0, seed: 0)]</span>
+<span class="go">[actions info:</span>
+<span class="go">{</span>
+<span class="go">  0: {&#39;name&#39;: &#39;0&#39;, &#39;n_root&#39;: 7474304, &#39;win_flag&#39;: False, &#39;n&#39;: 2182400, &#39;n_wins&#39;: 2100454, &#39;q&#39;: 0.9624514296187683, &#39;ucb&#39;: 0.9678373740384631},</span>
+<span class="go">  1: {&#39;name&#39;: &#39;1&#39;, &#39;n_root&#39;: 7474304, &#39;win_flag&#39;: False, &#39;n&#39;: 185344, &#39;n_wins&#39;: 164757, &#39;q&#39;: 0.8889254575276243, &#39;ucb&#39;: 0.9074070665330406},</span>
+<span class="go">  4: {&#39;name&#39;: &#39;4&#39;, &#39;n_root&#39;: 7474304, &#39;win_flag&#39;: False, &#39;n&#39;: 4921472, &#39;n_wins&#39;: 4885924, &#39;q&#39;: 0.9927769577882389, &#39;ucb&#39;: 0.9963635461474457},</span>
+<span class="go">  5: {&#39;name&#39;: &#39;5&#39;, &#39;n_root&#39;: 7474304, &#39;win_flag&#39;: False, &#39;n&#39;: 105472, &#39;n_wins&#39;: 91863, &#39;q&#39;: 0.8709704945388349, &#39;ucb&#39;: 0.8954701768685893},</span>
+<span class="go">  6: {&#39;name&#39;: &#39;6&#39;, &#39;n_root&#39;: 7474304, &#39;win_flag&#39;: False, &#39;n&#39;: 79616, &#39;n_wins&#39;: 68403, &#39;q&#39;: 0.8591614750803859, &#39;ucb&#39;: 0.8873601607647162},</span>
+<span class="go">  best: {&#39;index&#39;: 4, &#39;name&#39;: &#39;4&#39;, &#39;n_root&#39;: 7474304, &#39;win_flag&#39;: False, &#39;n&#39;: 4921472, &#39;n_wins&#39;: 4885924, &#39;q&#39;: 0.9927769577882389, &#39;ucb&#39;: 0.9963635461474457}</span>
+<span class="go">}]</span>
+<span class="go">[performance info:</span>
+<span class="go">{</span>
+<span class="go">  steps: 6373,</span>
+<span class="go">  steps_per_second: 1274.0076324260813,</span>
+<span class="go">  playouts: 7474304,</span>
+<span class="go">  playouts_per_second: 1494166.0666990099,</span>
+<span class="go">  times_[ms]: {&#39;total&#39;: 5002.324819564819, &#39;loop&#39;: 5000.642776489258, &#39;reduce_over_trees&#39;: 0.29015541076660156, &#39;reduce_over_actions&#39;: 0.4520416259765625, &#39;mean_loop&#39;: 0.7846607212441955, &#39;mean_select&#39;: 0.11222893376562147, &#39;mean_expand&#39;: 0.2786097114284054, &#39;mean_playout&#39;: 0.17186361935680036, &#39;mean_backup&#39;: 0.2193056618645448},</span>
+<span class="go">  trees: {&#39;count&#39;: 8, &#39;mean_depth&#39;: 5.176703163017032, &#39;max_depth&#39;: 12, &#39;mean_size&#39;: 1233.0, &#39;max_size&#39;: 2736}</span>
+<span class="go">}]</span>
+<span class="go">MCTSNC RUN DONE. [time: 5.002324819564819 s; best action: 4, best win_flag: False, best n: 4921472, best n_wins: 4885924, best q: 0.9927769577882389]</span>
+<span class="go">BEST ACTION: 4</span>
+</pre></div>
+</div>
+</section>
+<section id="example-usage-2-gomoku">
+<h2>Example usage 2 (Gomoku)<a class="headerlink" href="#example-usage-2-gomoku" title="Link to this heading"></a></h2>
 <p>TODO</p>
 </section>
 <section id="dependencies">
@@ -180,7 +229,7 @@ For actual docstrings associated with those functions see the source code.</p>
 <dt class="sig sig-object py" id="mctsnc.MCTSNC">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mctsnc.</span></span><span class="sig-name descname"><span class="pre">MCTSNC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_board_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_extra_info_memory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_max_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_time_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_trees</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_playouts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'acp_prodigal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_memory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucb_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_index_to_name_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Monte Carlo Tree Search (GPU-parallelized) implemented via <cite>numba.cuda</cite>.</p>
+<p>Monte Carlo Tree Search (GPU-parallelized) implemented via <code class="docutils literal notranslate"><span class="pre">numba.cuda</span></code>.</p>
 <dl class="simple">
 <dt>Parameters:</dt><dd><dl class="simple">
 <dt>state_board_shape (tuple(int, int)):</dt><dd><p>shape of board for states in a given game, at most <code class="docutils literal notranslate"><span class="pre">(32,</span> <span class="pre">32)</span></code>.</p>
@@ -197,7 +246,7 @@ For actual docstrings associated with those functions see the source code.</p>
 </dd>
 <dt>n_playouts (int):</dt><dd><p>number of independent playouts from an expanded child (corresponds to m), must be a power of two, defaults to <code class="docutils literal notranslate"><span class="pre">128</span></code>.</p>
 </dd>
-<dt>variant (str):</dt><dd><p>choice of algorithmic variant from {<code class="docutils literal notranslate"><span class="pre">&quot;ocp_thrifty&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ocp_prodigal&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_thrifty</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal</span></code>}, defaults to <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal&quot;</span></code>}.</p>
+<dt>variant (str):</dt><dd><p>choice of algorithmic variant from {<code class="docutils literal notranslate"><span class="pre">&quot;ocp_thrifty&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ocp_prodigal&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_thrifty</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal</span></code>}, defaults to <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal&quot;</span></code>.</p>
 </dd>
 <dt>device_memory (float): </dt><dd><p>GPU memory in gigabytes to be available for this instance, defaults to <code class="docutils literal notranslate"><span class="pre">2.0</span></code>.</p>
 </dd>
@@ -376,7 +425,7 @@ For actual docstrings associated with those functions see the source code.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_extra_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC.run" title="Link to this definition"></a></dt>
-<dd><p>Performs the Monte Carlo Tree Search on GPU using multiple independent trees and playouts.                 
+<dd><p>Runs the Monte Carlo Tree Search on GPU using multiple independent trees and playouts.                 
 Computations are carried out according to the formerly chosen algorithmic <code class="docutils literal notranslate"><span class="pre">variant</span></code> i.e. one of {<code class="docutils literal notranslate"><span class="pre">&quot;ocp_thrifty&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ocp_prodigal&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_thrifty</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal</span></code>}, defaults to <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal&quot;</span></code>}.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><dl class="simple">
@@ -399,49 +448,49 @@ Computations are carried out according to the formerly chosen algorithmic <code 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._flatten_trees_actions_expanded_thrifty">
 <span class="sig-name descname"><span class="pre">_flatten_trees_actions_expanded_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._flatten_trees_actions_expanded_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._flatten_trees_actions_expanded_thrifty" title="Link to this definition"></a></dt>
-<dd><p>TODO</p>
+<dd><p>Uses information from array <code class="docutils literal notranslate"><span class="pre">trees_actions_expanded</span></code> of shape <code class="docutils literal notranslate"><span class="pre">(self.n_trees,</span> <span class="pre">self.state_max_actions</span> <span class="pre">+</span> <span class="pre">2)</span></code> and converts it to another array where the number of rows corresponds to the total of expanded legal actions in all trees. Each row contains a pair of indexes for: action and tree. The approach allows to allocate exact number of needed CUDA blocks for further operations.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._make_performance_info">
 <span class="sig-name descname"><span class="pre">_make_performance_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._make_performance_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._make_performance_info" title="Link to this definition"></a></dt>
-<dd><p>TODO</p>
+<dd><p>Prepares a dictionary with information on performance during the last run.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._make_actions_info_thrifty">
 <span class="sig-name descname"><span class="pre">_make_actions_info_thrifty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._make_actions_info_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._make_actions_info_thrifty" title="Link to this definition"></a></dt>
-<dd><p>TODO</p>
+<dd><p>Prepares a dictionary with information on root actions (using thrifty indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._make_actions_info_prodigal">
 <span class="sig-name descname"><span class="pre">_make_actions_info_prodigal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._make_actions_info_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._make_actions_info_prodigal" title="Link to this definition"></a></dt>
-<dd><p>TODO</p>
+<dd><p>Prepares a dictionary with information on root actions (using prodigal indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._run_ocp_thrifty">
 <span class="sig-name descname"><span class="pre">_run_ocp_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_extra_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._run_ocp_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._run_ocp_thrifty" title="Link to this definition"></a></dt>
-<dd><p>TODO</p>
+<dd><p>Runs computations for algorithmic variant: <code class="docutils literal notranslate"><span class="pre">&quot;ocp_thrifty&quot;</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._run_ocp_prodigal">
 <span class="sig-name descname"><span class="pre">_run_ocp_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_extra_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._run_ocp_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._run_ocp_prodigal" title="Link to this definition"></a></dt>
-<dd><p>TODO</p>
+<dd><p>Runs computations for algorithmic variant: <code class="docutils literal notranslate"><span class="pre">&quot;ocp_prodigal&quot;</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._run_acp_thrifty">
 <span class="sig-name descname"><span class="pre">_run_acp_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_extra_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._run_acp_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._run_acp_thrifty" title="Link to this definition"></a></dt>
-<dd><p>TODO</p>
+<dd><p>Runs computations for algorithmic variant: <code class="docutils literal notranslate"><span class="pre">&quot;acp_thrifty&quot;</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._run_acp_prodigal">
 <span class="sig-name descname"><span class="pre">_run_acp_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_extra_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._run_acp_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._run_acp_prodigal" title="Link to this definition"></a></dt>
-<dd><p>TODO</p>
+<dd><p>Runs computations for algorithmic variant: <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal&quot;</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -459,25 +508,25 @@ Computations are carried out according to the formerly chosen algorithmic <code 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._expand_1_ocp_thrifty">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_expand_1_ocp_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_tree_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_generators_expand_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._expand_1_ocp_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._expand_1_ocp_thrifty" title="Link to this definition"></a></dt>
-<dd><p>CUDA kernel responsible for computations of stage: expansions (substage 1, <code class="docutils literal notranslate"><span class="pre">ocp_thrifty</span></code> variant).</p>
+<dd><p>CUDA kernel responsible for computations of stage: expansions (substage 1, variant <code class="docutils literal notranslate"><span class="pre">&quot;ocp_thrifty&quot;</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._expand_1_ocp_prodigal">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_expand_1_ocp_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_tree_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_generators_expand_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._expand_1_ocp_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._expand_1_ocp_prodigal" title="Link to this definition"></a></dt>
-<dd><p>CUDA kernel responsible for computations of stage: expansions (substage 1, <code class="docutils literal notranslate"><span class="pre">ocp_prodigal</span></code> variant).</p>
+<dd><p>CUDA kernel responsible for computations of stage: expansions (substage 1, variant <code class="docutils literal notranslate"><span class="pre">&quot;ocp_prodigal&quot;</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._expand_1_acp_thrifty">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_expand_1_acp_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_tree_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._expand_1_acp_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._expand_1_acp_thrifty" title="Link to this definition"></a></dt>
-<dd><p>CUDA kernel responsible for computations of stage: expansions (substage 1, <code class="docutils literal notranslate"><span class="pre">acp_thrifty</span></code> variant).</p>
+<dd><p>CUDA kernel responsible for computations of stage: expansions (substage 1, variant <code class="docutils literal notranslate"><span class="pre">&quot;acp_thrifty&quot;</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._expand_1_acp_prodigal">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_expand_1_acp_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_tree_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._expand_1_acp_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._expand_1_acp_prodigal" title="Link to this definition"></a></dt>
-<dd><p>CUDA kernel responsible for computations of stage: expansions (substage 1, <code class="docutils literal notranslate"><span class="pre">acp_prodigal</span></code> variant).</p>
+<dd><p>CUDA kernel responsible for computations of stage: expansions (substage 1, variant <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal&quot;</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -489,55 +538,55 @@ Computations are carried out according to the formerly chosen algorithmic <code 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._expand_2_thrifty">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_expand_2_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_depths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded_flat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._expand_2_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._expand_2_thrifty" title="Link to this definition"></a></dt>
-<dd><p>CUDA kernel responsible for computations of stage: expansions (substage 2, thrifty number of blocks - variant <code class="docutils literal notranslate"><span class="pre">ocp_thrifty</span></code> or <code class="docutils literal notranslate"><span class="pre">acp_thrifty</span></code>).</p>
+<dd><p>CUDA kernel responsible for computations of stage: expansions (substage 2, thrifty number of blocks - variant <code class="docutils literal notranslate"><span class="pre">&quot;ocp_thrifty&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;acp_thrifty&quot;</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._expand_2_prodigal">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_expand_2_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_depths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._expand_2_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._expand_2_prodigal" title="Link to this definition"></a></dt>
-<dd><p>CUDA kernel responsible for computations of stage: expansions (substage 2, prodigal number of blocks - variant <code class="docutils literal notranslate"><span class="pre">ocp_prodigal</span></code> or <code class="docutils literal notranslate"><span class="pre">acp_prodigal</span></code>).</p>
+<dd><p>CUDA kernel responsible for computations of stage: expansions (substage 2, prodigal number of blocks - variant <code class="docutils literal notranslate"><span class="pre">&quot;ocp_prodigal&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal&quot;</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._playout_ocp">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_playout_ocp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_generators_playout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._playout_ocp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._playout_ocp" title="Link to this definition"></a></dt>
-<dd><p>CUDA kernel responsible for computations of stage: playouts (variant <code class="docutils literal notranslate"><span class="pre">ocp_thrifty</span></code> or <code class="docutils literal notranslate"><span class="pre">ocp_prodigal</span></code>).</p>
+<dd><p>CUDA kernel responsible for computations of stage: playouts (variant <code class="docutils literal notranslate"><span class="pre">&quot;ocp_thrifty&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ocp_prodigal&quot;</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._playout_acp_thrifty">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_playout_acp_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded_flat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_generators_playout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes_children</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._playout_acp_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._playout_acp_thrifty" title="Link to this definition"></a></dt>
-<dd><p>CUDA kernel responsible for computations of stage: playouts (variant <code class="docutils literal notranslate"><span class="pre">acp_thrifty</span></code>).</p>
+<dd><p>CUDA kernel responsible for computations of stage: playouts (variant <code class="docutils literal notranslate"><span class="pre">&quot;acp_thrifty&quot;</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._playout_acp_prodigal">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_playout_acp_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_boards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_extra_infos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_generators_playout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes_children</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._playout_acp_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._playout_acp_prodigal" title="Link to this definition"></a></dt>
-<dd><p>CUDA kernel responsible for computations of stage: playouts (variant <code class="docutils literal notranslate"><span class="pre">acp_prodigal</span></code>).</p>
+<dd><p>CUDA kernel responsible for computations of stage: playouts (variant <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal&quot;</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._backup_ocp">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_backup_ocp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_playouts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_selected_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._backup_ocp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._backup_ocp" title="Link to this definition"></a></dt>
-<dd><p>CUDA kernel responsible for computations of stage: backups (variant <code class="docutils literal notranslate"><span class="pre">ocp_thrifty</span></code> or <code class="docutils literal notranslate"><span class="pre">ocp_prodigal</span></code>).</p>
+<dd><p>CUDA kernel responsible for computations of stage: backups (variant <code class="docutils literal notranslate"><span class="pre">&quot;ocp_thrifty&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ocp_prodigal&quot;</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._backup_1_acp_thrifty">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_backup_1_acp_thrifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_playouts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes_children</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._backup_1_acp_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._backup_1_acp_thrifty" title="Link to this definition"></a></dt>
-<dd><p>CUDA kernel responsible for computations of stage: backups (substage 1, variant <code class="docutils literal notranslate"><span class="pre">acp_thrifty</span></code>).</p>
+<dd><p>CUDA kernel responsible for computations of stage: backups (substage 1, variant <code class="docutils literal notranslate"><span class="pre">&quot;acp_thrifty&quot;</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._backup_1_acp_prodigal">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_backup_1_acp_prodigal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_playouts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_nodes_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes_children</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._backup_1_acp_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._backup_1_acp_prodigal" title="Link to this definition"></a></dt>
-<dd><p>CUDA kernel responsible for computations of stage: backups (substage 1, variant <code class="docutils literal notranslate"><span class="pre">acp_prodigal</span></code>).</p>
+<dd><p>CUDA kernel responsible for computations of stage: backups (substage 1, variant <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal&quot;</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._backup_2_acp">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_backup_2_acp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_playouts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_turns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_ns_wins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_selected_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_actions_expanded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees_playout_outcomes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._backup_2_acp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._backup_2_acp" title="Link to this definition"></a></dt>
-<dd><p>CUDA kernel responsible for computations of stage: backups (substage 2, variant <code class="docutils literal notranslate"><span class="pre">acp_thrifty</span></code> or <code class="docutils literal notranslate"><span class="pre">acp_prodigal</span></code>).</p>
+<dd><p>CUDA kernel responsible for computations of stage: backups (substage 2, variant <code class="docutils literal notranslate"><span class="pre">&quot;acp_thrifty&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal&quot;</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
