@@ -1,5 +1,13 @@
 UNDER CONSTRUCTION.
 
+# MCTS-NC: A thorough GPU parallelization of Monte Carlo Tree Search implemented in Python via numba.cuda
+<table>
+   <tr>
+        <td>![ocp](https://github.com/user-attachments/assets/df115f08-a5a4-409d-8b93-de84be6133f2)</td>
+        <td>![acp](https://github.com/user-attachments/assets/fea4b1ec-25d2-459c-b519-3727ecd3268b)</td>
+    </tr>
+</table>
+
 ## Example usage 1 (Connect 4)
 Assuming `c4` represents a state of Connect 4 game - an instance of class `C4(State)` - shown below:
 ```bash
