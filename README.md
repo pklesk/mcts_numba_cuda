@@ -27,8 +27,8 @@ in: blue (losses of the first "red" player), gray (draws) or red (wins of the fi
 the statistics at ancestor nodes. For shortness, Q stands for an action-value estimate and U for its upper confidence bound.
 
 ## Example usage 1 (Connect 4)
-Assuming the specifics of the Connect 4 game have been defined to MCTS-NC in `mctsnc_game_specifics.py` module (i.e. functions `is_action_legal`, `take_action`, etc.), 
-and that `c4` (instance of `C4(State)`) represents a state of Connect 4 game shown below:
+Assume the specifics of the Connect 4 game have been defined to MCTS-NC in `mctsnc_game_specifics.py` module (i.e. functions `is_action_legal`, `take_action`, etc.), 
+and that `c4` (instance of `C4(State)`) represents a state of an ongoing Connect 4 game shown below.
 ```bash
 |.|.|●|○|.|.|.|
 |.|.|●|○|.|.|○|
@@ -38,7 +38,7 @@ and that `c4` (instance of `C4(State)`) represents a state of Connect 4 game sho
 |○|○|○|●|●|○|○|
  0 1 2 3 4 5 6 
 ```
-running the following code
+Then, running the following code
 ```python
 ai = MCTSNC(C4.get_board_shape(), C4.get_extra_info_memory(), C4.get_max_actions())
 ai.init_device_side_arrays()
