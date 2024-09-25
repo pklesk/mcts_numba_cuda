@@ -27,7 +27,8 @@ in: blue (losses of the first "red" player), gray (draws) or red (wins of the fi
 the statistics at ancestor nodes. For shortness, Q stands for an action-value estimate and U for its upper confidence bound.
 
 ## Example usage 1 (Connect 4)
-Assuming `c4` represents a state of Connect 4 game - an instance of class `C4(State)` - shown below:
+Assuming the specifics of the Connect 4 game have been defined to MCTS-NC in `mctsnc_game_specifics.py` module (i.e. `is_action_legal`, `take_action`, etc.),
+and that `c4` (instance of `C4(State)`) represents a state of Connect 4 game shown below:
 ```bash
 |.|.|●|○|.|.|.|
 |.|.|●|○|.|.|○|
@@ -44,7 +45,7 @@ ai.init_device_side_arrays()
 best_action = ai.run(c4.get_board(), c4.get_extra_info(), c4.get_turn())
 print(f"BEST ACTION: {best_action}")
 ```
-results in finding the best action - move 4 - for black, and the following printout:
+results in finding the best action for black - move 4 (winning in two plies), and the following printout:
 ```bash
 [MCTSNC._init_device_side_arrays()... for MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant='acp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)]
 [MCTSNC._init_device_side_arrays() done; time: 0.5193691253662109 s, per_state_memory: 95 B,  calculated max_tree_size: 2825549]
