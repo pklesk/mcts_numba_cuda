@@ -2,10 +2,9 @@ import numpy as np
 from mcts import MCTS
 from mctsnc import MCTSNC
 from c4 import C4
-from gomoku import Gomoku
 from game_runner import GameRunner
 import time
-from utils import cpu_and_system_props, gpu_props, hash_str, dict_to_str, Logger, experiment_hash_str, save_and_zip_experiment, unzip_and_load_experiment
+from utils import cpu_and_system_props, gpu_props, dict_to_str, Logger, experiment_hash_str, save_and_zip_experiment, unzip_and_load_experiment
 import sys
 
 
@@ -20,7 +19,7 @@ FOLDER_EXTRAS = "../extras/"
 STATE_CLASS = C4 # C4 or Gomoku
 N_GAMES = 100
 AI_A_SHORTNAME = "mcts_5_inf_vanilla"
-AI_B_SHORTNAME = "mctsnc_1_inf_1_64_acp_thrifty" 
+AI_B_SHORTNAME = "mctsnc_1_inf_4_128_ocp_prodigal" 
 REPRODUCE_EXPERIMENT = False
 _BOARD_SHAPE = STATE_CLASS.get_board_shape()
 _EXTRA_INFO_MEMORY = STATE_CLASS.get_extra_info_memory()
@@ -106,7 +105,7 @@ AIS = {
 
 LINE_SEPARATOR = 208 * "="
 
-if __name__ == "__main_waiting__":    
+if __name__ == "__main__":    
     ai_a = AIS[AI_A_SHORTNAME]
     ai_b = AIS[AI_B_SHORTNAME]    
     matchup_info = {
@@ -193,72 +192,4 @@ if __name__ == "__main_waiting__":
     if not REPRODUCE_EXPERIMENT:
         sys.stdout = sys.__stdout__
         logger.logfile.close()
-        save_and_zip_experiment(experiment_hs, experiment_info, FOLDER_EXPERIMENTS)
-
-
-if __name__ == "__main_usage_example_c4__":
-    print("USAGE EXAMPLE C4.")    
-    
-    c4 = C4()
-    c4 = c4.take_action(3)
-    c4 = c4.take_action(2)
-    c4 = c4.take_action(2)
-    c4 = c4.take_action(3)
-    c4 = c4.take_action(3)
-    c4 = c4.take_action(2)
-    c4 = c4.take_action(3)
-    c4 = c4.take_action(3)
-    c4 = c4.take_action(2)
-    c4 = c4.take_action(5)
-    c4 = c4.take_action(5)
-    c4 = c4.take_action(5)
-    c4 = c4.take_action(5)
-    c4 = c4.take_action(6)
-    c4 = c4.take_action(2)
-    c4 = c4.take_action(6)
-    c4 = c4.take_action(6)
-    c4 = c4.take_action(1)
-    c4 = c4.take_action(4)
-    c4 = c4.take_action(1)
-    c4 = c4.take_action(1)
-    c4 = c4.take_action(3)
-    c4 = c4.take_action(6)
-    c4 = c4.take_action(6)
-    c4 = c4.take_action(2)
-    c4 = c4.take_action(0)    
-    print(c4)
-    
-    ai = MCTSNC(C4.get_board_shape(), C4.get_extra_info_memory(), C4.get_max_actions())
-    ai.init_device_side_arrays()
-    best_action = ai.run(c4.get_board(), c4.get_extra_info(), c4.get_turn())
-    print(f"BEST ACTION: {best_action}")
-
-if __name__ == "__main__": # "__main_usage_example_gomoku__":
-    print("USAGE EXAMPLE GOMOKU.")    
-    
-    gomoku = Gomoku()
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("h8"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i9"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i6"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i8"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("j6"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("k6"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("j7"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i10"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i7"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("g9"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("h7"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i11"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i12"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("k7"))
-    gomoku = gomoku.take_action(Gomoku.action_name_to_index("h5"))
-
-    
-    
-    print(gomoku)
-    
-    ai = MCTSNC(Gomoku.get_board_shape(), Gomoku.get_extra_info_memory(), Gomoku.get_max_actions(), action_index_to_name_function=Gomoku.action_index_to_name)
-    ai.init_device_side_arrays()
-    best_action = ai.run(gomoku.get_board(), gomoku.get_extra_info(), gomoku.get_turn())
-    print(f"BEST ACTION: {best_action}")
-    
+        save_and_zip_experiment(experiment_hs, experiment_info, FOLDER_EXPERIMENTS)    
