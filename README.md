@@ -18,7 +18,7 @@ The implementation uses: no atomic operations, no mutexes (lock-free), and very 
    <tr><td><img src="https://github.com/user-attachments/assets/fea4b1ec-25d2-459c-b519-3727ecd3268b"/></td></tr>
 </table>
 
-In MCTS-NC, there are two main variants according to which it conducts the playouts: OCP (*One Child Playouts*), ACP (*All Children Playouts*). 
+In MCTS-NC, there are two main variants according to which it conducts multiple playouts: OCP (*One Child Playouts*), ACP (*All Children Playouts*). 
 Each of them has two subvariants, named "thrifty" and "prodigal".
 In both OCP and ACP, multiple independent trees are grown concurrently (for readability just two are shown in each illustration).
 Wavy arrows distinguished by colors represent CUDA threads working for different stages of MCTS algorithm:
