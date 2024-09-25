@@ -2,20 +2,33 @@ UNDER CONSTRUCTION.
 
 # MCTS-NC: A thorough GPU parallelization of Monte Carlo Tree Search implemented in Python via numba.cuda
 With CUDA computational model in mind, we propose and implement four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm. 
-The provided implementation takes advantage of [Numba](https://numba.pydata.org/) (a just-in-time Python compiler) and its `numba.cuda` package. 
+The provided implementation takes advantage of [Numba](https://numba.pydata.org/), a just-in-time Python compiler, and its `numba.cuda` package (hence the "-NC" suffix in the project name). 
 By *thoroughly parallel* we understand an algorithmic design that applies to both: (1) the structural elements of trees - leaf-/root-/tree-level parallelization 
-(all those three are combined), and (2) the stages of MCTS --- each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. 
+(all those three are combined), and (2) the stages of MCTS - each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. 
 We apply suitable *reduction* patterns to carry out summations or max / argmax operations. Cooperation of threads helps to transfer information between global and shared memory. 
 The implementation uses: no atomic operations, no mutexes (lock-free), and very few host-device memory transfers.
+
+## High-level intuition 
 <table>
    <tr><td><img src="https://github.com/user-attachments/assets/df115f08-a5a4-409d-8b93-de84be6133f2"/></td></tr>
 </table>
 <table>   
    <tr><td><img src="https://github.com/user-attachments/assets/fea4b1ec-25d2-459c-b519-3727ecd3268b"/></td></tr>
 </table>
+In MCTS-NC, there are two main variants according to which it conducts the playouts: OCP (*One Child Playouts*), ACP (*All Children Playouts*). 
+Each of them has two subvariants, named "thrifty" and "prodigal".
+In both OCP and ACP, multiple independent trees are grown concurrently (for readability just two are shown in each illustration).
+Wavy arrows distinguished by colors represent CUDA threads working for different stages of MCTS algorithm:
+orange for selection, green for expansion, black for playouts, purple for backup. In MCTS-NC, threads are grouped in 
+CUDA blocks that are indexed either by tree indexes alone, or tree-action pairs, depending on the stage and variant / subvariant. 
+In the OCP variant, exactly one random child of each expanded leaf node (accross different trees) becomes played out. 
+In ACP, all such children become played out. In the figure, terminal rewards from playouts are colored
+in: blue (losses of the first "red" player), gray (draws) or red (wins of the first player). Their counts suitably update
+the statistics at ancestor nodes. For shortness, Q stands for an action-value estimate and U for its upper confidence bound.
 
 ## Example usage 1 (Connect 4)
-Assuming `c4` represents a state of Connect 4 game - an instance of class `C4(State)` - shown below:
+Assume the specifics of the Connect 4 game have been defined to MCTS-NC in `mctsnc_game_specifics.py` module (i.e. functions `is_action_legal`, `take_action`, etc.), 
+and that `c4` - instance of `C4(State)` - represents a state of an ongoing Connect 4 game shown below.
 ```bash
 |.|.|●|○|.|.|.|
 |.|.|●|○|.|.|○|
@@ -25,14 +38,14 @@ Assuming `c4` represents a state of Connect 4 game - an instance of class `C4(St
 |○|○|○|●|●|○|○|
  0 1 2 3 4 5 6 
 ```
-running the following code
+Then, running the following code
 ```python
 ai = MCTSNC(C4.get_board_shape(), C4.get_extra_info_memory(), C4.get_max_actions())
 ai.init_device_side_arrays()
 best_action = ai.run(c4.get_board(), c4.get_extra_info(), c4.get_turn())
 print(f"BEST ACTION: {best_action}")
 ```
-results in finding the best action - move 4 - for black, and the following printout:
+results in finding the best action for black - move 4 (winning in two plies), and the following printout:
 ```bash
 [MCTSNC._init_device_side_arrays()... for MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant='acp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)]
 [MCTSNC._init_device_side_arrays() done; time: 0.5193691253662109 s, per_state_memory: 95 B,  calculated max_tree_size: 2825549]
