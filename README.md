@@ -2,7 +2,8 @@ UNDER CONSTRUCTION.
 
 # MCTS-NC: A thorough GPU parallelization of Monte Carlo Tree Search implemented in Python via numba.cuda
 With CUDA computational model in mind, we propose and implement four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm. 
-The provided implementation takes advantage of [Numba](https://numba.pydata.org/) (a just-in-time Python compiler) and its `numba.cuda` package. 
+The provided implementation takes advantage of [Numba](https://numba.pydata.org/), a just-in-time Python compiler, and its `numba.cuda` package (corresponds to "-NC" suffix in 
+the project name). 
 By *thoroughly parallel* we understand an algorithmic design that applies to both: (1) the structural elements of trees - leaf-/root-/tree-level parallelization 
 (all those three are combined), and (2) the stages of MCTS --- each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. 
 We apply suitable *reduction* patterns to carry out summations or max / argmax operations. Cooperation of threads helps to transfer information between global and shared memory. 
