@@ -106,7 +106,7 @@ AIS = {
 
 LINE_SEPARATOR = 208 * "="
 
-if __name__ == "__main__":    
+if __name__ == "__main_waiting__":    
     ai_a = AIS[AI_A_SHORTNAME]
     ai_b = AIS[AI_B_SHORTNAME]    
     matchup_info = {
@@ -196,8 +196,8 @@ if __name__ == "__main__":
         save_and_zip_experiment(experiment_hs, experiment_info, FOLDER_EXPERIMENTS)
 
 
-if __name__ == "__main_usage_example__":
-    print("USAGE EXAMPLE")    
+if __name__ == "__main_usage_example_c4__":
+    print("USAGE EXAMPLE C4.")    
     
     c4 = C4()
     c4 = c4.take_action(3)
@@ -232,3 +232,33 @@ if __name__ == "__main_usage_example__":
     ai.init_device_side_arrays()
     best_action = ai.run(c4.get_board(), c4.get_extra_info(), c4.get_turn())
     print(f"BEST ACTION: {best_action}")
+
+if __name__ == "__main__": # "__main_usage_example_gomoku__":
+    print("USAGE EXAMPLE GOMOKU.")    
+    
+    gomoku = Gomoku()
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("h8"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i9"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i6"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i8"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("j6"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("k6"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("j7"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i10"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i7"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("g9"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("h7"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i11"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("i12"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("k7"))
+    gomoku = gomoku.take_action(Gomoku.action_name_to_index("h5"))
+
+    
+    
+    print(gomoku)
+    
+    ai = MCTSNC(Gomoku.get_board_shape(), Gomoku.get_extra_info_memory(), Gomoku.get_max_actions(), action_index_to_name_function=Gomoku.action_index_to_name)
+    ai.init_device_side_arrays()
+    best_action = ai.run(gomoku.get_board(), gomoku.get_extra_info(), gomoku.get_turn())
+    print(f"BEST ACTION: {best_action}")
+    

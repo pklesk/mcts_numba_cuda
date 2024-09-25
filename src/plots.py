@@ -99,24 +99,24 @@ def scores_array_plot_ocp_thrifty_vs_vanilla():
         ])
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "OCP-THRIFTY (1s) vs VANILLA (5s)")    
 
-def scores_array_plot_ocp_prodigal_vs_vanilla():
+def scores_array_plot_ocp_prodigal_vs_vanilla():    
     experiments_hs_array = np.array([
-        ["1302514517_91136_427_[mcts_4_inf_vanilla;mctsnc_1_inf_1_32_ocp_prodigal;C4_6x7;100]",
-         "2439094103_18658_427_[mcts_4_inf_vanilla;mctsnc_1_inf_1_64_ocp_prodigal;C4_6x7;100]",
-         "0611358305_22348_427_[mcts_4_inf_vanilla;mctsnc_1_inf_1_128_ocp_prodigal;C4_6x7;100]",
-         "3982047969_49772_427_[mcts_4_inf_vanilla;mctsnc_1_inf_1_256_ocp_prodigal;C4_6x7;100]"],
-        ["1281441239_38466_427_[mcts_4_inf_vanilla;mctsnc_1_inf_2_32_ocp_prodigal;C4_6x7;100]",
-         "2418020825_65988_427_[mcts_4_inf_vanilla;mctsnc_1_inf_2_64_ocp_prodigal;C4_6x7;100]",
-         "2356598209_12844_427_[mcts_4_inf_vanilla;mctsnc_1_inf_2_128_ocp_prodigal;C4_6x7;100]",
-         "1432320577_07564_427_[mcts_4_inf_vanilla;mctsnc_1_inf_2_256_ocp_prodigal;C4_6x7;100]"],
-        ["1239294683_33126_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_32_ocp_prodigal;C4_6x7;100]",         
-         "2375874269_93352_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_64_ocp_prodigal;C4_6x7;100]",
-         "1552110721_61132_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_128_ocp_prodigal;C4_6x7;100]",
-         "0627833089_55852_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]"],
-        ["1155001571_55150_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_32_ocp_prodigal;C4_6x7;100]",
-         "2291581157_82672_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_64_ocp_prodigal;C4_6x7;100]",
-         "4238103041_90412_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_128_ocp_prodigal;C4_6x7;100]",
-         "3313825409_85132_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_256_ocp_prodigal;C4_6x7;100]"]
+        ["2015967285_82784_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_ocp_prodigal;C4_6x7;100]",
+         "3152546871_43010_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_ocp_prodigal;C4_6x7;100]",
+         "3339668289_77068_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_ocp_prodigal;C4_6x7;100]",
+         "2415390657_71788_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_ocp_prodigal;C4_6x7;100]"],
+        ["1994894007_30114_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_ocp_prodigal;C4_6x7;100]",
+         "3131473593_90340_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_ocp_prodigal;C4_6x7;100]",
+         "0789940897_67564_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_ocp_prodigal;C4_6x7;100]",
+         "4160630561_62284_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_ocp_prodigal;C4_6x7;100]"],
+        ["1952747451_24774_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_ocp_prodigal;C4_6x7;100]",         
+         "3089327037_85000_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_ocp_prodigal;C4_6x7;100]",
+         "TODO",
+         "3356143073_10572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]"],
+        ["1868454339_46798_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_ocp_prodigal;C4_6x7;100]",
+         "3005033925_07024_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_ocp_prodigal;C4_6x7;100]",
+         "2671445729_45132_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_ocp_prodigal;C4_6x7;100]",
+         "1747168097_39852_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_prodigal;C4_6x7;100]"]
         ])
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "OCP-PRODIGAL (1s) vs VANILLA (4s)")
 
