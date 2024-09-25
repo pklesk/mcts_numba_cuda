@@ -60,6 +60,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#example-usage-2-gomoku">Example usage 2 (Gomoku)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#link-to-project-repository">Link to project repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#notes-on-code">Notes on code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#mctsnc.MCTSNC"><code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mctsnc.MCTSNC.VARIANTS"><code class="docutils literal notranslate"><span class="pre">MCTSNC.VARIANTS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mctsnc.MCTSNC.DEFAULT_SEARCH_TIME_LIMIT"><code class="docutils literal notranslate"><span class="pre">MCTSNC.DEFAULT_SEARCH_TIME_LIMIT</span></code></a></li>
@@ -153,20 +154,17 @@
              
   <section id="module-mctsnc">
 <span id="mctsnc-module"></span><h1>mctsnc module<a class="headerlink" href="#module-mctsnc" title="Link to this heading"></a></h1>
-<p>This module contains the core algorithmic functionalities of the project, embodied by the class <cite>MCTSNC</cite>. 
-With CUDA computational model in mind, we have proposed and implemented four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm
-in this class. The provided implementation takes advantage of Numba (a just-in-time Python compiler) and its <cite>numba.cuda</cite> package. 
-By <cite>thoroughly parallel</cite> we understand an algorithmic design that applies to both: (1) the structural elements of trees — leaf-/root-/tree-level parallelization 
-(all those three are combined), and (2) the stages of MCTS — each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. 
-We apply suitable <cite>reduction</cite> patterns to carry out summations or max / argmax operations. Cooperation of threads   
-helps to transfer information between global and shared memory. The implementation uses: no atomic operations, no mutexes (lock-free), and very few host-device memory transfers.</p>
-<p>Note: for further usage, NVIDIA CUDA drivers must be present in the operating system.</p>
-<p>Private functions of <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> class are named with a single leading underscore (e.g.: <code class="docutils literal notranslate"><span class="pre">_set_cuda_constants</span></code>, 
-<code class="docutils literal notranslate"><span class="pre">_make_performance_info</span></code>, <code class="docutils literal notranslate"><span class="pre">_playout_acp_prodigal</span></code>, etc.). Among them, the kernel functions are additionally 
-described by <code class="docutils literal notranslate"><span class="pre">&#64;cuda.jit</span></code> decorators coming from <code class="docutils literal notranslate"><span class="pre">numba</span></code> module. Exact specifications of types come along with the decorators.</p>
+<p>This module contains the core algorithmic functionalities of the project, embodied by the class <cite>MCTSNC</cite>.</p>
+<p>With CUDA computational model in mind, we have proposed and implemented in <cite>MCTSNC</cite> four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm. 
+The provided implementation takes advantage of <a class="reference external" href="https://numba.pydata.org">Numba</a>, a just-in-time Python compiler, and its <cite>numba.cuda</cite> package (hence the “NC” suffix in the name). 
+By <cite>thoroughly parallel</cite> we understand an algorithmic design that applies to both: (1) the structural elements of trees - leaf-/root-/tree-level parallelization 
+(all those three are combined), and (2) the stages of MCTS - each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. 
+We apply suitable <cite>reduction</cite> patterns to carry out summations or max / argmax operations. Cooperation of threads helps to transfer information between global and shared memory. 
+The implementation uses: no atomic operations, no mutexes (lock-free), and very few host-device memory transfers.</p>
 <section id="example-usage-1-connect-4">
 <h2>Example usage 1 (Connect 4)<a class="headerlink" href="#example-usage-1-connect-4" title="Link to this heading"></a></h2>
-<p>Assuming <code class="docutils literal notranslate"><span class="pre">c4</span></code> represents a state of Connect 4 game - an instance of class <code class="docutils literal notranslate"><span class="pre">C4(State)</span></code> - shown below:</p>
+<p>Assume the specifics of the Connect 4 game have been defined to MCTS-NC in <code class="docutils literal notranslate"><span class="pre">mctsnc_game_specifics.py</span></code> module (i.e. functions <code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action</span></code>, etc.), 
+and that <code class="docutils literal notranslate"><span class="pre">c4</span></code> - instance of <code class="docutils literal notranslate"><span class="pre">C4(State)</span></code> - represents a state of an ongoing Connect 4 game shown below.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">|.|.|●|○|.|.|.|</span>
 <span class="go">|.|.|●|○|.|.|○|</span>
 <span class="go">|.|.|●|●|.|●|●|</span>
@@ -176,14 +174,14 @@ described by <code class="docutils literal notranslate"><span class="pre">&#64;c
 <span class="go"> 0 1 2 3 4 5 6      </span>
 </pre></div>
 </div>
-<p>running the following code</p>
+<p>Then, running the following code</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ai</span> <span class="o">=</span> <span class="n">MCTSNC</span><span class="p">(</span><span class="n">C4</span><span class="o">.</span><span class="n">get_board_shape</span><span class="p">(),</span> <span class="n">C4</span><span class="o">.</span><span class="n">get_extra_info_memory</span><span class="p">(),</span> <span class="n">C4</span><span class="o">.</span><span class="n">get_max_actions</span><span class="p">())</span>
 <span class="n">ai</span><span class="o">.</span><span class="n">init_device_side_arrays</span><span class="p">()</span>
 <span class="n">best_action</span> <span class="o">=</span> <span class="n">ai</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">c4</span><span class="o">.</span><span class="n">get_board</span><span class="p">(),</span> <span class="n">c4</span><span class="o">.</span><span class="n">get_extra_info</span><span class="p">(),</span> <span class="n">c4</span><span class="o">.</span><span class="n">get_turn</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BEST ACTION: </span><span class="si">{</span><span class="n">best_action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>results in finding the best action - move 4 - for black, and the following printout:</p>
+<p>results in finding the best action for black - move 4 (winning in two plies), and the following printout:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[MCTSNC._init_device_side_arrays()... for MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant=&#39;acp_prodigal&#39;, device_memory=2.0, ucb_c=2.0, seed: 0)]</span>
 <span class="go">[MCTSNC._init_device_side_arrays() done; time: 0.5193691253662109 s, per_state_memory: 95 B,  calculated max_tree_size: 2825549]</span>
 <span class="go">MCTSNC RUN... [MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant=&#39;acp_prodigal&#39;, device_memory=2.0, ucb_c=2.0, seed: 0)]</span>
@@ -212,18 +210,82 @@ described by <code class="docutils literal notranslate"><span class="pre">&#64;c
 </section>
 <section id="example-usage-2-gomoku">
 <h2>Example usage 2 (Gomoku)<a class="headerlink" href="#example-usage-2-gomoku" title="Link to this heading"></a></h2>
-<p>TODO</p>
+<p>Assume the specifics of the Gomoku game have been defined to MCTS-NC in <code class="docutils literal notranslate"><span class="pre">mctsnc_game_specifics.py</span></code> module (i.e. functions <code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action</span></code>, etc.), 
+and that <code class="docutils literal notranslate"><span class="pre">g</span></code> - instance of <code class="docutils literal notranslate"><span class="pre">Gomoku(State)</span></code> - represents a state of an ongoing Gomoku game shown below.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">  ABCDEFGHIJKLMNO</span>
+<span class="go">15+++++++++++++++15</span>
+<span class="go">14+++++++++++++++14</span>
+<span class="go">13+++++++++++++++13</span>
+<span class="go">12++++++++●++++++12</span>
+<span class="go">11++++++++○++++++11</span>
+<span class="go">10++++++++○++++++10</span>
+<span class="go"> 9++++++○+○++++++9</span>
+<span class="go"> 8+++++++●○++++++8</span>
+<span class="go"> 7+++++++●●●○++++7</span>
+<span class="go"> 6++++++++●●○++++6</span>
+<span class="go"> 5+++++++●+++++++5</span>
+<span class="go"> 4+++++++++++++++4</span>
+<span class="go"> 3+++++++++++++++3</span>
+<span class="go"> 2+++++++++++++++2</span>
+<span class="go"> 1+++++++++++++++1</span>
+<span class="go">  ABCDEFGHIJKLMNO</span>
+</pre></div>
+</div>
+<p>Then, running the following code</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ai</span> <span class="o">=</span> <span class="n">MCTSNC</span><span class="p">(</span><span class="n">Gomoku</span><span class="o">.</span><span class="n">get_board_shape</span><span class="p">(),</span> <span class="n">Gomoku</span><span class="o">.</span><span class="n">get_extra_info_memory</span><span class="p">(),</span> <span class="n">Gomoku</span><span class="o">.</span><span class="n">get_max_actions</span><span class="p">(),</span> <span class="n">action_index_to_name_function</span><span class="o">=</span><span class="n">Gomoku</span><span class="o">.</span><span class="n">action_index_to_name</span><span class="p">)</span>
+<span class="n">ai</span><span class="o">.</span><span class="n">init_device_side_arrays</span><span class="p">()</span>
+<span class="n">best_action</span> <span class="o">=</span> <span class="n">ai</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">get_board</span><span class="p">(),</span> <span class="n">g</span><span class="o">.</span><span class="n">get_extra_info</span><span class="p">(),</span> <span class="n">g</span><span class="o">.</span><span class="n">get_turn</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BEST ACTION: </span><span class="si">{</span><span class="n">best_action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>results in finding the defensive action for white - move K8 (indexed as 115) that prevents black from winning in three plies, and the following printout:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[MCTSNC._init_device_side_arrays()... for MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant=&#39;acp_prodigal&#39;, device_memory=2.0, ucb_c=2.0, seed: 0)]</span>
+<span class="go">[MCTSNC._init_device_side_arrays() done; time: 0.5558419227600098 s, per_state_memory: 1144 B,  calculated max_tree_size: 234637]</span>
+<span class="go">MCTSNC RUN... [MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant=&#39;acp_prodigal&#39;, device_memory=2.0, ucb_c=2.0, seed: 0)]</span>
+<span class="go">[actions info:</span>
+<span class="go">{</span>
+<span class="go">  0: {&#39;name&#39;: &#39;A1&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 428032, &#39;n_wins&#39;: 148906, &#39;q&#39;: 0.3478852048444976, &#39;ucb&#39;: 0.36098484108863044},</span>
+<span class="go">  1: {&#39;name&#39;: &#39;B1&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 428032, &#39;n_wins&#39;: 149000, &#39;q&#39;: 0.34810481459330145, &#39;ucb&#39;: 0.3612044508374343},</span>
+<span class="go">  2: {&#39;name&#39;: &#39;C1&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 428032, &#39;n_wins&#39;: 144339, &#39;q&#39;: 0.3372154418361244, &#39;ucb&#39;: 0.35031507808025725},</span>
+<span class="go">  ...</span>
+<span class="go">  115: {&#39;name&#39;: &#39;K8&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 1093632, &#39;n_wins&#39;: 452284, &#39;q&#39;: 0.41356141736891383, &#39;ucb&#39;: 0.4217566587685248},</span>
+<span class="go">  ...</span>
+<span class="go">  222: {&#39;name&#39;: &#39;M15&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 428032, &#39;n_wins&#39;: 148009, &#39;q&#39;: 0.34578956713516745, &#39;ucb&#39;: 0.3588892033793003},</span>
+<span class="go">  223: {&#39;name&#39;: &#39;N15&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 401408, &#39;n_wins&#39;: 148802, &#39;q&#39;: 0.37070013552295916, &#39;ucb&#39;: 0.38422722440183954},</span>
+<span class="go">  224: {&#39;name&#39;: &#39;O15&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 428032, &#39;n_wins&#39;: 145329, &#39;q&#39;: 0.3395283530203349, &#39;ucb&#39;: 0.35262798926446776},</span>
+<span class="go">  best: {&#39;index&#39;: 115, &#39;name&#39;: &#39;K8&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 1093632, &#39;n_wins&#39;: 452284, &#39;q&#39;: 0.41356141736891383, &#39;ucb&#39;: 0.4217566587685248}</span>
+<span class="go">}]</span>
+<span class="go">[performance info:</span>
+<span class="go">{</span>
+<span class="go">  steps: 442,</span>
+<span class="go">  steps_per_second: 88.25552729358726,</span>
+<span class="go">  playouts: 94359552,</span>
+<span class="go">  playouts_per_second: 18841067.91164404,</span>
+<span class="go">  times_[ms]: {&#39;total&#39;: 5008.184909820557, &#39;loop&#39;: 5006.503105163574, &#39;reduce_over_trees&#39;: 0.20575523376464844, &#39;reduce_over_actions&#39;: 0.5161762237548828, &#39;mean_loop&#39;: 11.326930102180032, &#39;mean_select&#39;: 0.10066766005295974, &#39;mean_expand&#39;: 0.3082833139065704, &#39;mean_playout&#39;: 10.688265524298897, &#39;mean_backup&#39;: 0.226746317488036},</span>
+<span class="go">  trees: {&#39;count&#39;: 8, &#39;mean_depth&#39;: 2.519115779878241, &#39;max_depth&#39;: 3, &#39;mean_size&#39;: 92149.0, &#39;max_size&#39;: 92149}</span>
+<span class="go">}]</span>
+<span class="go">MCTSNC RUN DONE. [time: 5.008184909820557 s; best action: 115 (K8), best win_flag: False, best n: 1093632, best n_wins: 452284, best q: 0.41356141736891383]</span>
+<span class="go">BEST ACTION: 115</span>
+</pre></div>
+</div>
 </section>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">math</span></code>: required for mathematical computations.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">numba</span></code>: required for just-in-time compilation of CUDA kernels (decorated by <code class="docutils literal notranslate"><span class="pre">&#64;cuda.jit</span></code>).</p></li>
+<li><p>For usage of <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> class, NVIDIA CUDA drivers must be present in the operating system.</p></li>
 </ul>
 </section>
 <section id="link-to-project-repository">
 <h2>Link to project repository<a class="headerlink" href="#link-to-project-repository" title="Link to this heading"></a></h2>
 <p><a class="reference external" href="https://github.com/pklesk/mcts_numba_cuda">https://github.com/pklesk/mcts_numba_cuda</a></p>
+</section>
+<section id="notes-on-code">
+<h2>Notes on code<a class="headerlink" href="#notes-on-code" title="Link to this heading"></a></h2>
+<p>Private functions of <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> class are named with a single leading underscore (e.g.: <code class="docutils literal notranslate"><span class="pre">_set_cuda_constants</span></code>, 
+<code class="docutils literal notranslate"><span class="pre">_make_performance_info</span></code>, <code class="docutils literal notranslate"><span class="pre">_playout_acp_prodigal</span></code>, etc.). Among them, the kernel functions are additionally 
+described by <code class="docutils literal notranslate"><span class="pre">&#64;cuda.jit</span></code> decorators coming from <code class="docutils literal notranslate"><span class="pre">numba</span></code> module. Exact specifications of types come along with the decorators.</p>
 </section>
 <dl class="py class">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC">

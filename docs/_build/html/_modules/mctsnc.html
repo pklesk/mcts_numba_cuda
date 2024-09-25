@@ -76,22 +76,18 @@
   <h1>Source code for mctsnc</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This module contains the core algorithmic functionalities of the project, embodied by the class `MCTSNC`. </span>
-<span class="sd">With CUDA computational model in mind, we have proposed and implemented four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm</span>
-<span class="sd">in this class. The provided implementation takes advantage of Numba (a just-in-time Python compiler) and its `numba.cuda` package. </span>
-<span class="sd">By `thoroughly parallel` we understand an algorithmic design that applies to both: (1) the structural elements of trees --- leaf-/root-/tree-level parallelization </span>
-<span class="sd">(all those three are combined), and (2) the stages of MCTS --- each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. </span>
-<span class="sd">We apply suitable `reduction` patterns to carry out summations or max / argmax operations. Cooperation of threads   </span>
-<span class="sd">helps to transfer information between global and shared memory. The implementation uses: no atomic operations, no mutexes (lock-free), and very few host-device memory transfers. </span>
 
-<span class="sd">Note: for further usage, NVIDIA CUDA drivers must be present in the operating system.</span>
-
-<span class="sd">Private functions of ``MCTSNC`` class are named with a single leading underscore (e.g.: ``_set_cuda_constants``, </span>
-<span class="sd">``_make_performance_info``, ``_playout_acp_prodigal``, etc.). Among them, the kernel functions are additionally </span>
-<span class="sd">described by ``@cuda.jit`` decorators coming from ``numba`` module. Exact specifications of types come along with the decorators.</span>
+<span class="sd">With CUDA computational model in mind, we have proposed and implemented in `MCTSNC` four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm. </span>
+<span class="sd">The provided implementation takes advantage of `Numba &lt;https://numba.pydata.org&gt;`_, a just-in-time Python compiler, and its `numba.cuda` package (hence the &quot;NC&quot; suffix in the name). </span>
+<span class="sd">By `thoroughly parallel` we understand an algorithmic design that applies to both: (1) the structural elements of trees - leaf-/root-/tree-level parallelization </span>
+<span class="sd">(all those three are combined), and (2) the stages of MCTS - each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. </span>
+<span class="sd">We apply suitable `reduction` patterns to carry out summations or max / argmax operations. Cooperation of threads helps to transfer information between global and shared memory. </span>
+<span class="sd">The implementation uses: no atomic operations, no mutexes (lock-free), and very few host-device memory transfers. </span>
 
 <span class="sd">Example usage 1 (Connect 4)</span>
 <span class="sd">---------------------------</span>
-<span class="sd">Assuming ``c4`` represents a state of Connect 4 game - an instance of class ``C4(State)`` - shown below:</span>
+<span class="sd">Assume the specifics of the Connect 4 game have been defined to MCTS-NC in ``mctsnc_game_specifics.py`` module (i.e. functions ``is_action_legal``, ``take_action``, etc.), </span>
+<span class="sd">and that ``c4`` - instance of ``C4(State)`` - represents a state of an ongoing Connect 4 game shown below.</span>
 
 <span class="sd">.. code-block:: console</span>
 
@@ -103,7 +99,7 @@
 <span class="sd">    |○|○|○|●|●|○|○|</span>
 <span class="sd">     0 1 2 3 4 5 6      </span>
 
-<span class="sd">running the following code</span>
+<span class="sd">Then, running the following code</span>
 
 <span class="sd">.. code-block:: python</span>
 
@@ -112,7 +108,7 @@
 <span class="sd">    best_action = ai.run(c4.get_board(), c4.get_extra_info(), c4.get_turn())</span>
 <span class="sd">    print(f&quot;BEST ACTION: {best_action}&quot;)</span>
 
-<span class="sd">results in finding the best action - move 4 - for black, and the following printout:</span>
+<span class="sd">results in finding the best action for black - move 4 (winning in two plies), and the following printout:</span>
 
 <span class="sd">.. code-block:: console</span>
 
@@ -142,17 +138,87 @@
 
 <span class="sd">Example usage 2 (Gomoku)</span>
 <span class="sd">------------------------</span>
-<span class="sd">TODO</span>
+<span class="sd">Assume the specifics of the Gomoku game have been defined to MCTS-NC in ``mctsnc_game_specifics.py`` module (i.e. functions ``is_action_legal``, ``take_action``, etc.), </span>
+<span class="sd">and that ``g`` - instance of ``Gomoku(State)`` - represents a state of an ongoing Gomoku game shown below.</span>
+
+<span class="sd">.. code-block:: console</span>
+
+<span class="sd">      ABCDEFGHIJKLMNO</span>
+<span class="sd">    15+++++++++++++++15</span>
+<span class="sd">    14+++++++++++++++14</span>
+<span class="sd">    13+++++++++++++++13</span>
+<span class="sd">    12++++++++●++++++12</span>
+<span class="sd">    11++++++++○++++++11</span>
+<span class="sd">    10++++++++○++++++10</span>
+<span class="sd">     9++++++○+○++++++9</span>
+<span class="sd">     8+++++++●○++++++8</span>
+<span class="sd">     7+++++++●●●○++++7</span>
+<span class="sd">     6++++++++●●○++++6</span>
+<span class="sd">     5+++++++●+++++++5</span>
+<span class="sd">     4+++++++++++++++4</span>
+<span class="sd">     3+++++++++++++++3</span>
+<span class="sd">     2+++++++++++++++2</span>
+<span class="sd">     1+++++++++++++++1</span>
+<span class="sd">      ABCDEFGHIJKLMNO</span>
+<span class="sd">  </span>
+<span class="sd">Then, running the following code</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    ai = MCTSNC(Gomoku.get_board_shape(), Gomoku.get_extra_info_memory(), Gomoku.get_max_actions(), action_index_to_name_function=Gomoku.action_index_to_name)</span>
+<span class="sd">    ai.init_device_side_arrays()</span>
+<span class="sd">    best_action = ai.run(g.get_board(), g.get_extra_info(), g.get_turn())</span>
+<span class="sd">    print(f&quot;BEST ACTION: {best_action}&quot;)</span>
+
+<span class="sd">results in finding the defensive action for white - move K8 (indexed as 115) that prevents black from winning in three plies, and the following printout:</span>
+
+<span class="sd">.. code-block:: console</span>
+
+<span class="sd">    [MCTSNC._init_device_side_arrays()... for MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant=&#39;acp_prodigal&#39;, device_memory=2.0, ucb_c=2.0, seed: 0)]</span>
+<span class="sd">    [MCTSNC._init_device_side_arrays() done; time: 0.5558419227600098 s, per_state_memory: 1144 B,  calculated max_tree_size: 234637]</span>
+<span class="sd">    MCTSNC RUN... [MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant=&#39;acp_prodigal&#39;, device_memory=2.0, ucb_c=2.0, seed: 0)]</span>
+<span class="sd">    [actions info:</span>
+<span class="sd">    {</span>
+<span class="sd">      0: {&#39;name&#39;: &#39;A1&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 428032, &#39;n_wins&#39;: 148906, &#39;q&#39;: 0.3478852048444976, &#39;ucb&#39;: 0.36098484108863044},</span>
+<span class="sd">      1: {&#39;name&#39;: &#39;B1&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 428032, &#39;n_wins&#39;: 149000, &#39;q&#39;: 0.34810481459330145, &#39;ucb&#39;: 0.3612044508374343},</span>
+<span class="sd">      2: {&#39;name&#39;: &#39;C1&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 428032, &#39;n_wins&#39;: 144339, &#39;q&#39;: 0.3372154418361244, &#39;ucb&#39;: 0.35031507808025725},</span>
+<span class="sd">      ...</span>
+<span class="sd">      115: {&#39;name&#39;: &#39;K8&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 1093632, &#39;n_wins&#39;: 452284, &#39;q&#39;: 0.41356141736891383, &#39;ucb&#39;: 0.4217566587685248},</span>
+<span class="sd">      ...</span>
+<span class="sd">      222: {&#39;name&#39;: &#39;M15&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 428032, &#39;n_wins&#39;: 148009, &#39;q&#39;: 0.34578956713516745, &#39;ucb&#39;: 0.3588892033793003},</span>
+<span class="sd">      223: {&#39;name&#39;: &#39;N15&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 401408, &#39;n_wins&#39;: 148802, &#39;q&#39;: 0.37070013552295916, &#39;ucb&#39;: 0.38422722440183954},</span>
+<span class="sd">      224: {&#39;name&#39;: &#39;O15&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 428032, &#39;n_wins&#39;: 145329, &#39;q&#39;: 0.3395283530203349, &#39;ucb&#39;: 0.35262798926446776},</span>
+<span class="sd">      best: {&#39;index&#39;: 115, &#39;name&#39;: &#39;K8&#39;, &#39;n_root&#39;: 94359552, &#39;win_flag&#39;: False, &#39;n&#39;: 1093632, &#39;n_wins&#39;: 452284, &#39;q&#39;: 0.41356141736891383, &#39;ucb&#39;: 0.4217566587685248}</span>
+<span class="sd">    }]</span>
+<span class="sd">    [performance info:</span>
+<span class="sd">    {</span>
+<span class="sd">      steps: 442,</span>
+<span class="sd">      steps_per_second: 88.25552729358726,</span>
+<span class="sd">      playouts: 94359552,</span>
+<span class="sd">      playouts_per_second: 18841067.91164404,</span>
+<span class="sd">      times_[ms]: {&#39;total&#39;: 5008.184909820557, &#39;loop&#39;: 5006.503105163574, &#39;reduce_over_trees&#39;: 0.20575523376464844, &#39;reduce_over_actions&#39;: 0.5161762237548828, &#39;mean_loop&#39;: 11.326930102180032, &#39;mean_select&#39;: 0.10066766005295974, &#39;mean_expand&#39;: 0.3082833139065704, &#39;mean_playout&#39;: 10.688265524298897, &#39;mean_backup&#39;: 0.226746317488036},</span>
+<span class="sd">      trees: {&#39;count&#39;: 8, &#39;mean_depth&#39;: 2.519115779878241, &#39;max_depth&#39;: 3, &#39;mean_size&#39;: 92149.0, &#39;max_size&#39;: 92149}</span>
+<span class="sd">    }]</span>
+<span class="sd">    MCTSNC RUN DONE. [time: 5.008184909820557 s; best action: 115 (K8), best win_flag: False, best n: 1093632, best n_wins: 452284, best q: 0.41356141736891383]</span>
+<span class="sd">    BEST ACTION: 115</span>
 <span class="sd">     </span>
 <span class="sd">Dependencies</span>
 <span class="sd">------------</span>
 <span class="sd">- ``numpy``, ``math``: required for mathematical computations.</span>
 
-<span class="sd">- ``numba``: required for just-in-time compilation of CUDA kernels (decorated by ``@cuda.jit``). </span>
+<span class="sd">- ``numba``: required for just-in-time compilation of CUDA kernels (decorated by ``@cuda.jit``).</span>
+<span class="sd">- For usage of ``MCTSNC`` class, NVIDIA CUDA drivers must be present in the operating system. </span>
 
 <span class="sd">Link to project repository</span>
 <span class="sd">--------------------------</span>
 <span class="sd">`https://github.com/pklesk/mcts_numba_cuda &lt;https://github.com/pklesk/mcts_numba_cuda&gt;`_</span>
+
+<span class="sd">Notes on code</span>
+<span class="sd">-------------</span>
+<span class="sd">Private functions of ``MCTSNC`` class are named with a single leading underscore (e.g.: ``_set_cuda_constants``, </span>
+<span class="sd">``_make_performance_info``, ``_playout_acp_prodigal``, etc.). Among them, the kernel functions are additionally </span>
+<span class="sd">described by ``@cuda.jit`` decorators coming from ``numba`` module. Exact specifications of types come along with the decorators.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
