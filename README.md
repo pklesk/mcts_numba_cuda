@@ -98,6 +98,7 @@ and that `g` - instance of `Gomoku(State)` - represents a state of an ongoing Go
  2+++++++++++++++2
  1+++++++++++++++1
   ABCDEFGHIJKLMNO
+```
 Then, running the following code
 ```python
 ai = MCTSNC(Gomoku.get_board_shape(), Gomoku.get_extra_info_memory(), Gomoku.get_max_actions(), action_index_to_name_function=Gomoku.action_index_to_name)
