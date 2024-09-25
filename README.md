@@ -28,7 +28,7 @@ the statistics at ancestor nodes. For shortness, Q stands for an action-value es
 
 ## Example usage 1 (Connect 4)
 Assume the specifics of the Connect 4 game have been defined to MCTS-NC in `mctsnc_game_specifics.py` module (i.e. functions `is_action_legal`, `take_action`, etc.), 
-and that `c4` (instance of `C4(State)`) represents a state of an ongoing Connect 4 game shown below.
+and that `c4` - instance of `C4(State)` - represents a state of an ongoing Connect 4 game shown below.
 ```bash
 |.|.|●|○|.|.|.|
 |.|.|●|○|.|.|○|
