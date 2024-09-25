@@ -72,6 +72,65 @@ MCTSNC RUN DONE. [time: 5.002324819564819 s; best action: 4, best win_flag: Fals
 BEST ACTION: 4
 ```
 
+## Example usage 2 (Gomoku)
+Assume the specifics of the Gomoku game have been defined to MCTS-NC in `mctsnc_game_specifics.py` module (i.e. functions `is_action_legal`, `take_action`, etc.), 
+and that `g` - instance of `Gomoku(State)` - represents a state of an ongoing Gomoku game shown below.
+```bash
+  ABCDEFGHIJKLMNO
+15+++++++++++++++15
+14+++++++++++++++14
+13+++++++++++++++13
+12++++++++●++++++12
+11++++++++○++++++11
+10++++++++○++++++10
+ 9++++++○+○++++++9
+ 8+++++++●○++++++8
+ 7+++++++●●●○++++7
+ 6++++++++●●○++++6
+ 5+++++++●+++++++5
+ 4+++++++++++++++4
+ 3+++++++++++++++3
+ 2+++++++++++++++2
+ 1+++++++++++++++1
+  ABCDEFGHIJKLMNO
+Then, running the following code
+```python
+ai = MCTSNC(Gomoku.get_board_shape(), Gomoku.get_extra_info_memory(), Gomoku.get_max_actions(), action_index_to_name_function=Gomoku.action_index_to_name)
+ai.init_device_side_arrays()
+best_action = ai.run(g.get_board(), g.get_extra_info(), g.get_turn())
+print(f"BEST ACTION: {best_action}")
+```
+results in finding the best action for white - move K8 (indexed as 115), preventing black from winning in two plies, and the following printout:
+```bash
+[MCTSNC._init_device_side_arrays()... for MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant='acp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)]
+[MCTSNC._init_device_side_arrays() done; time: 0.5558419227600098 s, per_state_memory: 1144 B,  calculated max_tree_size: 234637]
+MCTSNC RUN... [MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, n_playouts=128, variant='acp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)]
+[actions info:
+{
+  0: {'name': 'A1', 'n_root': 94359552, 'win_flag': False, 'n': 428032, 'n_wins': 148906, 'q': 0.3478852048444976, 'ucb': 0.36098484108863044},
+  1: {'name': 'B1', 'n_root': 94359552, 'win_flag': False, 'n': 428032, 'n_wins': 149000, 'q': 0.34810481459330145, 'ucb': 0.3612044508374343},
+  2: {'name': 'C1', 'n_root': 94359552, 'win_flag': False, 'n': 428032, 'n_wins': 144339, 'q': 0.3372154418361244, 'ucb': 0.35031507808025725},
+  ...
+  115: {'name': 'K8', 'n_root': 94359552, 'win_flag': False, 'n': 1093632, 'n_wins': 452284, 'q': 0.41356141736891383, 'ucb': 0.4217566587685248},
+  ...
+  222: {'name': 'M15', 'n_root': 94359552, 'win_flag': False, 'n': 428032, 'n_wins': 148009, 'q': 0.34578956713516745, 'ucb': 0.3588892033793003},
+  223: {'name': 'N15', 'n_root': 94359552, 'win_flag': False, 'n': 401408, 'n_wins': 148802, 'q': 0.37070013552295916, 'ucb': 0.38422722440183954},
+  224: {'name': 'O15', 'n_root': 94359552, 'win_flag': False, 'n': 428032, 'n_wins': 145329, 'q': 0.3395283530203349, 'ucb': 0.35262798926446776},
+  best: {'index': 115, 'name': 'K8', 'n_root': 94359552, 'win_flag': False, 'n': 1093632, 'n_wins': 452284, 'q': 0.41356141736891383, 'ucb': 0.4217566587685248}
+}]
+[performance info:
+{
+  steps: 442,
+  steps_per_second: 88.25552729358726,
+  playouts: 94359552,
+  playouts_per_second: 18841067.91164404,
+  times_[ms]: {'total': 5008.184909820557, 'loop': 5006.503105163574, 'reduce_over_trees': 0.20575523376464844, 'reduce_over_actions': 0.5161762237548828, 'mean_loop': 11.326930102180032, 'mean_select': 0.10066766005295974, 'mean_expand': 0.3082833139065704, 'mean_playout': 10.688265524298897, 'mean_backup': 0.226746317488036},
+  trees: {'count': 8, 'mean_depth': 2.519115779878241, 'max_depth': 3, 'mean_size': 92149.0, 'max_size': 92149}
+}]
+MCTSNC RUN DONE. [time: 5.008184909820557 s; best action: 115 (K8), best win_flag: False, best n: 1093632, best n_wins: 452284, best q: 0.41356141736891383]
+BEST ACTION: 115
+```
+
 ## Documentation
 Complete developer documentation of the project is accessible at: [https://pklesk.github.io/mcts_numba_cuda](https://pklesk.github.io/mcts_numba_cuda). <br/>
 Documentation for the `MCTSNC` class alone is at: [https://pklesk.github.io/mcts_numba_cuda/mctsnc.html](https://pklesk.github.io/mcts_numba_cuda/mctsnc.html).
