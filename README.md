@@ -8,12 +8,23 @@ By *thoroughly parallel* we understand an algorithmic design that applies to bot
 We apply suitable *reduction* patterns to carry out summations or max / argmax operations. Cooperation of threads helps to transfer information between global and shared memory. 
 The implementation uses: no atomic operations, no mutexes (lock-free), and very few host-device memory transfers.
 
+## High-level intuition 
+In MCTS-NC, there are two main variants according to which it conducts the playouts: OCP (*One Child Playouts*), ACP (*All Children Playouts*). 
+Each of them has two subvariants, named "thrifty" and "prodigal".
+In both OCP and ACP, multiple independent trees are grown concurrently (for readability just two are shown in each illustration).
 <table>
    <tr><td><img src="https://github.com/user-attachments/assets/df115f08-a5a4-409d-8b93-de84be6133f2"/></td></tr>
 </table>
 <table>   
    <tr><td><img src="https://github.com/user-attachments/assets/fea4b1ec-25d2-459c-b519-3727ecd3268b"/></td></tr>
 </table>
+Wavy arrows distinguished by colors represent CUDA threads working for different stages of MCTS algorithm:
+orange for selection, green for expansion, black for playouts, purple for backup. In MCTS-NC, threads are grouped in 
+CUDA blocks that are indexed either by tree indexes alone, or tree-action pairs, depending on the stage and variant / subvariant. 
+In the OCP variant, exactly one random child of each expanded leaf node (accross different trees) becomes played out. 
+In ACP, all such children become played out. In the figure, terminal rewards from playouts are colored
+in: blue (losses of the first "red" player), gray (draws) or red (wins of the first player). Their counts suitably update
+the statistics at ancestor nodes. For shortness, Q stands for an action-value estimate and U for its upper confidence bound.
 
 ## Example usage 1 (Connect 4)
 Assuming `c4` represents a state of Connect 4 game - an instance of class `C4(State)` - shown below:
