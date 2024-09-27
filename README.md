@@ -31,7 +31,7 @@ the statistics at ancestor nodes. For shortness, Q stands for an action-value es
 
 ## Example usage 1 (Connect 4)
 
-Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in `mctsnc_game_mechanics.py` module (with device functions `is_action_legal`, `take_action`, etc.), 
+Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in `mctsnc_game_mechanics.py` (via device functions `is_action_legal`, `take_action`, etc.), 
 and that `c4` - instance of `C4(State)` - represents a state of an ongoing Connect 4 game shown below.
 ```bash
 |.|.|●|○|.|.|.|
@@ -78,7 +78,7 @@ BEST ACTION: 4
 
 ## Example usage 2 (Gomoku)
 
-Assume the mechanics of the Gomoku game have been defined to MCTS-NC in `mctsnc_game_mechanics.py` module (with device functions `is_action_legal`, `take_action`, etc.), 
+Assume the mechanics of the Gomoku game have been defined to MCTS-NC in `mctsnc_game_mechanics.py` (via device functions `is_action_legal`, `take_action`, etc.), 
 and that `g` - instance of `Gomoku(State)` - represents a state of an ongoing Gomoku game shown below.
 ```bash
   ABCDEFGHIJKLMNO
