@@ -138,7 +138,7 @@ def scores_array_plot_acp_thrifty_vs_vanilla():
         ["3404010025_62100_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_acp_thrifty;C4_6x7;100]",
          "2261929033_44532_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_acp_thrifty;C4_6x7;100]",
          "4064261779_31134_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_acp_thrifty;C4_6x7;100]",
-         "3512101579_08374_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_thrifty;C4_6x7;10]"]
+         "3512101579_08374_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_thrifty;C4_6x7;100]"]
         ])
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "ACP-THRIFTY (1s) vs VANILLA (4s)")
 
