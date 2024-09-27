@@ -159,12 +159,6 @@ class C4(State):
         if total >= 3:
             return last_token        
         return 0
-    
-    # TODO remove if unnecessary (default implementation of expand was moved to State class)
-    # def expand(self):
-    #     if len(self.children) == 0 and self.compute_outcome() is None:
-    #         for j in range(self.N):
-    #             self.take_action(j)
                         
     def take_random_action_playout(self):
         j_indexes = np.where(self.column_fills < C4.M)[0]

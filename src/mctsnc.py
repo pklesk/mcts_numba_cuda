@@ -10,7 +10,7 @@ The implementation uses: no atomic operations, no mutexes (lock-free), and very 
 
 Example usage 1 (Connect 4)
 ---------------------------
-Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in ``mctsnc_game_mechanics.py`` module (with device functions ``is_action_legal``, ``take_action``, etc.), 
+Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in ``mctsnc_game_mechanics.py`` (via device functions ``is_action_legal``, ``take_action``, etc.), 
 and that ``c4`` - instance of ``C4(State)`` - represents a state of an ongoing Connect 4 game shown below.
 
 .. code-block:: console
@@ -62,7 +62,7 @@ results in finding the best action for black - move 4 (winning in two plies), an
 
 Example usage 2 (Gomoku)
 ------------------------
-Assume the mechanics of the Gomoku game have been defined to MCTS-NC in ``mctsnc_game_mechanics.py`` module (with device functions ``is_action_legal``, ``take_action``, etc.), 
+Assume the mechanics of the Gomoku game have been defined to MCTS-NC in ``mctsnc_game_mechanics.py`` (via device functions ``is_action_legal``, ``take_action``, etc.), 
 and that ``g`` - instance of ``Gomoku(State)`` - represents a state of an ongoing Gomoku game shown below.
 
 .. code-block:: console
@@ -168,33 +168,7 @@ warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
 # the class
 class MCTSNC:
     """
-    Monte Carlo Tree Search (GPU-parallelized) implemented via ``numba.cuda``.
-    
-    Parameters:
-        state_board_shape (tuple(int, int)):
-            shape of board for states in a given game, at most ``(32, 32)``.
-        state_extra_info_memory (int):
-            number of bytes for extra information on states, at most ``4096``.        
-        state_max_actions (int): 
-            maximum branching factor, at most ``512``.            
-        search_time_limit (float):
-            time limit in seconds (computational budget), ``np.inf`` if no limit, defaults to ``5.0``.             
-        search_steps_limit (float): 
-            steps limit (computational budget), ``np.inf`` if no limit, defaults to ``np.inf``.
-        n_trees (int): 
-            number of independent trees, defaults to ``8``.                                    
-        n_playouts (int):
-            number of independent playouts from an expanded child (corresponds to m), must be a power of two, defaults to ``128``.            
-        variant (str):
-            choice of algorithmic variant from {``"ocp_thrifty"``, ``"ocp_prodigal"``, ``"acp_thrifty``, ``"acp_prodigal``}, defaults to ``"acp_prodigal"``.        
-        device_memory (float): 
-            GPU memory in gigabytes to be available for this instance, defaults to ``2.0``.            
-        verbose_debug (bool):
-            debug verbosity flag, if ``True`` then detailed information about each kernel invocation are printed to console (in each iteration), defaults to ``False``.
-        verbose_info (bool): 
-            verbosity flag, if ``True`` then standard information on actions and performance are printed to console (after a full run), defaults to ``True``.
-        action_index_to_name_function (callable):
-            pointer to user-provided function converting action indexes to a human-friendly names (e.g. ``"e2:e4"`` for chess), defaults to ``None``.                    
+    Monte Carlo Tree Search implemented via ``numba.cuda`` meant for multi-threaded executions on GPU involving multiple concurrent trees and playouts (four algorithmic variants available). 
     """    
     
     # constants
@@ -244,14 +218,16 @@ class MCTSNC:
             variant (str):
                 choice of algorithmic variant from {``"ocp_thrifty"``, ``"ocp_prodigal"``, ``"acp_thrifty``, ``"acp_prodigal``}, defaults to ``"acp_prodigal"``.        
             device_memory (float): 
-                GPU memory in gigabytes to be available for this instance, defaults to ``2.0``.            
+                GPU memory in GiBs (gibibytes) to be available for this instance, defaults to ``2.0``.
+            ucb_c (float):
+                value of C constant, influencing exploration tendency, appearing in UCT formula (upper confidence bounds for trees), defaults to ``2.0``. 
             verbose_debug (bool):
                 debug verbosity flag, if ``True`` then detailed information about each kernel invocation are printed to console (in each iteration), defaults to ``False``.
             verbose_info (bool): 
                 verbosity flag, if ``True`` then standard information on actions and performance are printed to console (after a full run), defaults to ``True``.
             action_index_to_name_function (callable):
                 pointer to user-provided function converting action indexes to a human-friendly names (e.g. ``"e2:e4"`` for chess), defaults to ``None``.            
-        """        
+        """
         self._set_cuda_constants()
         if not self.cuda_available:
             sys.exit(f"[MCTSNC.__init__(): exiting due to cuda computations not available]")        
@@ -285,7 +261,7 @@ class MCTSNC:
         self.variant = variant
         self.ucb_c = ucb_c
         self._validate_param("ucb_c", float, False, 0.0, False, np.inf, self.DEFAULT_UCB_C)
-        self.device_memory = device_memory * 1024**3 # gigabytes to bytes
+        self.device_memory = device_memory * 1024**3 # gibibytes (GiB) to bytes (B)
         self._validate_param("device_memory", float, True, 0.0, False, np.inf, self.DEFAULT_DEVICE_MEMORY)    
         self.seed = seed
         self.verbose_debug = verbose_debug 
@@ -427,16 +403,18 @@ class MCTSNC:
         
     def run(self, root_board, root_extra_info, root_turn, forced_search_steps_limit=np.inf):
         """
-        Runs the Monte Carlo Tree Search on GPU using multiple independent trees and playouts.                 
-        Computations are carried out according to the formerly chosen algorithmic ``variant`` i.e. one of {``"ocp_thrifty"``, ``"ocp_prodigal"``, ``"acp_thrifty``, ``"acp_prodigal``}, defaults to ``"acp_prodigal"``}.
+        Runs the Monte Carlo Tree Search on GPU involving multiple concurrent trees and playouts.                 
+        Computations are carried out according to the formerly chosen algorithmic variant, i.e. one of {``"ocp_thrifty"``, ``"ocp_prodigal"``, ``"acp_thrifty``, ``"acp_prodigal``}, defaults to ``"acp_prodigal"``}.
         
         Args:
             root_board (ndarray): 
-                two-dimensional array with board (or other representation) of root state from which search starts.
+                two-dimensional array with board (or other representation) of root state from which the search starts.
             root_extra_info (ndarray): 
-                any additional information not implied by the contents of the board itself (e.g. possibilities of castling or en-passant captures in chess, the contract in double dummy bridge, etc.), or technical information useful to generate legal actions faster.
+                any additional information of root state not implied by the contents of the board itself (e.g. possibilities of castling or en-passant captures in chess, the contract in double dummy bridge, etc.), or technical information useful to generate legal actions faster.
             root_turn {-1, 1}:
-                indicator of player, minimizing or maximizing, to act first.
+                indicator of the player, minimizing or maximizing, to act first at root state.
+            forced_search_steps_limit (int):
+                steps limit used only when reproducing results of a previous experiment; if less than``np.inf`` then has a priority over the standard computational budget given by ``search_time_limit`` and ``search_steps_limit``.
         Returns:
             self.best_action (int):
                 best action resulting from search.
@@ -463,7 +441,10 @@ class MCTSNC:
         return trees_actions_expanded_flat
     
     def _make_performance_info(self):
-        """Prepares a dictionary with information on performance during the last run."""        
+        """
+        Prepares and returns a dictionary with information on performance during the last run. 
+        After the call, available via ``performance_info`` attribute.
+        """
         performance_info = {}
         performance_info["steps"] = int(self.steps)
         performance_info["steps_per_second"] = self.steps / self.time_total                
@@ -508,7 +489,10 @@ class MCTSNC:
         return performance_info
     
     def _make_actions_info_thrifty(self):
-        """Prepares a dictionary with information on root actions (using thrifty indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc."""
+        """
+        Prepares and returns a dictionary with information on root actions (using thrifty indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.
+        After the call, available via ``actions_info`` attribute.
+        """
         root_actions_expanded = np.empty_like(self.dev_root_actions_expanded)        
         root_ns_thrifty = np.empty_like(self.dev_root_ns)                
         actions_win_flags_thrifty = np.empty_like(self.dev_actions_win_flags)
@@ -540,7 +524,10 @@ class MCTSNC:
         return actions_info
     
     def _make_actions_info_prodigal(self):
-        """Prepares a dictionary with information on root actions (using prodigal indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc."""
+        """
+        Prepares and returns a dictionary with information on root actions (using prodigal indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.
+        After the call, available via ``actions_info`` attribute.
+        """
         root_ns_prodigal = np.empty_like(self.dev_root_ns)            
         actions_win_flags_prodigal = np.empty_like(self.dev_actions_win_flags)
         actions_ns_prodigal = np.empty_like(self.dev_actions_ns)

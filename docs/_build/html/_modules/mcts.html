@@ -78,7 +78,7 @@
 <span class="sd">Auxiliary module with a referential standard implementation of MCTS algorithm (for CPU, single-threaded).</span>
 <span class="sd">The module contains:</span>
 
-<span class="sd">- ``State``: class representing an arbitrary state of some game or sequential decision problem (to inherit from when searches using ``MCTS`` class are planned),  </span>
+<span class="sd">- ``State``: class representing an arbitrary state of some game or sequential decision problem (meant to inherit from when searches using ``MCTS`` class are planned),  </span>
 
 <span class="sd">- ``MCTS``: class representing the referential MCTS algorithm.</span>
 
@@ -105,9 +105,9 @@
 <span class="sd">    and then applicable in searches conducted by ``MCTS`` class.</span>
 <span class="sd">    For actual inheritance examples see:</span>
 <span class="sd">    </span>
-<span class="sd">    -  ``C4`` class in ``c4.py`` module :doc:`c4`. (representation of Connect 4 game),</span>
+<span class="sd">    -  ``C4`` class in :doc:`c4` (representation of Connect 4 game),</span>
 <span class="sd">    </span>
-<span class="sd">    -  ``Gomoku`` class in ``gomoku.py`` module (representation of Gomoku game).</span>
+<span class="sd">    -  ``Gomoku`` class in :doc:`gomoku` (representation of Gomoku game).</span>
 <span class="sd">    </span>
 <span class="sd">    When searches using ``MCTS`` class are planned, the programmer, while inheriting from ``State``, must provide implementations for the following non-static methods: </span>
 <span class="sd">    ``take_action_job``, ``compute_outcome_job``, ``take_random_action_playout``, ``__str__``; </span>
@@ -218,9 +218,9 @@
     <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_index</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Takes action (specified by its index) and returns the child-state implied by the action. </span>
-<span class="sd">        If the child related to this action already existed among children, returns it immediately. </span>
-<span class="sd">        Otherwise, creates a new child-state object and tries to call on it the function ``take_action_job`` (implementated in a subclass).</span>
-<span class="sd">        If ``None`` is returned in the latter case - interpreted as illegal action, then forwards ``None`` as a result .</span>
+<span class="sd">        If such a child already existed (prior to the call) among children, returns it immediately. </span>
+<span class="sd">        Otherwise, creates a new child-state object and tries to call on it the function ``take_action_job``, assumed as implemented in the subclass.</span>
+<span class="sd">        If ``None`` is returned in the latter case (interpreted as illegal action), then forwards ``None`` as the result .</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            action_index (int): </span>
@@ -248,7 +248,11 @@
 <span class="sd">        [To be implemented in subclasses.]</span>
 <span class="sd">        </span>
 <span class="sd">        Should performs changes on this state implied by the given action, and return ``True`` if the action is legal.</span>
-<span class="sd">        Otherwise, should do no changes and return ``False``</span>
+<span class="sd">        Otherwise, should do no changes and return ``False``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            action_index (int): </span>
+<span class="sd">                index of action to be taken.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            action_legal (bool):</span>
@@ -262,7 +266,7 @@
     <span class="k">def</span> <span class="nf">compute_outcome</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If called before on this state, returns the outcome already computed and memorized.</span>
-<span class="sd">        Otherwise, tries to call on this state the function ``compute_outcome_job`` (implemented in a subclass) and return its result.</span>
+<span class="sd">        Otherwise, tries to call on this state the function ``compute_outcome_job`` (assumed as implemented in the subclass) and return its result.</span>
 <span class="sd">        Possible outcomes for terminal states are {-1, 0, 1}, indicating respectively: </span>
 <span class="sd">        a win for the minimizing player, a draw, a win for the maximizing player.</span>
 <span class="sd">        For an ongoing game the outcome should be ``None``. </span>
@@ -304,7 +308,7 @@
 <a class="viewcode-back" href="../mcts.html#mcts.State.get_board">[docs]</a>
     <span class="k">def</span> <span class="nf">get_board</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]</span>
+<span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]</span>
 <span class="sd">        </span>
 <span class="sd">        Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g. chessboard, backgammon board, etc.),</span>
 <span class="sd">        even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).</span>
@@ -320,7 +324,7 @@
 <a class="viewcode-back" href="../mcts.html#mcts.State.get_extra_info">[docs]</a>
     <span class="k">def</span> <span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]</span>
+<span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]</span>
 <span class="sd">        </span>
 <span class="sd">        Should return additional information associated with this state (as a one-dimensional array of bytes)</span>
 <span class="sd">        not implied by the contents of the board itself (e.g. possibilities of castling or en-passant </span>
@@ -351,7 +355,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        [To be implemented in subclasses.]</span>
 <span class="sd">        </span>
-<span class="sd">        Should pick a uniformly random action from currently available actions in this state and return the result of calling ``take_action`` with the action index as argument.</span>
+<span class="sd">        Should pick a uniformly random action from actions available in this state and return the result of calling ``take_action`` with the action index as argument.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            child (State): </span>
@@ -403,7 +407,7 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_board_shape</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]</span>
+<span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]</span>
 <span class="sd">        </span>
 <span class="sd">        Returns a tuple with board shape for the game (or sequential decision problem) represented by this class.</span>
 <span class="sd">        </span>
@@ -419,7 +423,7 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_extra_info_memory</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]</span>
+<span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]</span>
 <span class="sd">        </span>
 <span class="sd">        Returns amount of memory (in bytes) needed to memorize additional information associated with states of the game (or sequential decision problem) represented by this class.</span>
 <span class="sd">        </span>
@@ -470,6 +474,21 @@
                  <span class="n">vanilla</span><span class="o">=</span><span class="n">DEFAULT_VANILLA</span><span class="p">,</span>                  
                  <span class="n">ucb_c</span><span class="o">=</span><span class="n">DEFAULT_UCB_C</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">DEFAULT_SEED</span><span class="p">,</span>
                  <span class="n">verbose_debug</span><span class="o">=</span><span class="n">DEFAULT_VERBOSE_DEBUG</span><span class="p">,</span> <span class="n">verbose_info</span><span class="o">=</span><span class="n">DEFAULT_VERBOSE_INFO</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor of ``MCTS`` instances.</span>
+<span class="sd">         </span>
+<span class="sd">        Args:</span>
+<span class="sd">            search_time_limit (float):</span>
+<span class="sd">                time limit in seconds (computational budget), ``np.inf`` if no limit, defaults to ``5.0``.             </span>
+<span class="sd">            search_steps_limit (float): </span>
+<span class="sd">                steps limit (computational budget), ``np.inf`` if no limit, defaults to ``np.inf``.</span>
+<span class="sd">            vanilla (bool):</span>
+<span class="sd">                flag indicating whether information (partial tree, action-value estimates, etc.) from previous searches is ignored, defaults to ``True``.</span>
+<span class="sd">            verbose_debug (bool):</span>
+<span class="sd">                debug verbosity flag, if ``True`` then detailed information about each kernel invocation are printed to console (in each iteration), defaults to ``False``.</span>
+<span class="sd">            verbose_info (bool): </span>
+<span class="sd">                verbosity flag, if ``True`` then standard information on actions and performance are printed to console (after a full run), defaults to ``True``.            </span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="bp">self</span><span class="o">.</span><span class="n">search_time_limit</span> <span class="o">=</span> <span class="n">search_time_limit</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">search_steps_limit</span> <span class="o">=</span> <span class="n">search_steps_limit</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vanilla</span> <span class="o">=</span> <span class="n">vanilla</span> <span class="c1"># if True, statistics from previous runs (searches) are not reused         </span>
@@ -483,46 +502,34 @@
 <div class="viewcode-block" id="MCTS.__str__">
 <a class="viewcode-back" href="../mcts.html#mcts.MCTS.__str__">[docs]</a>
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>         
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(search_time_limit=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">search_time_limit</span><span class="si">}</span><span class="s2">, search_steps_limit=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">search_steps_limit</span><span class="si">}</span><span class="s2">, vanilla=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vanilla</span><span class="si">}</span><span class="s2">, ucb_c=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ucb_c</span><span class="si">}</span><span class="s2">, seed: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a string representation of this ``MCTS`` instance.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: string representation of this ``MCTS`` instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>           
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;MCTS(search_time_limit=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">search_time_limit</span><span class="si">}</span><span class="s2">, search_steps_limit=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">search_steps_limit</span><span class="si">}</span><span class="s2">, vanilla=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vanilla</span><span class="si">}</span><span class="s2">, ucb_c=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ucb_c</span><span class="si">}</span><span class="s2">, seed: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="si">}</span><span class="s2">)&quot;</span></div>
 
         
 <div class="viewcode-block" id="MCTS.__repr__">
 <a class="viewcode-back" href="../mcts.html#mcts.MCTS.__repr__">[docs]</a>
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a string representation of this ``MCTS`` instance (equivalent to ``__str__`` method).</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: string representation of this ``MCTSNC`` instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>                
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> </div>
-
-                
-<div class="viewcode-block" id="MCTS._make_actions_info">
-<a class="viewcode-back" href="../mcts.html#mcts.MCTS._make_actions_info">[docs]</a>
-    <span class="k">def</span> <span class="nf">_make_actions_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">children</span><span class="p">,</span> <span class="n">best_action_entry</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">actions_info</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">children</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">n_root</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">n</span>
-            <span class="n">win_flag</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">win_flag</span>
-            <span class="n">n</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">n</span>
-            <span class="n">n_wins</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">n_wins</span>        
-            <span class="n">q</span> <span class="o">=</span> <span class="n">n_wins</span> <span class="o">/</span> <span class="n">n</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span> <span class="c1"># 2nd case does not affect ucb</span>
-            <span class="n">ucb</span> <span class="o">=</span> <span class="n">q</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ucb_c</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n_root</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> 
-            <span class="n">entry</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">action_index_to_name</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;n_root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_root</span>
-            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;win_flag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">win_flag</span>
-            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
-            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;n_wins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_wins</span>
-            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_wins</span> <span class="o">/</span> <span class="n">n</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;ucb&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ucb</span>
-            <span class="n">actions_info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">entry</span>
-        <span class="k">if</span> <span class="n">best_action_entry</span><span class="p">:</span>
-            <span class="n">best_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_best_action</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="n">actions_info</span><span class="p">)</span>
-            <span class="n">best_entry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">best_key</span><span class="p">,</span> <span class="o">**</span><span class="n">actions_info</span><span class="p">[</span><span class="n">best_key</span><span class="p">]}</span>
-            <span class="n">actions_info</span><span class="p">[</span><span class="s2">&quot;best&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_entry</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">actions_info</span> <span class="o">=</span> <span class="n">actions_info</span>
-        <span class="k">return</span> <span class="n">actions_info</span></div>
 
 
 <div class="viewcode-block" id="MCTS._make_performance_info">
 <a class="viewcode-back" href="../mcts.html#mcts.MCTS._make_performance_info">[docs]</a>
     <span class="k">def</span> <span class="nf">_make_performance_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepares and returns a dictionary with information on performance during the last run. </span>
+<span class="sd">        After the call, available via ``performance_info`` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="n">performance_info</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">performance_info</span><span class="p">[</span><span class="s2">&quot;steps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span>
         <span class="n">performance_info</span><span class="p">[</span><span class="s2">&quot;steps_per_second&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_total</span>                
@@ -552,10 +559,44 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">performance_info</span> <span class="o">=</span> <span class="n">performance_info</span>
         <span class="k">return</span> <span class="n">performance_info</span></div>
 
+
+                
+<div class="viewcode-block" id="MCTS._make_actions_info">
+<a class="viewcode-back" href="../mcts.html#mcts.MCTS._make_actions_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">_make_actions_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">children</span><span class="p">,</span> <span class="n">best_action_entry</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepares and returns a dictionary with information on root actions implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.</span>
+<span class="sd">        After the call, available via ``actions_info`` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">actions_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">children</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">n_root</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">n</span>
+            <span class="n">win_flag</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">win_flag</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">n</span>
+            <span class="n">n_wins</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">n_wins</span>        
+            <span class="n">q</span> <span class="o">=</span> <span class="n">n_wins</span> <span class="o">/</span> <span class="n">n</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span> <span class="c1"># 2nd case does not affect ucb</span>
+            <span class="n">ucb</span> <span class="o">=</span> <span class="n">q</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ucb_c</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n_root</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> 
+            <span class="n">entry</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">action_index_to_name</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;n_root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_root</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;win_flag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">win_flag</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;n_wins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_wins</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_wins</span> <span class="o">/</span> <span class="n">n</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;ucb&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ucb</span>
+            <span class="n">actions_info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">entry</span>
+        <span class="k">if</span> <span class="n">best_action_entry</span><span class="p">:</span>
+            <span class="n">best_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_best_action</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="n">actions_info</span><span class="p">)</span>
+            <span class="n">best_entry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">best_key</span><span class="p">,</span> <span class="o">**</span><span class="n">actions_info</span><span class="p">[</span><span class="n">best_key</span><span class="p">]}</span>
+            <span class="n">actions_info</span><span class="p">[</span><span class="s2">&quot;best&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_entry</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions_info</span> <span class="o">=</span> <span class="n">actions_info</span>
+        <span class="k">return</span> <span class="n">actions_info</span></div>
+
     
 <div class="viewcode-block" id="MCTS._best_action_ucb">
 <a class="viewcode-back" href="../mcts.html#mcts.MCTS._best_action_ucb">[docs]</a>
-    <span class="k">def</span> <span class="nf">_best_action_ucb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">children</span><span class="p">,</span> <span class="n">actions_info</span><span class="p">):</span> 
+    <span class="k">def</span> <span class="nf">_best_action_ucb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">children</span><span class="p">,</span> <span class="n">actions_info</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the best action for selection stage purposes, i.e. the action with the largest UCB value.&quot;&quot;&quot;</span>  
         <span class="n">best_key</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">best_ucb</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">children</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -568,7 +609,14 @@
     
 <div class="viewcode-block" id="MCTS._best_action">
 <a class="viewcode-back" href="../mcts.html#mcts.MCTS._best_action">[docs]</a>
-    <span class="k">def</span> <span class="nf">_best_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_children</span><span class="p">,</span> <span class="n">root_actions_info</span><span class="p">):</span> 
+    <span class="k">def</span> <span class="nf">_best_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_children</span><span class="p">,</span> <span class="n">root_actions_info</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the best action among the root actions for the final decision.</span>
+<span class="sd">        Actions&#39; comparison is a three-step process: </span>
+<span class="sd">        (1) in the first order, the win flag is decisive (attribute ``win_flag`` of a child state), </span>
+<span class="sd">        (2) if there is a tie (win flags equal), the number of times an action was taken becomes decisive (attribute ``n`` of a child state), </span>
+<span class="sd">        (3) if there still is a tie (both win flags and action execution counts equal), the number of wins becomes decisive (attribute ``n_wins`` of a child state).</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">best_action</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">best_win_flag</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">best_n</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -591,6 +639,18 @@
 <div class="viewcode-block" id="MCTS.run">
 <a class="viewcode-back" href="../mcts.html#mcts.MCTS.run">[docs]</a>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">forced_search_steps_limit</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the standard, referential implementation of Monte Carlo Tree Search (on CPU, single-threaded).</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            root (State):</span>
+<span class="sd">                root state from which the search starts.            </span>
+<span class="sd">            forced_search_steps_limit (int):</span>
+<span class="sd">                steps limit used only when reproducing results of a previous experiment; if less than``np.inf`` then has a priority over the standard computational budget given by ``search_time_limit`` and ``search_steps_limit``.            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            self.best_action (int):</span>
+<span class="sd">                best action resulting from search.                        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MCTS RUN...&quot;</span><span class="p">)</span>
         <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
@@ -690,6 +750,7 @@
 <div class="viewcode-block" id="MCTS._select">
 <a class="viewcode-back" href="../mcts.html#mcts.MCTS._select">[docs]</a>
     <span class="k">def</span> <span class="nf">_select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs the selection stage and returns the selected state.&quot;&quot;&quot;</span>
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">actions_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_actions_info</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
             <span class="n">best_ucb_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_best_action_ucb</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">children</span><span class="p">,</span> <span class="n">actions_info</span><span class="p">)</span>
@@ -700,6 +761,7 @@
 <div class="viewcode-block" id="MCTS._expand">
 <a class="viewcode-back" href="../mcts.html#mcts.MCTS._expand">[docs]</a>
     <span class="k">def</span> <span class="nf">_expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs the expansion stage and returns the child (picked on random) on which to carry out the playout.&quot;&quot;&quot;</span>
         <span class="n">state</span><span class="o">.</span><span class="n">expand</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">random_child_key</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
@@ -710,6 +772,7 @@
 <div class="viewcode-block" id="MCTS._playout">
 <a class="viewcode-back" href="../mcts.html#mcts.MCTS._playout">[docs]</a>
     <span class="k">def</span> <span class="nf">_playout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs the playout stage and returns the reached terminal state.&quot;&quot;&quot;</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">outcome</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">compute_outcome</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">outcome</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -721,6 +784,7 @@
 <div class="viewcode-block" id="MCTS._backup">
 <a class="viewcode-back" href="../mcts.html#mcts.MCTS._backup">[docs]</a>
     <span class="k">def</span> <span class="nf">_backup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">playout_root</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calls ``compute_outcome`` method on the terminal state (``state``), and suitably backs up the outcome to ancestors of the playout root.&quot;&quot;&quot;</span>
         <span class="n">outcome</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">compute_outcome</span><span class="p">()</span>
         <span class="n">state</span> <span class="o">=</span> <span class="n">playout_root</span>
         <span class="k">del</span> <span class="n">state</span><span class="o">.</span><span class="n">children</span> <span class="c1"># getting rid of playout branch</span>
@@ -735,6 +799,7 @@
 <div class="viewcode-block" id="MCTS._reduce_over_actions">
 <a class="viewcode-back" href="../mcts.html#mcts.MCTS._reduce_over_actions">[docs]</a>
     <span class="k">def</span> <span class="nf">_reduce_over_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calls ``_make_actions_info`` and ``_best_action`` using children states of the root to finds the best available action.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root_actions_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_actions_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">children</span><span class="p">,</span> <span class="n">best_action_entry</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_best_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">children</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_actions_info</span><span class="p">)</span></div>
 </div>

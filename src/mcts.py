@@ -118,7 +118,7 @@ class State:
         """
         Takes action (specified by its index) and returns the child-state implied by the action. 
         If such a child already existed (prior to the call) among children, returns it immediately. 
-        Otherwise, creates a new child-state object and tries to call on it the function ``take_action_job`` implementated in a subclass.
+        Otherwise, creates a new child-state object and tries to call on it the function ``take_action_job``, assumed as implemented in the subclass.
         If ``None`` is returned in the latter case (interpreted as illegal action), then forwards ``None`` as the result .
         
         Args:
@@ -145,6 +145,10 @@ class State:
         
         Should performs changes on this state implied by the given action, and return ``True`` if the action is legal.
         Otherwise, should do no changes and return ``False``.
+
+        Args:
+            action_index (int): 
+                index of action to be taken.
         
         Returns:
             action_legal (bool):
@@ -155,7 +159,7 @@ class State:
     def compute_outcome(self):
         """
         If called before on this state, returns the outcome already computed and memorized.
-        Otherwise, tries to call on this state the function ``compute_outcome_job`` (implemented in a subclass) and return its result.
+        Otherwise, tries to call on this state the function ``compute_outcome_job`` (assumed as implemented in the subclass) and return its result.
         Possible outcomes for terminal states are {-1, 0, 1}, indicating respectively: 
         a win for the minimizing player, a draw, a win for the maximizing player.
         For an ongoing game the outcome should be ``None``. 
@@ -191,7 +195,7 @@ class State:
                 
     def get_board(self):
         """
-        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]
+        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]
         
         Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g. chessboard, backgammon board, etc.),
         even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).
@@ -204,7 +208,7 @@ class State:
 
     def get_extra_info(self):
         """
-        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]
+        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]
         
         Should return additional information associated with this state (as a one-dimensional array of bytes)
         not implied by the contents of the board itself (e.g. possibilities of castling or en-passant 
@@ -229,7 +233,7 @@ class State:
         """
         [To be implemented in subclasses.]
         
-        Should pick a uniformly random action from currently available actions in this state and return the result of calling ``take_action`` with the action index as argument.
+        Should pick a uniformly random action from actions available in this state and return the result of calling ``take_action`` with the action index as argument.
         
         Returns:
             child (State): 
@@ -272,7 +276,7 @@ class State:
     @staticmethod
     def get_board_shape():
         """
-        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]
+        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]
         
         Returns a tuple with board shape for the game (or sequential decision problem) represented by this class.
         
@@ -285,7 +289,7 @@ class State:
     @staticmethod
     def get_extra_info_memory():
         """
-        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]
+        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]
         
         Returns amount of memory (in bytes) needed to memorize additional information associated with states of the game (or sequential decision problem) represented by this class.
         
@@ -327,6 +331,21 @@ class MCTS:
                  vanilla=DEFAULT_VANILLA,                  
                  ucb_c=DEFAULT_UCB_C, seed=DEFAULT_SEED,
                  verbose_debug=DEFAULT_VERBOSE_DEBUG, verbose_info=DEFAULT_VERBOSE_INFO):
+        """
+        Constructor of ``MCTS`` instances.
+         
+        Args:
+            search_time_limit (float):
+                time limit in seconds (computational budget), ``np.inf`` if no limit, defaults to ``5.0``.             
+            search_steps_limit (float): 
+                steps limit (computational budget), ``np.inf`` if no limit, defaults to ``np.inf``.
+            vanilla (bool):
+                flag indicating whether information (partial tree, action-value estimates, etc.) from previous searches is ignored, defaults to ``True``.
+            verbose_debug (bool):
+                debug verbosity flag, if ``True`` then detailed information about each kernel invocation are printed to console (in each iteration), defaults to ``False``.
+            verbose_info (bool): 
+                verbosity flag, if ``True`` then standard information on actions and performance are printed to console (after a full run), defaults to ``True``.            
+        """        
         self.search_time_limit = search_time_limit
         self.search_steps_limit = search_steps_limit
         self.vanilla = vanilla # if True, statistics from previous runs (searches) are not reused         
@@ -337,37 +356,28 @@ class MCTS:
         self.verbose_info = verbose_info
 
     def __str__(self):         
-        return f"{self.__class__.__name__}(search_time_limit={self.search_time_limit}, search_steps_limit={self.search_steps_limit}, vanilla={self.vanilla}, ucb_c={self.ucb_c}, seed: {self.seed})"
+        """
+        Returns a string representation of this ``MCTS`` instance.
+        
+        Returns:
+            str: string representation of this ``MCTS`` instance.
+        """           
+        return f"MCTS(search_time_limit={self.search_time_limit}, search_steps_limit={self.search_steps_limit}, vanilla={self.vanilla}, ucb_c={self.ucb_c}, seed: {self.seed})"
         
     def __repr__(self):
+        """
+        Returns a string representation of this ``MCTS`` instance (equivalent to ``__str__`` method).
+        
+        Returns:
+            str: string representation of this ``MCTSNC`` instance.
+        """                
         return self.__str__() 
-                
-    def _make_actions_info(self, children, best_action_entry=False):
-        actions_info = {}
-        for key in children.keys():
-            n_root = children[key].parent.n
-            win_flag = children[key].win_flag
-            n = children[key].n
-            n_wins = children[key].n_wins        
-            q = n_wins / n if n > 0 else 0.0 # 2nd case does not affect ucb
-            ucb = q + self.ucb_c * np.sqrt(np.log(n_root) / n) if n > 0 else np.inf 
-            entry = {}
-            entry["name"] = children[key].__class__.action_index_to_name(key)
-            entry["n_root"] = n_root
-            entry["win_flag"] = win_flag
-            entry["n"] = n
-            entry["n_wins"] = n_wins
-            entry["q"] = n_wins / n if n > 0 else np.nan
-            entry["ucb"] = ucb
-            actions_info[key] = entry
-        if best_action_entry:
-            best_key = self._best_action(children, actions_info)
-            best_entry = {"index": best_key, **actions_info[best_key]}
-            actions_info["best"] = best_entry
-        self.actions_info = actions_info
-        return actions_info
 
     def _make_performance_info(self):
+        """
+        Prepares and returns a dictionary with information on performance during the last run. 
+        After the call, available via ``performance_info`` attribute.
+        """        
         performance_info = {}
         performance_info["steps"] = self.steps
         performance_info["steps_per_second"] = self.steps / self.time_total                
@@ -396,8 +406,39 @@ class MCTS:
         performance_info["tree"] = tree_info
         self.performance_info = performance_info
         return performance_info
+
+                
+    def _make_actions_info(self, children, best_action_entry=False):
+        """
+        Prepares and returns a dictionary with information on root actions implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.
+        After the call, available via ``actions_info`` attribute.
+        """
+        actions_info = {}
+        for key in children.keys():
+            n_root = children[key].parent.n
+            win_flag = children[key].win_flag
+            n = children[key].n
+            n_wins = children[key].n_wins        
+            q = n_wins / n if n > 0 else 0.0 # 2nd case does not affect ucb
+            ucb = q + self.ucb_c * np.sqrt(np.log(n_root) / n) if n > 0 else np.inf 
+            entry = {}
+            entry["name"] = children[key].__class__.action_index_to_name(key)
+            entry["n_root"] = n_root
+            entry["win_flag"] = win_flag
+            entry["n"] = n
+            entry["n_wins"] = n_wins
+            entry["q"] = n_wins / n if n > 0 else np.nan
+            entry["ucb"] = ucb
+            actions_info[key] = entry
+        if best_action_entry:
+            best_key = self._best_action(children, actions_info)
+            best_entry = {"index": best_key, **actions_info[best_key]}
+            actions_info["best"] = best_entry
+        self.actions_info = actions_info
+        return actions_info
     
-    def _best_action_ucb(self, children, actions_info): 
+    def _best_action_ucb(self, children, actions_info):
+        """Returns the best action for selection stage purposes, i.e. the action with the largest UCB value."""  
         best_key = None
         best_ucb = -1.0
         for key in children.keys():
@@ -407,7 +448,14 @@ class MCTS:
                 best_key = key                        
         return best_key    
     
-    def _best_action(self, root_children, root_actions_info): 
+    def _best_action(self, root_children, root_actions_info):
+        """
+        Returns the best action among the root actions for the final decision.
+        Actions' comparison is a three-step process: 
+        (1) in the first order, the win flag is decisive (attribute ``win_flag`` of a child state), 
+        (2) if there is a tie (win flags equal), the number of times an action was taken becomes decisive (attribute ``n`` of a child state), 
+        (3) if there still is a tie (both win flags and action execution counts equal), the number of wins becomes decisive (attribute ``n_wins`` of a child state).
+        """ 
         self.best_action = None
         self.best_win_flag = False
         self.best_n = -1
@@ -427,6 +475,18 @@ class MCTS:
         return self.best_action
         
     def run(self, root, forced_search_steps_limit=np.inf):
+        """
+        Runs the standard, referential implementation of Monte Carlo Tree Search (on CPU, single-threaded).
+        
+        Args:
+            root (State):
+                root state from which the search starts.            
+            forced_search_steps_limit (int):
+                steps limit used only when reproducing results of a previous experiment; if less than``np.inf`` then has a priority over the standard computational budget given by ``search_time_limit`` and ``search_steps_limit``.            
+        Returns:
+            self.best_action (int):
+                best action resulting from search.                        
+        """
         print("MCTS RUN...")
         t1 = time.time()
         self.root = root
@@ -523,6 +583,7 @@ class MCTS:
         return self.best_action
     
     def _select(self, state):
+        """Performs the selection stage and returns the selected state."""
         while len(state.children) > 0:
             actions_info = self._make_actions_info(state.children)
             best_ucb_action = self._best_action_ucb(state.children, actions_info)
@@ -530,6 +591,7 @@ class MCTS:
         return state     
     
     def _expand(self, state):
+        """Performs the expansion stage and returns the child (picked on random) on which to carry out the playout."""
         state.expand()
         if len(state.children) > 0:
             random_child_key = np.random.choice(list(state.children.keys()))
@@ -537,6 +599,7 @@ class MCTS:
         return state
     
     def _playout(self, state):
+        """Performs the playout stage and returns the reached terminal state."""
         while True:
             outcome = state.compute_outcome()
             if outcome is not None:
@@ -545,6 +608,7 @@ class MCTS:
         return state        
     
     def _backup(self, state, playout_root):
+        """Calls ``compute_outcome`` method on the terminal state (``state``), and suitably backs up the outcome to ancestors of the playout root."""
         outcome = state.compute_outcome()
         state = playout_root
         del state.children # getting rid of playout branch
@@ -556,5 +620,6 @@ class MCTS:
             state = state.parent
             
     def _reduce_over_actions(self):
+        """Calls ``_make_actions_info`` and ``_best_action`` using children states of the root to finds the best available action."""
         self.root_actions_info = self._make_actions_info(self.root.children, best_action_entry=True)
         self._best_action(self.root.children, self.root_actions_info)
