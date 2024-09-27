@@ -55,8 +55,11 @@
 <li class="toctree-l2"><a class="reference internal" href="gomoku.html">gomoku module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">mcts module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#link-to-project-repository">Link to project repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#mcts.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.State.__init__"><code class="docutils literal notranslate"><span class="pre">State.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.__str__"><code class="docutils literal notranslate"><span class="pre">State.__str__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.State.class_repr"><code class="docutils literal notranslate"><span class="pre">State.class_repr()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.State._subtree_size"><code class="docutils literal notranslate"><span class="pre">State._subtree_size()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.State._subtree_max_depth"><code class="docutils literal notranslate"><span class="pre">State._subtree_max_depth()</span></code></a></li>
@@ -69,7 +72,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#mcts.State.get_board"><code class="docutils literal notranslate"><span class="pre">State.get_board()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.State.get_extra_info"><code class="docutils literal notranslate"><span class="pre">State.get_extra_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.State.expand"><code class="docutils literal notranslate"><span class="pre">State.expand()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mcts.State.expand_one_random_child"><code class="docutils literal notranslate"><span class="pre">State.expand_one_random_child()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.State.take_random_action_playout"><code class="docutils literal notranslate"><span class="pre">State.take_random_action_playout()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.State.action_name_to_index"><code class="docutils literal notranslate"><span class="pre">State.action_name_to_index()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.State.action_index_to_name"><code class="docutils literal notranslate"><span class="pre">State.action_index_to_name()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.State.get_board_shape"><code class="docutils literal notranslate"><span class="pre">State.get_board_shape()</span></code></a></li>
@@ -89,8 +92,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.__init__"><code class="docutils literal notranslate"><span class="pre">MCTS.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.__str__"><code class="docutils literal notranslate"><span class="pre">MCTS.__str__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.__repr__"><code class="docutils literal notranslate"><span class="pre">MCTS.__repr__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._make_actions_info"><code class="docutils literal notranslate"><span class="pre">MCTS._make_actions_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._make_performance_info"><code class="docutils literal notranslate"><span class="pre">MCTS._make_performance_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._make_actions_info"><code class="docutils literal notranslate"><span class="pre">MCTS._make_actions_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._best_action_ucb"><code class="docutils literal notranslate"><span class="pre">MCTS._best_action_ucb()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS._best_action"><code class="docutils literal notranslate"><span class="pre">MCTS._best_action()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcts.MCTS.run"><code class="docutils literal notranslate"><span class="pre">MCTS.run()</span></code></a></li>
@@ -105,7 +108,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="mctsnc.html">mctsnc module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html">mctsnc_game_specifics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html">mctsnc_game_mechanics module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">utils module</a></li>
 </ul>
 </li>
@@ -138,104 +141,311 @@
              
   <section id="module-mcts">
 <span id="mcts-module"></span><h1>mcts module<a class="headerlink" href="#module-mcts" title="Link to this heading"></a></h1>
+<p>Auxiliary module with a referential standard implementation of MCTS algorithm (for CPU, single-threaded).
+The module contains:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">State</span></code>: class representing an arbitrary state of some game or sequential decision problem (meant to inherit from when searches using <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> class are planned),</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCTS</span></code>: class representing the referential MCTS algorithm.</p></li>
+</ul>
+<section id="link-to-project-repository">
+<h2>Link to project repository<a class="headerlink" href="#link-to-project-repository" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://github.com/pklesk/mcts_numba_cuda">https://github.com/pklesk/mcts_numba_cuda</a></p>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
+<p>Private functions of <code class="docutils literal notranslate"><span class="pre">State</span></code> and <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> classes are named with a single leading underscore.
+For public methods full docstrings are provided (with arguments and returns described). For private functions short docstrings are provided.</p>
+</section>
 <dl class="py class">
 <dt class="sig sig-object py" id="mcts.State">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mcts.</span></span><span class="sig-name descname"><span class="pre">State</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Arbitrary abstract state of some game or sequential decision problem. Meant to be inherited - extended to subclasses 
+and then applicable in searches conducted by <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> class.
+For actual inheritance examples see:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">C4</span></code> class in <a class="reference internal" href="c4.html"><span class="doc">c4 module</span></a> (representation of Connect 4 game),</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Gomoku</span></code> class in <a class="reference internal" href="gomoku.html"><span class="doc">gomoku module</span></a> (representation of Gomoku game).</p></li>
+</ul>
+<p>When searches using <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> class are planned, the programmer, while inheriting from <code class="docutils literal notranslate"><span class="pre">State</span></code>, must provide implementations for the following non-static methods: 
+<code class="docutils literal notranslate"><span class="pre">take_action_job</span></code>, <code class="docutils literal notranslate"><span class="pre">compute_outcome_job</span></code>, <code class="docutils literal notranslate"><span class="pre">take_random_action_playout</span></code>, <code class="docutils literal notranslate"><span class="pre">__str__</span></code>; 
+and one static method <code class="docutils literal notranslate"><span class="pre">class_repr</span></code>.
+When searches using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> class are planned, the programmer, while inheriting from <code class="docutils literal notranslate"><span class="pre">State</span></code>, must provide the following non-static methods:    
+<code class="docutils literal notranslate"><span class="pre">get_board</span></code>, <code class="docutils literal notranslate"><span class="pre">get_extra_info</span></code>
+and the following static ones:
+<code class="docutils literal notranslate"><span class="pre">get_board_shape</span></code>, <code class="docutils literal notranslate"><span class="pre">get_extra_info_memory</span></code>, <code class="docutils literal notranslate"><span class="pre">get_max_actions</span></code>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.__init__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Constructor of <code class="docutils literal notranslate"><span class="pre">State</span></code> instances. Should be called (in the first line) in subclasses’ constructors as: <code class="docutils literal notranslate"><span class="pre">super().__init__(parent)</span></code>.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>parent (State): </dt><dd><p>reference to parent state object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcts.State.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.__str__" title="Link to this definition"></a></dt>
+<dd><p>[To be implemented in subclasses.]</p>
+<p>Should return a string representation of this state, e.g. game board with its current contents.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>str: string representation of this state.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.class_repr">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.class_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.class_repr" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses.]</p>
+<p>Should return a string representation of this class of states (e.g. game name, its variation, board size if configurable, etc.).</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>str: string representation of this class of states.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State._subtree_size">
 <span class="sig-name descname"><span class="pre">_subtree_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State._subtree_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State._subtree_size" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns size of the subtree rooted by this state (number of tree nodes including this one).</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State._subtree_max_depth">
 <span class="sig-name descname"><span class="pre">_subtree_max_depth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State._subtree_max_depth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State._subtree_max_depth" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns (maximum) depth of the subtree rooted by this state.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State._subtree_depths">
 <span class="sig-name descname"><span class="pre">_subtree_depths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State._subtree_depths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State._subtree_depths" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns a list of depths for nodes in the subtree rooted by this state.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.get_turn">
 <span class="sig-name descname"><span class="pre">get_turn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_turn" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns {-1, 1} indicating whose turn it is: -1 for the minimizing player, 1 for the maximizing player.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>self.turn ({-1, 1}): </dt><dd><p>indicating whose turn it is: -1 for the minimizing player, 1 for the maximizing player.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.take_action">
 <span class="sig-name descname"><span class="pre">take_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.take_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.take_action" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Takes action (specified by its index) and returns the child-state implied by the action. 
+If such a child already existed (prior to the call) among children, returns it immediately. 
+Otherwise, creates a new child-state object and tries to call on it the function <code class="docutils literal notranslate"><span class="pre">take_action_job</span></code>, assumed as implemented in the subclass.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned in the latter case (interpreted as illegal action), then forwards <code class="docutils literal notranslate"><span class="pre">None</span></code> as the result .</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>action_index (int): </dt><dd><p>index of action to be taken.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>child (State): </dt><dd><p>reference to child state implied by the action or <code class="docutils literal notranslate"><span class="pre">None</span></code> if action illegal.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.take_action_job">
 <span class="sig-name descname"><span class="pre">take_action_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.take_action_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.take_action_job" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses.]</p>
+<p>Should performs changes on this state implied by the given action, and return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the action is legal.
+Otherwise, should do no changes and return <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>action_index (int): </dt><dd><p>index of action to be taken.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>action_legal (bool):</dt><dd><p>boolean flag indicated if the specified action was legal and performed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.compute_outcome">
 <span class="sig-name descname"><span class="pre">compute_outcome</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.compute_outcome"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.compute_outcome" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>If called before on this state, returns the outcome already computed and memorized.
+Otherwise, tries to call on this state the function <code class="docutils literal notranslate"><span class="pre">compute_outcome_job</span></code> (assumed as implemented in the subclass) and return its result.
+Possible outcomes for terminal states are {-1, 0, 1}, indicating respectively: 
+a win for the minimizing player, a draw, a win for the maximizing player.
+For an ongoing game the outcome should be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>outcome ({-1, 0, 1} or <code class="docutils literal notranslate"><span class="pre">None</span></code>):</dt><dd><p>outcome of the game represented by this state.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.compute_outcome_job">
 <span class="sig-name descname"><span class="pre">compute_outcome_job</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.compute_outcome_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.compute_outcome_job" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses.]</p>
+<p>Should compute and return the game outcome for this state in compliance with rules of the game it represents.
+Possible results for terminal states are {-1, 0, 1}, indicating respectively: 
+a win for the minimizing player, a draw, a win for the maximizing player.
+For an ongoing game the result should be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>outcome ({-1, 0, 1} or <code class="docutils literal notranslate"><span class="pre">None</span></code>)</dt><dd><p>game outcome for this state.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.get_board">
 <span class="sig-name descname"><span class="pre">get_board</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_board"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_board" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
+<p>Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g. chessboard, backgammon board, etc.),
+even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>board (ndarray[np.int8, ndim=2]):</dt><dd><p>two-dimensional array with representation of this state.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.get_extra_info">
 <span class="sig-name descname"><span class="pre">get_extra_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_extra_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_extra_info" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
+<p>Should return additional information associated with this state (as a one-dimensional array of bytes)
+not implied by the contents of the board itself (e.g. possibilities of castling or en-passant 
+captures in chess, the contract in double dummy bridge, etc.), or any technical information useful to generate 
+legal actions faster. If no additional information is needed should return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>extra_info (ndarray[np.int8, ndim=1] or <code class="docutils literal notranslate"><span class="pre">None</span></code>):</dt><dd><p>one-dimensional array with additional information associated with this state.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.expand">
 <span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.expand" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Expands this state to generate its children by calling <code class="docutils literal notranslate"><span class="pre">take_action</span></code> multiple times for all possible action indexes.</p>
+</dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mcts.State.expand_one_random_child">
-<span class="sig-name descname"><span class="pre">expand_one_random_child</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.expand_one_random_child"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.expand_one_random_child" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="mcts.State.take_random_action_playout">
+<span class="sig-name descname"><span class="pre">take_random_action_playout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.take_random_action_playout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.take_random_action_playout" title="Link to this definition"></a></dt>
+<dd><p>[To be implemented in subclasses.]</p>
+<p>Should pick a uniformly random action from actions available in this state and return the result of calling <code class="docutils literal notranslate"><span class="pre">take_action</span></code> with the action index as argument.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>child (State): </dt><dd><p>result of <code class="docutils literal notranslate"><span class="pre">take_action</span></code> call for the random action.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.action_name_to_index">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_name_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.action_name_to_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.action_name_to_index" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be optionally implemented by programmer in subclasses.]</p>
+<p>Returns an action’s index (numbering from 0) based on its name. E.g. name <code class="docutils literal notranslate"><span class="pre">&quot;B4&quot;</span></code> for 15 X 15 Gomoku maps to index <code class="docutils literal notranslate"><span class="pre">18</span></code>.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>action_name (str):</dt><dd><p>name of an action.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>action_index (int):</dt><dd><p>index corresponding to the given name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.action_index_to_name">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_index_to_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.action_index_to_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.action_index_to_name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be optionally implemented by programmer in subclasses.]</p>
+<p>Returns an action’s name based on its index (numbering from 0). E.g. index <code class="docutils literal notranslate"><span class="pre">18</span></code> for 15 X 15 Gomoku maps to name <code class="docutils literal notranslate"><span class="pre">B4</span></code>.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>action_index (int):</dt><dd><p>index of an action.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>action_name (str):</dt><dd><p>name corresponding to the given index.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.get_board_shape">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_board_shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_board_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_board_shape" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
+<p>Returns a tuple with board shape for the game (or sequential decision problem) represented by this class.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>shape (tuple(int, int)):</dt><dd><p>shape of boards related to states of this class.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.get_extra_info_memory">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_extra_info_memory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_extra_info_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_extra_info_memory" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
+<p>Returns amount of memory (in bytes) needed to memorize additional information associated with states of the game (or sequential decision problem) represented by this class.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>extra_info_memory (int):</dt><dd><p>number of bytes required to memorize additional information relate to states of this class.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.State.get_max_actions">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_max_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_max_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_max_actions" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses.]</p>
+<p>Returns the maximum number of actions (the largest branching factor) possible in the game represented by this class.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>max_actions (int):</dt><dd><p>maximum number of actions (the largest branching factor) possible in the game represented by this class.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcts.State.__module__">
@@ -248,6 +458,7 @@
 <dt class="sig sig-object py" id="mcts.MCTS">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mcts.</span></span><span class="sig-name descname"><span class="pre">MCTS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_time_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vanilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucb_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Monte Carlo Tree Search - standard, referential implementation (for CPU, single-threaded).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcts.MCTS.DEFAULT_SEARCH_TIME_LIMIT">
 <span class="sig-name descname"><span class="pre">DEFAULT_SEARCH_TIME_LIMIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5.0</span></em><a class="headerlink" href="#mcts.MCTS.DEFAULT_SEARCH_TIME_LIMIT" title="Link to this definition"></a></dt>
@@ -286,69 +497,123 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_time_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vanilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucb_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS.__init__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Constructor of <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> instances.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>search_time_limit (float):</dt><dd><p>time limit in seconds (computational budget), <code class="docutils literal notranslate"><span class="pre">np.inf</span></code> if no limit, defaults to <code class="docutils literal notranslate"><span class="pre">5.0</span></code>.</p>
+</dd>
+<dt>search_steps_limit (float): </dt><dd><p>steps limit (computational budget), <code class="docutils literal notranslate"><span class="pre">np.inf</span></code> if no limit, defaults to <code class="docutils literal notranslate"><span class="pre">np.inf</span></code>.</p>
+</dd>
+<dt>vanilla (bool):</dt><dd><p>flag indicating whether information (partial tree, action-value estimates, etc.) from previous searches is ignored, defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt>verbose_debug (bool):</dt><dd><p>debug verbosity flag, if <code class="docutils literal notranslate"><span class="pre">True</span></code> then detailed information about each kernel invocation are printed to console (in each iteration), defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt>verbose_info (bool): </dt><dd><p>verbosity flag, if <code class="docutils literal notranslate"><span class="pre">True</span></code> then standard information on actions and performance are printed to console (after a full run), defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS.__str__">
 <span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS.__str__" title="Link to this definition"></a></dt>
-<dd><p>Return str(self).</p>
+<dd><p>Returns a string representation of this <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> instance.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>str: string representation of this <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> instance.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS.__repr__">
 <span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS.__repr__" title="Link to this definition"></a></dt>
-<dd><p>Return repr(self).</p>
+<dd><p>Returns a string representation of this <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> instance (equivalent to <code class="docutils literal notranslate"><span class="pre">__str__</span></code> method).</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>str: string representation of this <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mcts.MCTS._make_performance_info">
+<span class="sig-name descname"><span class="pre">_make_performance_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._make_performance_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._make_performance_info" title="Link to this definition"></a></dt>
+<dd><p>Prepares and returns a dictionary with information on performance during the last run. 
+After the call, available via <code class="docutils literal notranslate"><span class="pre">performance_info</span></code> attribute.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._make_actions_info">
 <span class="sig-name descname"><span class="pre">_make_actions_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">children</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_action_entry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._make_actions_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._make_actions_info" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mcts.MCTS._make_performance_info">
-<span class="sig-name descname"><span class="pre">_make_performance_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._make_performance_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._make_performance_info" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Prepares and returns a dictionary with information on root actions implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.
+After the call, available via <code class="docutils literal notranslate"><span class="pre">actions_info</span></code> attribute.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._best_action_ucb">
 <span class="sig-name descname"><span class="pre">_best_action_ucb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">children</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._best_action_ucb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._best_action_ucb" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the best action for selection stage purposes, i.e. the action with the largest UCB value.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._best_action">
 <span class="sig-name descname"><span class="pre">_best_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_children</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_actions_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._best_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._best_action" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the best action among the root actions for the final decision.
+Actions’ comparison is a three-step process: 
+(1) in the first order, the win flag is decisive (attribute <code class="docutils literal notranslate"><span class="pre">win_flag</span></code> of a child state), 
+(2) if there is a tie (win flags equal), the number of times an action was taken becomes decisive (attribute <code class="docutils literal notranslate"><span class="pre">n</span></code> of a child state), 
+(3) if there still is a tie (both win flags and action execution counts equal), the number of wins becomes decisive (attribute <code class="docutils literal notranslate"><span class="pre">n_wins</span></code> of a child state).</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS.run" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Runs the standard, referential implementation of Monte Carlo Tree Search (on CPU, single-threaded).</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>root (State):</dt><dd><p>root state from which the search starts.</p>
+</dd>
+<dt>forced_search_steps_limit (int):</dt><dd><p>steps limit used only when reproducing results of a previous experiment; if less than``np.inf`` then has a priority over the standard computational budget given by <code class="docutils literal notranslate"><span class="pre">search_time_limit</span></code> and <code class="docutils literal notranslate"><span class="pre">search_steps_limit</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>self.best_action (int):</dt><dd><p>best action resulting from search.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._select">
 <span class="sig-name descname"><span class="pre">_select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._select" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Performs the selection stage and returns the selected state.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._expand">
 <span class="sig-name descname"><span class="pre">_expand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._expand" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Performs the expansion stage and returns the child (picked on random) on which to carry out the playout.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._playout">
 <span class="sig-name descname"><span class="pre">_playout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._playout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._playout" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Performs the playout stage and returns the reached terminal state.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._backup">
 <span class="sig-name descname"><span class="pre">_backup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">playout_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._backup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._backup" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calls <code class="docutils literal notranslate"><span class="pre">compute_outcome</span></code> method on the terminal state (<code class="docutils literal notranslate"><span class="pre">state</span></code>), and suitably backs up the outcome to ancestors of the playout root.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcts.MCTS._reduce_over_actions">
 <span class="sig-name descname"><span class="pre">_reduce_over_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#MCTS._reduce_over_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.MCTS._reduce_over_actions" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calls <code class="docutils literal notranslate"><span class="pre">_make_actions_info</span></code> and <code class="docutils literal notranslate"><span class="pre">_best_action</span></code> using children states of the root to finds the best available action.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcts.MCTS.__module__">
