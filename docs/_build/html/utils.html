@@ -21,7 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="mctsnc_game_specifics module" href="mctsnc_game_specifics.html" /> 
+    <link rel="prev" title="mctsnc_game_mechanics module" href="mctsnc_game_mechanics.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,7 +55,7 @@
 <li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mcts.html">mcts module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mctsnc.html">mctsnc module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html">mctsnc_game_specifics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html">mctsnc_game_mechanics module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">utils module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#link-to-project-repository">Link to project repository</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#utils.dict_to_str"><code class="docutils literal notranslate"><span class="pre">dict_to_str()</span></code></a></li>
@@ -165,20 +165,24 @@
 <dt class="sig sig-object py" id="utils.Logger">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">Logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Logger" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for simultaneous logging to console and a log file (for purposes of experiments).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.Logger.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Logger.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Logger.__init__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Constructor of <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> instances.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.Logger.write">
 <span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Logger.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Logger.write" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Writes a message to console and a log file.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.Logger.flush">
 <span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Logger.flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Logger.flush" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Empty function required for buffering.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="utils.Logger.__module__">
@@ -196,12 +200,14 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.save_and_zip_experiment">
 <span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">save_and_zip_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_hs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#save_and_zip_experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.save_and_zip_experiment" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Saves and zips .json and .log files for an experiment given its hash string and information stored in a dictionary.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.unzip_and_load_experiment">
 <span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">unzip_and_load_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_hs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#unzip_and_load_experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.unzip_and_load_experiment" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Unzips, loads an experiment given its hash string, and returns a dictionary with experiments’ information.</p>
+</dd></dl>
 
 </section>
 
@@ -209,7 +215,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="mctsnc_game_specifics.html" class="btn btn-neutral float-left" title="mctsnc_game_specifics module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mctsnc_game_mechanics.html" class="btn btn-neutral float-left" title="mctsnc_game_mechanics module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

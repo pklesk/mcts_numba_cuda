@@ -21,7 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="mctsnc_game_specifics module" href="mctsnc_game_specifics.html" />
+    <link rel="next" title="mctsnc_game_mechanics module" href="mctsnc_game_mechanics.html" />
     <link rel="prev" title="mcts module" href="mcts.html" /> 
 </head>
 
@@ -60,7 +60,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#example-usage-2-gomoku">Example usage 2 (Gomoku)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#link-to-project-repository">Link to project repository</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#notes-on-code">Notes on code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#mctsnc.MCTSNC"><code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mctsnc.MCTSNC.VARIANTS"><code class="docutils literal notranslate"><span class="pre">MCTSNC.VARIANTS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mctsnc.MCTSNC.DEFAULT_SEARCH_TIME_LIMIT"><code class="docutils literal notranslate"><span class="pre">MCTSNC.DEFAULT_SEARCH_TIME_LIMIT</span></code></a></li>
@@ -121,7 +121,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html">mctsnc_game_specifics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html">mctsnc_game_mechanics module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">utils module</a></li>
 </ul>
 </li>
@@ -154,16 +154,16 @@
              
   <section id="module-mctsnc">
 <span id="mctsnc-module"></span><h1>mctsnc module<a class="headerlink" href="#module-mctsnc" title="Link to this heading"></a></h1>
-<p>This module contains the core algorithmic functionalities of the project, embodied by the class <cite>MCTSNC</cite>.</p>
-<p>With CUDA computational model in mind, we have proposed and implemented in <cite>MCTSNC</cite> four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm. 
-The provided implementation takes advantage of <a class="reference external" href="https://numba.pydata.org">Numba</a>, a just-in-time Python compiler, and its <cite>numba.cuda</cite> package (hence the “NC” suffix in the name). 
+<p>This module contains the core algorithmic functionalities of the project, embodied by the class <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code>.</p>
+<p>With CUDA computational model in mind, we have proposed and implemented in class <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm. 
+The provided implementation takes advantage of <a class="reference external" href="https://numba.pydata.org">Numba</a>, a just-in-time Python compiler, and its <code class="docutils literal notranslate"><span class="pre">numba.cuda</span></code> package (hence the “NC” suffix in the name). 
 By <cite>thoroughly parallel</cite> we understand an algorithmic design that applies to both: (1) the structural elements of trees - leaf-/root-/tree-level parallelization 
 (all those three are combined), and (2) the stages of MCTS - each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. 
 We apply suitable <cite>reduction</cite> patterns to carry out summations or max / argmax operations. Cooperation of threads helps to transfer information between global and shared memory. 
 The implementation uses: no atomic operations, no mutexes (lock-free), and very few host-device memory transfers.</p>
 <section id="example-usage-1-connect-4">
 <h2>Example usage 1 (Connect 4)<a class="headerlink" href="#example-usage-1-connect-4" title="Link to this heading"></a></h2>
-<p>Assume the specifics of the Connect 4 game have been defined to MCTS-NC in <code class="docutils literal notranslate"><span class="pre">mctsnc_game_specifics.py</span></code> module (i.e. functions <code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action</span></code>, etc.), 
+<p>Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in <code class="docutils literal notranslate"><span class="pre">mctsnc_game_mechanics.py</span></code> module (with device functions <code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action</span></code>, etc.), 
 and that <code class="docutils literal notranslate"><span class="pre">c4</span></code> - instance of <code class="docutils literal notranslate"><span class="pre">C4(State)</span></code> - represents a state of an ongoing Connect 4 game shown below.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">|.|.|●|○|.|.|.|</span>
 <span class="go">|.|.|●|○|.|.|○|</span>
@@ -210,7 +210,7 @@ and that <code class="docutils literal notranslate"><span class="pre">c4</span><
 </section>
 <section id="example-usage-2-gomoku">
 <h2>Example usage 2 (Gomoku)<a class="headerlink" href="#example-usage-2-gomoku" title="Link to this heading"></a></h2>
-<p>Assume the specifics of the Gomoku game have been defined to MCTS-NC in <code class="docutils literal notranslate"><span class="pre">mctsnc_game_specifics.py</span></code> module (i.e. functions <code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action</span></code>, etc.), 
+<p>Assume the mechanics of the Gomoku game have been defined to MCTS-NC in <code class="docutils literal notranslate"><span class="pre">mctsnc_game_mechanics.py</span></code> module (with device functions <code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action</span></code>, etc.), 
 and that <code class="docutils literal notranslate"><span class="pre">g</span></code> - instance of <code class="docutils literal notranslate"><span class="pre">Gomoku(State)</span></code> - represents a state of an ongoing Gomoku game shown below.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">  ABCDEFGHIJKLMNO</span>
 <span class="go">15+++++++++++++++15</span>
@@ -281,11 +281,12 @@ and that <code class="docutils literal notranslate"><span class="pre">g</span></
 <h2>Link to project repository<a class="headerlink" href="#link-to-project-repository" title="Link to this heading"></a></h2>
 <p><a class="reference external" href="https://github.com/pklesk/mcts_numba_cuda">https://github.com/pklesk/mcts_numba_cuda</a></p>
 </section>
-<section id="notes-on-code">
-<h2>Notes on code<a class="headerlink" href="#notes-on-code" title="Link to this heading"></a></h2>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
 <p>Private functions of <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> class are named with a single leading underscore (e.g.: <code class="docutils literal notranslate"><span class="pre">_set_cuda_constants</span></code>, 
 <code class="docutils literal notranslate"><span class="pre">_make_performance_info</span></code>, <code class="docutils literal notranslate"><span class="pre">_playout_acp_prodigal</span></code>, etc.). Among them, the kernel functions are additionally 
-described by <code class="docutils literal notranslate"><span class="pre">&#64;cuda.jit</span></code> decorators coming from <code class="docutils literal notranslate"><span class="pre">numba</span></code> module. Exact specifications of types come along with the decorators.</p>
+described by <code class="docutils literal notranslate"><span class="pre">&#64;cuda.jit</span></code> decorators coming from <code class="docutils literal notranslate"><span class="pre">numba</span></code> module. Exact specifications of types come along with the decorators.
+For public methods full docstrings are provided (with arguments and returns described). For private functions short docstrings are provided.</p>
 </section>
 <dl class="py class">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC">
@@ -500,7 +501,7 @@ Computations are carried out according to the formerly chosen algorithmic <code 
 </dl>
 </dd>
 <dt>Returns:</dt><dd><dl class="simple">
-<dt>self.best_action:</dt><dd><p>best action resulting from search.</p>
+<dt>self.best_action (int):</dt><dd><p>best action resulting from search.</p>
 </dd>
 </dl>
 </dd>
@@ -695,7 +696,7 @@ Computations are carried out according to the formerly chosen algorithmic <code 
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="mcts.html" class="btn btn-neutral float-left" title="mcts module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="mctsnc_game_specifics.html" class="btn btn-neutral float-right" title="mctsnc_game_specifics module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mctsnc_game_mechanics.html" class="btn btn-neutral float-right" title="mctsnc_game_mechanics module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

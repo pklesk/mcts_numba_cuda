@@ -160,12 +160,13 @@ class C4(State):
             return last_token        
         return 0
     
-    def expand(self):
-        if len(self.children) == 0 and self.compute_outcome() is None:
-            for j in range(self.N):
-                self.take_action(j)
+    # TODO remove if unnecessary (default implementation of expand was moved to State class)
+    # def expand(self):
+    #     if len(self.children) == 0 and self.compute_outcome() is None:
+    #         for j in range(self.N):
+    #             self.take_action(j)
                         
-    def expand_one_random_child(self):
+    def take_random_action_playout(self):
         j_indexes = np.where(self.column_fills < C4.M)[0]
         j = np.random.choice(j_indexes) 
         child = self.take_action(j)

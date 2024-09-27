@@ -56,7 +56,7 @@
 <li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mcts.html">mcts module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mctsnc.html">mctsnc module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html">mctsnc_game_specifics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html">mctsnc_game_mechanics module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">utils module</a></li>
 </ul>
 </li>
@@ -101,8 +101,7 @@
 <li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.take_action_job"><code class="docutils literal notranslate"><span class="pre">C4.take_action_job()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.compute_outcome_job"><code class="docutils literal notranslate"><span class="pre">C4.compute_outcome_job()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.compute_outcome_job_numba_jit"><code class="docutils literal notranslate"><span class="pre">C4.compute_outcome_job_numba_jit()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.expand"><code class="docutils literal notranslate"><span class="pre">C4.expand()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.expand_one_random_child"><code class="docutils literal notranslate"><span class="pre">C4.expand_one_random_child()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.take_random_action_playout"><code class="docutils literal notranslate"><span class="pre">C4.take_random_action_playout()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.get_board"><code class="docutils literal notranslate"><span class="pre">C4.get_board()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.get_extra_info"><code class="docutils literal notranslate"><span class="pre">C4.get_extra_info()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="c4.html#c4.C4.action_name_to_index"><code class="docutils literal notranslate"><span class="pre">C4.action_name_to_index()</span></code></a></li>
@@ -136,8 +135,7 @@
 <li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.take_action_job"><code class="docutils literal notranslate"><span class="pre">Gomoku.take_action_job()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.compute_outcome_job"><code class="docutils literal notranslate"><span class="pre">Gomoku.compute_outcome_job()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.compute_outcome_job_numba_jit"><code class="docutils literal notranslate"><span class="pre">Gomoku.compute_outcome_job_numba_jit()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.expand"><code class="docutils literal notranslate"><span class="pre">Gomoku.expand()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.expand_one_random_child"><code class="docutils literal notranslate"><span class="pre">Gomoku.expand_one_random_child()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.take_random_action_playout"><code class="docutils literal notranslate"><span class="pre">Gomoku.take_random_action_playout()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.get_board"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_board()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.get_extra_info"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_extra_info()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.action_name_to_index"><code class="docutils literal notranslate"><span class="pre">Gomoku.action_name_to_index()</span></code></a></li>
@@ -152,8 +150,11 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="main.html">main module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mcts.html">mcts module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mcts.html#link-to-project-repository">Link to project repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcts.html#notes">Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mcts.html#mcts.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.__init__"><code class="docutils literal notranslate"><span class="pre">State.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.__str__"><code class="docutils literal notranslate"><span class="pre">State.__str__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.class_repr"><code class="docutils literal notranslate"><span class="pre">State.class_repr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State._subtree_size"><code class="docutils literal notranslate"><span class="pre">State._subtree_size()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State._subtree_max_depth"><code class="docutils literal notranslate"><span class="pre">State._subtree_max_depth()</span></code></a></li>
@@ -166,7 +167,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.get_board"><code class="docutils literal notranslate"><span class="pre">State.get_board()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.get_extra_info"><code class="docutils literal notranslate"><span class="pre">State.get_extra_info()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.expand"><code class="docutils literal notranslate"><span class="pre">State.expand()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.expand_one_random_child"><code class="docutils literal notranslate"><span class="pre">State.expand_one_random_child()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.take_random_action_playout"><code class="docutils literal notranslate"><span class="pre">State.take_random_action_playout()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.action_name_to_index"><code class="docutils literal notranslate"><span class="pre">State.action_name_to_index()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.action_index_to_name"><code class="docutils literal notranslate"><span class="pre">State.action_index_to_name()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.get_board_shape"><code class="docutils literal notranslate"><span class="pre">State.get_board_shape()</span></code></a></li>
@@ -206,7 +207,7 @@
 <li class="toctree-l2"><a class="reference internal" href="mctsnc.html#example-usage-2-gomoku">Example usage 2 (Gomoku)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mctsnc.html#dependencies">Dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mctsnc.html#link-to-project-repository">Link to project repository</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc.html#notes-on-code">Notes on code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc.html#notes">Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC"><code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.VARIANTS"><code class="docutils literal notranslate"><span class="pre">MCTSNC.VARIANTS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mctsnc.html#mctsnc.MCTSNC.DEFAULT_SEARCH_TIME_LIMIT"><code class="docutils literal notranslate"><span class="pre">MCTSNC.DEFAULT_SEARCH_TIME_LIMIT</span></code></a></li>
@@ -267,22 +268,22 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="mctsnc_game_specifics.html">mctsnc_game_specifics module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.is_action_legal"><code class="docutils literal notranslate"><span class="pre">is_action_legal()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.take_action"><code class="docutils literal notranslate"><span class="pre">take_action()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.legal_actions_playout"><code class="docutils literal notranslate"><span class="pre">legal_actions_playout()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.take_action_playout"><code class="docutils literal notranslate"><span class="pre">take_action_playout()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.compute_outcome"><code class="docutils literal notranslate"><span class="pre">compute_outcome()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.is_action_legal_c4"><code class="docutils literal notranslate"><span class="pre">is_action_legal_c4()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.take_action_c4"><code class="docutils literal notranslate"><span class="pre">take_action_c4()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.legal_actions_playout_c4"><code class="docutils literal notranslate"><span class="pre">legal_actions_playout_c4()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.take_action_playout_c4"><code class="docutils literal notranslate"><span class="pre">take_action_playout_c4()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.compute_outcome_c4"><code class="docutils literal notranslate"><span class="pre">compute_outcome_c4()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.is_action_legal_gomoku"><code class="docutils literal notranslate"><span class="pre">is_action_legal_gomoku()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.take_action_gomoku"><code class="docutils literal notranslate"><span class="pre">take_action_gomoku()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.legal_actions_playout_gomoku"><code class="docutils literal notranslate"><span class="pre">legal_actions_playout_gomoku()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.take_action_playout_gomoku"><code class="docutils literal notranslate"><span class="pre">take_action_playout_gomoku()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html#mctsnc_game_specifics.compute_outcome_gomoku"><code class="docutils literal notranslate"><span class="pre">compute_outcome_gomoku()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="mctsnc_game_mechanics.html">mctsnc_game_mechanics module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.is_action_legal"><code class="docutils literal notranslate"><span class="pre">is_action_legal()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.take_action"><code class="docutils literal notranslate"><span class="pre">take_action()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.legal_actions_playout"><code class="docutils literal notranslate"><span class="pre">legal_actions_playout()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.take_action_playout"><code class="docutils literal notranslate"><span class="pre">take_action_playout()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.compute_outcome"><code class="docutils literal notranslate"><span class="pre">compute_outcome()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.is_action_legal_c4"><code class="docutils literal notranslate"><span class="pre">is_action_legal_c4()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.take_action_c4"><code class="docutils literal notranslate"><span class="pre">take_action_c4()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.legal_actions_playout_c4"><code class="docutils literal notranslate"><span class="pre">legal_actions_playout_c4()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.take_action_playout_c4"><code class="docutils literal notranslate"><span class="pre">take_action_playout_c4()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.compute_outcome_c4"><code class="docutils literal notranslate"><span class="pre">compute_outcome_c4()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.is_action_legal_gomoku"><code class="docutils literal notranslate"><span class="pre">is_action_legal_gomoku()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.take_action_gomoku"><code class="docutils literal notranslate"><span class="pre">take_action_gomoku()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.legal_actions_playout_gomoku"><code class="docutils literal notranslate"><span class="pre">legal_actions_playout_gomoku()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.take_action_playout_gomoku"><code class="docutils literal notranslate"><span class="pre">take_action_playout_gomoku()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html#mctsnc_game_mechanics.compute_outcome_gomoku"><code class="docutils literal notranslate"><span class="pre">compute_outcome_gomoku()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">utils module</a><ul>

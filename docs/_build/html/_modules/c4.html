@@ -256,17 +256,15 @@
         <span class="k">return</span> <span class="mi">0</span></div>
 
     
-<div class="viewcode-block" id="C4.expand">
-<a class="viewcode-back" href="../c4.html#c4.C4.expand">[docs]</a>
-    <span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_outcome</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">take_action</span><span class="p">(</span><span class="n">j</span><span class="p">)</span></div>
-
+    <span class="c1"># TODO remove if unnecessary (default implementation of expand was moved to State class)</span>
+    <span class="c1"># def expand(self):</span>
+    <span class="c1">#     if len(self.children) == 0 and self.compute_outcome() is None:</span>
+    <span class="c1">#         for j in range(self.N):</span>
+    <span class="c1">#             self.take_action(j)</span>
                         
-<div class="viewcode-block" id="C4.expand_one_random_child">
-<a class="viewcode-back" href="../c4.html#c4.C4.expand_one_random_child">[docs]</a>
-    <span class="k">def</span> <span class="nf">expand_one_random_child</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="C4.take_random_action_playout">
+<a class="viewcode-back" href="../c4.html#c4.C4.take_random_action_playout">[docs]</a>
+    <span class="k">def</span> <span class="nf">take_random_action_playout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">j_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">column_fills</span> <span class="o">&lt;</span> <span class="n">C4</span><span class="o">.</span><span class="n">M</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">j_indexes</span><span class="p">)</span> 
         <span class="n">child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take_action</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>

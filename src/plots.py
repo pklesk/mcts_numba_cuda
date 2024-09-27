@@ -111,7 +111,7 @@ def scores_array_plot_ocp_prodigal_vs_vanilla():
          "4160630561_62284_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_ocp_prodigal;C4_6x7;100]"],
         ["1952747451_24774_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_ocp_prodigal;C4_6x7;100]",         
          "3089327037_85000_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_ocp_prodigal;C4_6x7;100]",
-         "TODO",
+         "4280420705_15852_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_ocp_prodigal;C4_6x7;100]",
          "3356143073_10572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]"],
         ["1868454339_46798_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_ocp_prodigal;C4_6x7;100]",
          "3005033925_07024_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_ocp_prodigal;C4_6x7;100]",
@@ -267,7 +267,7 @@ def depths_plot(moves_rounds_black, mean_depths_black, max_depths_black, moves_r
     fontsize_legend = 13
     grid_color = (0.4, 0.4, 0.4) 
     grid_dashes = (4.0, 4.0)
-    legend_loc = "upper left"
+    legend_loc = "lower left"
     legend_handlelength = 4
     legend_labelspacing = 0.1
     alpha_ucb=0.25
@@ -320,7 +320,7 @@ def depths_plot_generator(experiments_hs, game_index,
 
 if __name__ == "__main__":        
     
-    scores_array_plot_ocp_thrifty_vs_vanilla()
+    # scores_array_plot_ocp_thrifty_vs_vanilla()
     
     # scores_array_plot_ocp_prodigal_vs_vanilla()
     
@@ -328,10 +328,10 @@ if __name__ == "__main__":
     
     # scores_array_plot_acp_prodigal_vs_vanilla()
 
-    # best_action_plot_generator("2375874269_93352_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_64_ocp_prodigal;C4_6x7;100]", 33,
+    # best_action_plot_generator("3356143073_10572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 61,
     #                            "BEST $\widehat{q}$ - MCTS_4_INF_VANILLA", "UCB - MCTS_4_INF_VANILLA",      
-    #                            "BEST $\widehat{q}$ - MCTS-NC_1_INF_4_64_OCP_PRODIGAL", "UCB - MCTS-NC_1_INF_4_64_OCP_PRODIGAL",     
-    #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 33/100)")
+    #                            "BEST $\widehat{q}$ - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "UCB - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",     
+    #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 61/100)")
     
     # best_action_plot_generator("0500042733_17720_427_[mctsnc_30_inf_2_128_ocp_prodigal_16g;mctsnc_30_inf_2_128_acp_prodigal_16g;Gomoku_15x15;100]", 87,
     #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_2_128_OCP_PRODIGAL", "UCB - MCTS-NC_30_INF_2_128_OCP_PRODIGAL",                               
@@ -339,10 +339,10 @@ if __name__ == "__main__":
     #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF GOMOKU")
     
     
-    # depths_plot_generator("2249034921_44724_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_64_ocp_thrifty;C4_6x7;100]", 25,  
-    #                       "MEAN DEPTHS - MCTS_4_INF_VANILLA", "MAX DEPTHS - MCTS_4_INF_VANILLA",
-    #                       "MEAN DEPTHS - MCTS-NC_1_INF_4_64_OCP_THRIFTY", "MAX DEPTHS - MCTS-NC_1_INF_4_64_OCP_THRIFTY",                                  
-    #                       "MOVES ROUND", "MEAN DEPTHS, MAX_DEPTHS", None, "SAMPLE GAME OF CONNECT 4")
+    depths_plot_generator("3356143073_10572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 61,  
+                          "MEAN DEPTHS - MCTS_4_INF_VANILLA", "MAX DEPTHS - MCTS_4_INF_VANILLA",
+                          "MEAN DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "MAX DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",                                  
+                          "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 61/100)")
 
     # best_action_plot_generator("0500042733_17720_427_[mctsnc_30_inf_2_128_ocp_prodigal_16g;mctsnc_30_inf_2_128_acp_prodigal_16g;Gomoku_15x15;100]", 55,
     #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_2_128_OCP_PRODIGAL", "UCB - MCTS-NC_30_INF_2_128_OCP_PRODIGAL",

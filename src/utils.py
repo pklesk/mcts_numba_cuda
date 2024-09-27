@@ -130,16 +130,20 @@ def hash_str(params, digits):
     return str((hash_function(str(params)) & ((1 << 32) - 1)) % 10**digits).rjust(digits, "0") 
 
 class Logger:
+    """Class for simultaneous logging to console and a log file (for purposes of experiments)."""
     def __init__(self, fname):
+        """Constructor of ``MCTSNC`` instances."""
         self.logfile = open(fname, "a", encoding="utf-8")  
         
     def write(self, message):
+        """Writes a message to console and a log file.""" 
         self.logfile.write(message)
         self.logfile.flush() 
         sys.__stdout__.write(message)
 
     def flush(self):
-        pass  # Ta funkcja jest potrzebna do obsługi buforowania
+        """Empty function required for buffering."""
+        pass  
     
 def experiment_hash_str(matchup_info, c_props, g_props, main_hs_digits=10, matchup_hs_digits=5, env_hs_digits=3):
     """Returns a hash string for an experiment, based on its settings and properties."""
@@ -152,6 +156,7 @@ def experiment_hash_str(matchup_info, c_props, g_props, main_hs_digits=10, match
     return hs
 
 def save_and_zip_experiment(experiment_hs, experiment_info, folder):
+    """Saves and zips .json and .log files for an experiment given its hash string and information stored in a dictionary."""
     print(f"SAVE AND ZIP EXPERIMENT... [hash string: {experiment_hs}]")
     t1 = time.time()
     fpath = folder + experiment_hs    
@@ -170,6 +175,7 @@ def save_and_zip_experiment(experiment_hs, experiment_info, folder):
     print(f"SAVE AND ZIP EXPERIMENT DONE. [time: {t2 - t1} s]")
 
 def unzip_and_load_experiment(experiment_hs, folder):
+    """Unzips, loads an experiment given its hash string, and returns a dictionary with experiments' information."""
     print(f"UNZIP AND LOAD EXPERIMENT... [hash string: {experiment_hs}]")
     t1 = time.time()
     fpath = folder + experiment_hs    
@@ -183,4 +189,4 @@ def unzip_and_load_experiment(experiment_hs, folder):
         sys.exit(f"[error occurred when trying to unzip and load experiment info: {experiment_hs}]")            
     t2 = time.time()
     print(f"UNZIP AND LOAD EXPERIMENT DONE. [time: {t2 - t1} s]")
-    return experiment_info    
+    return experiment_info

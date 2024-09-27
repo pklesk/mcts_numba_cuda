@@ -63,8 +63,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.take_action_job"><code class="docutils literal notranslate"><span class="pre">Gomoku.take_action_job()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.compute_outcome_job"><code class="docutils literal notranslate"><span class="pre">Gomoku.compute_outcome_job()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.compute_outcome_job_numba_jit"><code class="docutils literal notranslate"><span class="pre">Gomoku.compute_outcome_job_numba_jit()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.expand"><code class="docutils literal notranslate"><span class="pre">Gomoku.expand()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.expand_one_random_child"><code class="docutils literal notranslate"><span class="pre">Gomoku.expand_one_random_child()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.take_random_action_playout"><code class="docutils literal notranslate"><span class="pre">Gomoku.take_random_action_playout()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.get_board"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_board()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.get_extra_info"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_extra_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gomoku.Gomoku.action_name_to_index"><code class="docutils literal notranslate"><span class="pre">Gomoku.action_name_to_index()</span></code></a></li>
@@ -80,7 +79,7 @@
 <li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mcts.html">mcts module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mctsnc.html">mctsnc module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_specifics.html">mctsnc_game_specifics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html">mctsnc_game_mechanics module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">utils module</a></li>
 </ul>
 </li>
@@ -135,28 +134,69 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.__init__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Constructor of <code class="docutils literal notranslate"><span class="pre">State</span></code> instances. Should be called (in the first line) in subclasses’ constructors as: <code class="docutils literal notranslate"><span class="pre">super().__init__(parent)</span></code>.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>parent (State): </dt><dd><p>reference to parent state object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.class_repr">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.class_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.class_repr" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses.]</p>
+<p>Should return a string representation of this class of states (e.g. game name, its variation, board size if configurable, etc.).</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>str: string representation of this class of states.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.__str__">
 <span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.__str__" title="Link to this definition"></a></dt>
-<dd><p>Return str(self).</p>
+<dd><p>[To be implemented in subclasses.]</p>
+<p>Should return a string representation of this state, e.g. game board with its current contents.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>str: string representation of this state.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.take_action_job">
 <span class="sig-name descname"><span class="pre">take_action_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.take_action_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.take_action_job" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses.]</p>
+<p>Should performs changes on this state implied by the given action, and return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the action is legal.
+Otherwise, should do no changes and return <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>action_legal (bool):</dt><dd><p>boolean flag indicated if the specified action was legal and performed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.compute_outcome_job">
 <span class="sig-name descname"><span class="pre">compute_outcome_job</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.compute_outcome_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.compute_outcome_job" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses.]</p>
+<p>Should compute and return the game outcome for this state in compliance with rules of the game it represents.
+Possible results for terminal states are {-1, 0, 1}, indicating respectively: 
+a win for the minimizing player, a draw, a win for the maximizing player.
+For an ongoing game the result should be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>outcome ({-1, 0, 1} or <code class="docutils literal notranslate"><span class="pre">None</span></code>)</dt><dd><p>game outcome for this state.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.compute_outcome_job_numba_jit">
@@ -164,44 +204,116 @@
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gomoku.Gomoku.expand">
-<span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.expand" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gomoku.Gomoku.expand_one_random_child">
-<span class="sig-name descname"><span class="pre">expand_one_random_child</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.expand_one_random_child"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.expand_one_random_child" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="gomoku.Gomoku.take_random_action_playout">
+<span class="sig-name descname"><span class="pre">take_random_action_playout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.take_random_action_playout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.take_random_action_playout" title="Link to this definition"></a></dt>
+<dd><p>[To be implemented in subclasses.]</p>
+<p>Should pick a uniformly random action from currently available actions in this state and return the result of calling <code class="docutils literal notranslate"><span class="pre">take_action</span></code> with the action index as argument.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>child (State): </dt><dd><p>result of <code class="docutils literal notranslate"><span class="pre">take_action</span></code> call for the random action.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_board">
 <span class="sig-name descname"><span class="pre">get_board</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_board"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_board" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned, not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
+<p>Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g. chessboard, backgammon board, etc.),
+even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>board (ndarray[np.int8, ndim=2]):</dt><dd><p>two-dimensional array with representation of this state.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_extra_info">
 <span class="sig-name descname"><span class="pre">get_extra_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_extra_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_extra_info" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned, not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
+<p>Should return additional information associated with this state (as a one-dimensional array of bytes)
+not implied by the contents of the board itself (e.g. possibilities of castling or en-passant 
+captures in chess, the contract in double dummy bridge, etc.), or any technical information useful to generate 
+legal actions faster. If no additional information is needed should return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>extra_info (ndarray[np.int8, ndim=1] or <code class="docutils literal notranslate"><span class="pre">None</span></code>):</dt><dd><p>one-dimensional array with additional information associated with this state.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.action_name_to_index">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_name_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.action_name_to_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.action_name_to_index" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be optionally implemented by programmer in subclasses.]</p>
+<p>Returns an action’s index (numbering from 0) based on its name. E.g. name <code class="docutils literal notranslate"><span class="pre">&quot;B4&quot;</span></code> for 15 X 15 Gomoku maps to index <code class="docutils literal notranslate"><span class="pre">18</span></code>.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>action_name (str):</dt><dd><p>name of an action.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>action_index (int):</dt><dd><p>index corresponding to the given name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.action_index_to_name">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_index_to_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.action_index_to_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.action_index_to_name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be optionally implemented by programmer in subclasses.]</p>
+<p>Returns an action’s name based on its index (numbering from 0). E.g. index <code class="docutils literal notranslate"><span class="pre">18</span></code> for 15 X 15 Gomoku maps to name <code class="docutils literal notranslate"><span class="pre">B4</span></code>.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>action_index (int):</dt><dd><p>index of an action.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>action_name (str):</dt><dd><p>name corresponding to the given index.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_board_shape">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_board_shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_board_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_board_shape" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned, not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
+<p>Returns a tuple with board shape for the game (or sequential decision problem) represented by this class.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>shape (tuple(int, int)):</dt><dd><p>shape of boards related to states of this class.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_extra_info_memory">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_extra_info_memory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_extra_info_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_extra_info_memory" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned, not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
+<p>Returns amount of memory (in bytes) needed to memorize additional information associated with states of the game (or sequential decision problem) represented by this class.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>extra_info_memory (int):</dt><dd><p>number of bytes required to memorize additional information relate to states of this class.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gomoku.Gomoku.__module__">
@@ -211,7 +323,16 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_max_actions">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_max_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_max_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_max_actions" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>[To be implemented in subclasses.]</p>
+<p>Returns the maximum number of actions (the largest branching factor) possible in the game represented by this class.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>max_actions (int):</dt><dd><p>maximum number of actions (the largest branching factor) possible in the game represented by this class.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

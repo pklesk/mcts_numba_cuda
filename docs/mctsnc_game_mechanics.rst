@@ -1,7 +1,7 @@
-mctsnc\_game\_specifics module
+mctsnc\_game\_mechanics module
 ==============================
 
-.. automodule:: mctsnc_game_specifics
+.. automodule:: mctsnc_game_mechanics
    :members:
    :undoc-members:
    :show-inheritance:

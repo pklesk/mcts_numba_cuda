@@ -74,17 +74,60 @@
            <div itemprop="articleBody">
              
   <h1>Source code for mcts</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Auxiliary module with a referential standard implementation of MCTS algorithm (for CPU, single-threaded).</span>
+<span class="sd">The module contains:</span>
+
+<span class="sd">- ``State``: class representing an arbitrary state of some game or sequential decision problem (to inherit from when searches using ``MCTS`` class are planned),  </span>
+
+<span class="sd">- ``MCTS``: class representing the referential MCTS algorithm.</span>
+
+
+<span class="sd">Link to project repository</span>
+<span class="sd">--------------------------</span>
+<span class="sd">`https://github.com/pklesk/mcts_numba_cuda &lt;https://github.com/pklesk/mcts_numba_cuda&gt;`_</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">Private functions of ``State`` and ``MCTS`` classes are named with a single leading underscore.</span>
+<span class="sd">For public methods full docstrings are provided (with arguments and returns described). For private functions short docstrings are provided.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">dict_to_str</span>
 
 <div class="viewcode-block" id="State">
 <a class="viewcode-back" href="../mcts.html#mcts.State">[docs]</a>
 <span class="k">class</span> <span class="nc">State</span><span class="p">:</span>
-    
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Arbitrary abstract state of some game or sequential decision problem. Meant to be inherited - extended to subclasses </span>
+<span class="sd">    and then applicable in searches conducted by ``MCTS`` class.</span>
+<span class="sd">    For actual inheritance examples see:</span>
+<span class="sd">    </span>
+<span class="sd">    -  ``C4`` class in ``c4.py`` module :doc:`c4`. (representation of Connect 4 game),</span>
+<span class="sd">    </span>
+<span class="sd">    -  ``Gomoku`` class in ``gomoku.py`` module (representation of Gomoku game).</span>
+<span class="sd">    </span>
+<span class="sd">    When searches using ``MCTS`` class are planned, the programmer, while inheriting from ``State``, must provide implementations for the following non-static methods: </span>
+<span class="sd">    ``take_action_job``, ``compute_outcome_job``, ``take_random_action_playout``, ``__str__``; </span>
+<span class="sd">    and one static method ``class_repr``.</span>
+<span class="sd">    When searches using ``MCTSNC`` class are planned, the programmer, while inheriting from ``State``, must provide the following non-static methods:    </span>
+<span class="sd">    ``get_board``, ``get_extra_info``</span>
+<span class="sd">    and the following static ones:</span>
+<span class="sd">    ``get_board_shape``, ``get_extra_info_memory``, ``get_max_actions``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>        
+            
 <div class="viewcode-block" id="State.__init__">
 <a class="viewcode-back" href="../mcts.html#mcts.State.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor of ``State`` instances. Should be called (in the first line) in subclasses&#39; constructors as: ``super().__init__(parent)``.</span>
+<span class="sd">         </span>
+<span class="sd">        Args:</span>
+<span class="sd">            parent (State): </span>
+<span class="sd">                reference to parent state object.            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">win_flag</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_wins</span> <span class="o">=</span> <span class="mi">0</span>
@@ -93,19 +136,42 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">outcome_computed</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># has outcome value been already prepared within last call of get_outcome  </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># None - ongoing, or {-1, 0, 1} - win for min player, draw, win for max player        </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">turn</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last_action_index</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_action_index</span> <span class="o">=</span> <span class="kc">None</span>        </div>
+
+
+<div class="viewcode-block" id="State.__str__">
+<a class="viewcode-back" href="../mcts.html#mcts.State.__str__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [To be implemented in subclasses.]</span>
+<span class="sd">        </span>
+<span class="sd">        Should return a string representation of this state, e.g. game board with its current contents.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: string representation of this state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="State.class_repr">
 <a class="viewcode-back" href="../mcts.html#mcts.State.class_repr">[docs]</a>
     <span class="nd">@staticmethod</span>        
     <span class="k">def</span> <span class="nf">class_repr</span><span class="p">():</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">State</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">()&quot;</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [To be implemented in subclasses.]</span>
+<span class="sd">        </span>
+<span class="sd">        Should return a string representation of this class of states (e.g. game name, its variation, board size if configurable, etc.).</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: string representation of this class of states. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
             
 <div class="viewcode-block" id="State._subtree_size">
 <a class="viewcode-back" href="../mcts.html#mcts.State._subtree_size">[docs]</a>
     <span class="k">def</span> <span class="nf">_subtree_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns size of the subtree rooted by this state (number of tree nodes including this one).&quot;&quot;&quot;</span>
         <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="n">size</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">_subtree_size</span><span class="p">()</span>
@@ -115,6 +181,7 @@
 <div class="viewcode-block" id="State._subtree_max_depth">
 <a class="viewcode-back" href="../mcts.html#mcts.State._subtree_max_depth">[docs]</a>
     <span class="k">def</span> <span class="nf">_subtree_max_depth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns (maximum) depth of the subtree rooted by this state.&quot;&quot;&quot;</span>
         <span class="n">d</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="n">temp_d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">_subtree_max_depth</span><span class="p">()</span>
@@ -126,6 +193,7 @@
 <div class="viewcode-block" id="State._subtree_depths">
 <a class="viewcode-back" href="../mcts.html#mcts.State._subtree_depths">[docs]</a>
     <span class="k">def</span> <span class="nf">_subtree_depths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">depths</span><span class="o">=</span><span class="p">[]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of depths for nodes in the subtree rooted by this state.&quot;&quot;&quot;</span>
         <span class="n">depths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">_subtree_depths</span><span class="p">(</span><span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">depths</span><span class="p">)</span>
@@ -135,12 +203,33 @@
 <div class="viewcode-block" id="State.get_turn">
 <a class="viewcode-back" href="../mcts.html#mcts.State.get_turn">[docs]</a>
     <span class="k">def</span> <span class="nf">get_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns {-1, 1} indicating whose turn it is: -1 for the minimizing player, 1 for the maximizing player.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            self.turn ({-1, 1}): </span>
+<span class="sd">                indicating whose turn it is: -1 for the minimizing player, 1 for the maximizing player.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn</span>            </div>
 
         
 <div class="viewcode-block" id="State.take_action">
 <a class="viewcode-back" href="../mcts.html#mcts.State.take_action">[docs]</a>
-    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_index</span><span class="p">):</span>        
+    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes action (specified by its index) and returns the child-state implied by the action. </span>
+<span class="sd">        If the child related to this action already existed among children, returns it immediately. </span>
+<span class="sd">        Otherwise, creates a new child-state object and tries to call on it the function ``take_action_job`` (implementated in a subclass).</span>
+<span class="sd">        If ``None`` is returned in the latter case - interpreted as illegal action, then forwards ``None`` as a result .</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            action_index (int): </span>
+<span class="sd">                index of action to be taken.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            child (State): </span>
+<span class="sd">                reference to child state implied by the action or ``None`` if action illegal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">action_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>            
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">action_index</span><span class="p">]</span>
         <span class="n">child</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="bp">self</span><span class="p">)</span> <span class="c1"># copying constructor</span>
@@ -155,12 +244,33 @@
 <div class="viewcode-block" id="State.take_action_job">
 <a class="viewcode-back" href="../mcts.html#mcts.State.take_action_job">[docs]</a>
     <span class="k">def</span> <span class="nf">take_action_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [To be implemented in subclasses.]</span>
+<span class="sd">        </span>
+<span class="sd">        Should performs changes on this state implied by the given action, and return ``True`` if the action is legal.</span>
+<span class="sd">        Otherwise, should do no changes and return ``False``</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            action_legal (bool):</span>
+<span class="sd">                boolean flag indicated if the specified action was legal and performed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>            </div>
 
     
 <div class="viewcode-block" id="State.compute_outcome">
 <a class="viewcode-back" href="../mcts.html#mcts.State.compute_outcome">[docs]</a>
     <span class="k">def</span> <span class="nf">compute_outcome</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If called before on this state, returns the outcome already computed and memorized.</span>
+<span class="sd">        Otherwise, tries to call on this state the function ``compute_outcome_job`` (implemented in a subclass) and return its result.</span>
+<span class="sd">        Possible outcomes for terminal states are {-1, 0, 1}, indicating respectively: </span>
+<span class="sd">        a win for the minimizing player, a draw, a win for the maximizing player.</span>
+<span class="sd">        For an ongoing game the outcome should be ``None``. </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            outcome ({-1, 0, 1} or ``None``):</span>
+<span class="sd">                outcome of the game represented by this state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">outcome_computed</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_action_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -175,30 +285,78 @@
 <div class="viewcode-block" id="State.compute_outcome_job">
 <a class="viewcode-back" href="../mcts.html#mcts.State.compute_outcome_job">[docs]</a>
     <span class="k">def</span> <span class="nf">compute_outcome_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [To be implemented in subclasses.]</span>
+<span class="sd">        </span>
+<span class="sd">        Should compute and return the game outcome for this state in compliance with rules of the game it represents.</span>
+<span class="sd">        Possible results for terminal states are {-1, 0, 1}, indicating respectively: </span>
+<span class="sd">        a win for the minimizing player, a draw, a win for the maximizing player.</span>
+<span class="sd">        For an ongoing game the result should be ``None``.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            outcome ({-1, 0, 1} or ``None``)</span>
+<span class="sd">                game outcome for this state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">pass</span></div>
 
                 
 <div class="viewcode-block" id="State.get_board">
 <a class="viewcode-back" href="../mcts.html#mcts.State.get_board">[docs]</a>
     <span class="k">def</span> <span class="nf">get_board</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]</span>
+<span class="sd">        </span>
+<span class="sd">        Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g. chessboard, backgammon board, etc.),</span>
+<span class="sd">        even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            board (ndarray[np.int8, ndim=2]):</span>
+<span class="sd">                two-dimensional array with representation of this state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>    </div>
 
 
 <div class="viewcode-block" id="State.get_extra_info">
 <a class="viewcode-back" href="../mcts.html#mcts.State.get_extra_info">[docs]</a>
     <span class="k">def</span> <span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]</span>
+<span class="sd">        </span>
+<span class="sd">        Should return additional information associated with this state (as a one-dimensional array of bytes)</span>
+<span class="sd">        not implied by the contents of the board itself (e.g. possibilities of castling or en-passant </span>
+<span class="sd">        captures in chess, the contract in double dummy bridge, etc.), or any technical information useful to generate </span>
+<span class="sd">        legal actions faster. If no additional information is needed should return ``None``.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            extra_info (ndarray[np.int8, ndim=1] or ``None``):</span>
+<span class="sd">                one-dimensional array with additional information associated with this state.        </span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="kc">None</span></div>
 
             
 <div class="viewcode-block" id="State.expand">
 <a class="viewcode-back" href="../mcts.html#mcts.State.expand">[docs]</a>
     <span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;        </span>
+<span class="sd">        Expands this state to generate its children by calling ``take_action`` multiple times for all possible action indexes. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_outcome</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">action_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">get_max_actions</span><span class="p">()):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">take_action</span><span class="p">(</span><span class="n">action_index</span><span class="p">)</span></div>
 
     
-<div class="viewcode-block" id="State.expand_one_random_child">
-<a class="viewcode-back" href="../mcts.html#mcts.State.expand_one_random_child">[docs]</a>
-    <span class="k">def</span> <span class="nf">expand_one_random_child</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="State.take_random_action_playout">
+<a class="viewcode-back" href="../mcts.html#mcts.State.take_random_action_playout">[docs]</a>
+    <span class="k">def</span> <span class="nf">take_random_action_playout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [To be implemented in subclasses.]</span>
+<span class="sd">        </span>
+<span class="sd">        Should pick a uniformly random action from currently available actions in this state and return the result of calling ``take_action`` with the action index as argument.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            child (State): </span>
+<span class="sd">                result of ``take_action`` call for the random action.          </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>  </div>
 
     
@@ -206,6 +364,18 @@
 <a class="viewcode-back" href="../mcts.html#mcts.State.action_name_to_index">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">action_name_to_index</span><span class="p">(</span><span class="n">action_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [To be optionally implemented by programmer in subclasses.]</span>
+<span class="sd">        </span>
+<span class="sd">        Returns an action&#39;s index (numbering from 0) based on its name. E.g. name ``&quot;B4&quot;`` for 15 X 15 Gomoku maps to index ``18``.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            action_name (str):</span>
+<span class="sd">                name of an action.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            action_index (int):</span>
+<span class="sd">                index corresponding to the given name.   </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 
@@ -213,6 +383,18 @@
 <a class="viewcode-back" href="../mcts.html#mcts.State.action_index_to_name">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">action_index_to_name</span><span class="p">(</span><span class="n">action_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [To be optionally implemented by programmer in subclasses.]</span>
+<span class="sd">        </span>
+<span class="sd">        Returns an action&#39;s name based on its index (numbering from 0). E.g. index ``18`` for 15 X 15 Gomoku maps to name ``B4``.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            action_index (int):</span>
+<span class="sd">                index of an action.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            action_name (str):</span>
+<span class="sd">                name corresponding to the given index.          </span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">pass</span></div>
 
     
@@ -220,6 +402,15 @@
 <a class="viewcode-back" href="../mcts.html#mcts.State.get_board_shape">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_board_shape</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]</span>
+<span class="sd">        </span>
+<span class="sd">        Returns a tuple with board shape for the game (or sequential decision problem) represented by this class.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            shape (tuple(int, int)):</span>
+<span class="sd">                shape of boards related to states of this class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 
@@ -227,6 +418,15 @@
 <a class="viewcode-back" href="../mcts.html#mcts.State.get_extra_info_memory">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_extra_info_memory</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]</span>
+<span class="sd">        </span>
+<span class="sd">        Returns amount of memory (in bytes) needed to memorize additional information associated with states of the game (or sequential decision problem) represented by this class.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            extra_info_memory (int):</span>
+<span class="sd">                number of bytes required to memorize additional information relate to states of this class.         </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 
@@ -234,6 +434,15 @@
 <a class="viewcode-back" href="../mcts.html#mcts.State.get_max_actions">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_max_actions</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [To be implemented in subclasses.]</span>
+<span class="sd">        </span>
+<span class="sd">        Returns the maximum number of actions (the largest branching factor) possible in the game represented by this class.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            max_actions (int):</span>
+<span class="sd">                maximum number of actions (the largest branching factor) possible in the game represented by this class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">pass</span></div>
 </div>
 
@@ -242,6 +451,9 @@
 <div class="viewcode-block" id="MCTS">
 <a class="viewcode-back" href="../mcts.html#mcts.MCTS">[docs]</a>
 <span class="k">class</span> <span class="nc">MCTS</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Monte Carlo Tree Search - standard, referential implementation (for CPU, single-threaded).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">DEFAULT_SEARCH_TIME_LIMIT</span> <span class="o">=</span> <span class="mf">5.0</span> <span class="c1"># [s], np.inf possible</span>
     <span class="n">DEFAULT_SEARCH_STEPS_LIMIT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="c1"># integer, np.inf possible</span>
@@ -502,7 +714,7 @@
             <span class="n">outcome</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">compute_outcome</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">outcome</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">break</span>        
-            <span class="n">state</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">expand_one_random_child</span><span class="p">()</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">take_random_action_playout</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">state</span>        </div>
 
     

@@ -1,10 +1,53 @@
+"""
+Auxiliary module with a referential standard implementation of MCTS algorithm (for CPU, single-threaded).
+The module contains:
+
+- ``State``: class representing an arbitrary state of some game or sequential decision problem (meant to inherit from when searches using ``MCTS`` class are planned),  
+
+- ``MCTS``: class representing the referential MCTS algorithm.
+
+
+Link to project repository
+--------------------------
+`https://github.com/pklesk/mcts_numba_cuda <https://github.com/pklesk/mcts_numba_cuda>`_
+
+Notes
+-----
+Private functions of ``State`` and ``MCTS`` classes are named with a single leading underscore.
+For public methods full docstrings are provided (with arguments and returns described). For private functions short docstrings are provided.
+"""
+
 import numpy as np
 import time
 from utils import dict_to_str
 
 class State:
+    """
+    Arbitrary abstract state of some game or sequential decision problem. Meant to be inherited - extended to subclasses 
+    and then applicable in searches conducted by ``MCTS`` class.
+    For actual inheritance examples see:
     
+    -  ``C4`` class in :doc:`c4` (representation of Connect 4 game),
+    
+    -  ``Gomoku`` class in :doc:`gomoku` (representation of Gomoku game).
+    
+    When searches using ``MCTS`` class are planned, the programmer, while inheriting from ``State``, must provide implementations for the following non-static methods: 
+    ``take_action_job``, ``compute_outcome_job``, ``take_random_action_playout``, ``__str__``; 
+    and one static method ``class_repr``.
+    When searches using ``MCTSNC`` class are planned, the programmer, while inheriting from ``State``, must provide the following non-static methods:    
+    ``get_board``, ``get_extra_info``
+    and the following static ones:
+    ``get_board_shape``, ``get_extra_info_memory``, ``get_max_actions``.
+    """        
+            
     def __init__(self, parent=None):
+        """
+        Constructor of ``State`` instances. Should be called (in the first line) in subclasses' constructors as: ``super().__init__(parent)``.
+         
+        Args:
+            parent (State): 
+                reference to parent state object.            
+        """
         self.win_flag = False
         self.n = 0
         self.n_wins = 0
@@ -13,19 +56,40 @@ class State:
         self.outcome_computed = False # has outcome value been already prepared within last call of get_outcome  
         self.outcome = None # None - ongoing, or {-1, 0, 1} - win for min player, draw, win for max player        
         self.turn = 1 if self.parent is None else self.parent.turn
-        self.last_action_index = None
+        self.last_action_index = None        
+
+    def __str__(self):
+        """
+        [To be implemented in subclasses.]
+        
+        Should return a string representation of this state, e.g. game board with its current contents.
+        
+        Returns:
+            str: string representation of this state.
+        """
+        pass
 
     @staticmethod        
     def class_repr():
-        return f"{State.__name__}()"
+        """
+        [To be implemented in subclasses.]
+        
+        Should return a string representation of this class of states (e.g. game name, its variation, board size if configurable, etc.).
+        
+        Returns:
+            str: string representation of this class of states. 
+        """
+        pass
             
     def _subtree_size(self):
+        """Returns size of the subtree rooted by this state (number of tree nodes including this one)."""
         size = 1
         for key in self.children:
             size += self.children[key]._subtree_size()
         return size
     
     def _subtree_max_depth(self):
+        """Returns (maximum) depth of the subtree rooted by this state."""
         d = 0
         for key in self.children:
             temp_d = self.children[key]._subtree_max_depth()
@@ -34,15 +98,37 @@ class State:
         return d
     
     def _subtree_depths(self, d=0, depths=[]):
+        """Returns a list of depths for nodes in the subtree rooted by this state."""
         depths.append(d)
         for key in self.children:
             self.children[key]._subtree_depths(d + 1, depths)
         return depths
     
     def get_turn(self):
+        """
+        Returns {-1, 1} indicating whose turn it is: -1 for the minimizing player, 1 for the maximizing player.
+        
+        Returns:
+            self.turn ({-1, 1}): 
+                indicating whose turn it is: -1 for the minimizing player, 1 for the maximizing player.
+        """
         return self.turn            
         
-    def take_action(self, action_index):        
+    def take_action(self, action_index):
+        """
+        Takes action (specified by its index) and returns the child-state implied by the action. 
+        If such a child already existed (prior to the call) among children, returns it immediately. 
+        Otherwise, creates a new child-state object and tries to call on it the function ``take_action_job`` implementated in a subclass.
+        If ``None`` is returned in the latter case (interpreted as illegal action), then forwards ``None`` as the result .
+        
+        Args:
+            action_index (int): 
+                index of action to be taken.
+            
+        Returns:
+            child (State): 
+                reference to child state implied by the action or ``None`` if action illegal.
+        """
         if action_index in self.children:            
             return self.children[action_index]
         child = type(self)(self) # copying constructor
@@ -54,9 +140,30 @@ class State:
         return child
     
     def take_action_job(self, action_index):
+        """
+        [To be implemented in subclasses.]
+        
+        Should performs changes on this state implied by the given action, and return ``True`` if the action is legal.
+        Otherwise, should do no changes and return ``False``.
+        
+        Returns:
+            action_legal (bool):
+                boolean flag indicated if the specified action was legal and performed.
+        """
         pass            
     
     def compute_outcome(self):
+        """
+        If called before on this state, returns the outcome already computed and memorized.
+        Otherwise, tries to call on this state the function ``compute_outcome_job`` (implemented in a subclass) and return its result.
+        Possible outcomes for terminal states are {-1, 0, 1}, indicating respectively: 
+        a win for the minimizing player, a draw, a win for the maximizing player.
+        For an ongoing game the outcome should be ``None``. 
+        
+        Returns:
+            outcome ({-1, 0, 1} or ``None``):
+                outcome of the game represented by this state.
+        """        
         if self.outcome_computed:
             return self.outcome
         if self.last_action_index is None:
@@ -68,42 +175,144 @@ class State:
         return self.outcome
 
     def compute_outcome_job(self):
+        """
+        [To be implemented in subclasses.]
+        
+        Should compute and return the game outcome for this state in compliance with rules of the game it represents.
+        Possible results for terminal states are {-1, 0, 1}, indicating respectively: 
+        a win for the minimizing player, a draw, a win for the maximizing player.
+        For an ongoing game the result should be ``None``.
+        
+        Returns:
+            outcome ({-1, 0, 1} or ``None``)
+                game outcome for this state.
+        """        
         pass
                 
     def get_board(self):
+        """
+        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]
+        
+        Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g. chessboard, backgammon board, etc.),
+        even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).
+        
+        Returns:
+            board (ndarray[np.int8, ndim=2]):
+                two-dimensional array with representation of this state.
+        """
         pass    
 
     def get_extra_info(self):
-        pass
+        """
+        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]
+        
+        Should return additional information associated with this state (as a one-dimensional array of bytes)
+        not implied by the contents of the board itself (e.g. possibilities of castling or en-passant 
+        captures in chess, the contract in double dummy bridge, etc.), or any technical information useful to generate 
+        legal actions faster. If no additional information is needed should return ``None``.
+        
+        Returns:
+            extra_info (ndarray[np.int8, ndim=1] or ``None``):
+                one-dimensional array with additional information associated with this state.        
+        """        
+        return None
             
     def expand(self):
-        pass
+        """        
+        Expands this state to generate its children by calling ``take_action`` multiple times for all possible action indexes. 
+        """
+        if len(self.children) == 0 and self.compute_outcome() is None:
+            for action_index in range(self.__class__.get_max_actions()):
+                self.take_action(action_index)
     
-    def expand_one_random_child(self):
+    def take_random_action_playout(self):
+        """
+        [To be implemented in subclasses.]
+        
+        Should pick a uniformly random action from currently available actions in this state and return the result of calling ``take_action`` with the action index as argument.
+        
+        Returns:
+            child (State): 
+                result of ``take_action`` call for the random action.          
+        """
         pass  
     
     @staticmethod
     def action_name_to_index(action_name):
+        """
+        [To be optionally implemented by programmer in subclasses.]
+        
+        Returns an action's index (numbering from 0) based on its name. E.g. name ``"B4"`` for 15 X 15 Gomoku maps to index ``18``.
+        
+        Args:
+            action_name (str):
+                name of an action.
+        Returns:
+            action_index (int):
+                index corresponding to the given name.   
+        """
         pass
 
     @staticmethod
     def action_index_to_name(action_index):
+        """
+        [To be optionally implemented by programmer in subclasses.]
+        
+        Returns an action's name based on its index (numbering from 0). E.g. index ``18`` for 15 X 15 Gomoku maps to name ``B4``.
+        
+        Args:
+            action_index (int):
+                index of an action.
+        Returns:
+            action_name (str):
+                name corresponding to the given index.          
+        """        
         pass
     
     @staticmethod
     def get_board_shape():
+        """
+        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]
+        
+        Returns a tuple with board shape for the game (or sequential decision problem) represented by this class.
+        
+        Returns:
+            shape (tuple(int, int)):
+                shape of boards related to states of this class.
+        """
         pass
 
     @staticmethod
     def get_extra_info_memory():
+        """
+        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned, not required for ``MCTS`` searches.]
+        
+        Returns amount of memory (in bytes) needed to memorize additional information associated with states of the game (or sequential decision problem) represented by this class.
+        
+        Returns:
+            extra_info_memory (int):
+                number of bytes required to memorize additional information relate to states of this class.         
+        """
         pass
 
     @staticmethod
     def get_max_actions():
+        """
+        [To be implemented in subclasses.]
+        
+        Returns the maximum number of actions (the largest branching factor) possible in the game represented by this class.
+        
+        Returns:
+            max_actions (int):
+                maximum number of actions (the largest branching factor) possible in the game represented by this class.
+        """        
         pass
     
                                  
 class MCTS:
+    """
+    Monte Carlo Tree Search - standard, referential implementation (for CPU, single-threaded).
+    """
     
     DEFAULT_SEARCH_TIME_LIMIT = 5.0 # [s], np.inf possible
     DEFAULT_SEARCH_STEPS_LIMIT = np.inf # integer, np.inf possible
@@ -332,7 +541,7 @@ class MCTS:
             outcome = state.compute_outcome()
             if outcome is not None:
                 break        
-            state = state.expand_one_random_child()
+            state = state.take_random_action_playout()
         return state        
     
     def _backup(self, state, playout_root):

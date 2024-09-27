@@ -161,14 +161,15 @@ class Gomoku(State):
         if total == 4:
             return last_token        
         return 0        
-        
-    def expand(self):
-        if len(self.children) == 0 and self.compute_outcome() is None:
-            m_n = self.M * self.N
-            for index in range(m_n):
-                self.take_action(index)
+    
+    # TODO remove if unnecessary (default implementation of expand was moved to State class)
+    # def expand(self):
+    #     if len(self.children) == 0 and self.compute_outcome() is None:
+    #         m_n = self.M * self.N
+    #         for index in range(m_n):
+    #             self.take_action(index)
                         
-    def expand_one_random_child(self):
+    def take_random_action_playout(self):
         indexes = np.where(np.ravel(self.board) == 0)[0]
         action_index = np.random.choice(indexes) 
         child = self.take_action(action_index)
@@ -178,7 +179,7 @@ class Gomoku(State):
         return self.board
     
     def get_extra_info(self):
-        return None    
+        return None
    
     @staticmethod
     def action_name_to_index(action_name):

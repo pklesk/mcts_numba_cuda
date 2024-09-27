@@ -10,5 +10,5 @@ src
    main
    mcts
    mctsnc
-   mctsnc_game_specifics
+   mctsnc_game_mechanics
    utils

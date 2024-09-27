@@ -1,8 +1,8 @@
 """
-This module contains the core algorithmic functionalities of the project, embodied by the class `MCTSNC`. 
+This module contains the core algorithmic functionalities of the project, embodied by the class ``MCTSNC``. 
 
-With CUDA computational model in mind, we have proposed and implemented in `MCTSNC` four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm. 
-The provided implementation takes advantage of `Numba <https://numba.pydata.org>`_, a just-in-time Python compiler, and its `numba.cuda` package (hence the "NC" suffix in the name). 
+With CUDA computational model in mind, we have proposed and implemented in class ``MCTSNC`` four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm. 
+The provided implementation takes advantage of `Numba <https://numba.pydata.org>`_, a just-in-time Python compiler, and its ``numba.cuda`` package (hence the "NC" suffix in the name). 
 By `thoroughly parallel` we understand an algorithmic design that applies to both: (1) the structural elements of trees - leaf-/root-/tree-level parallelization 
 (all those three are combined), and (2) the stages of MCTS - each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. 
 We apply suitable `reduction` patterns to carry out summations or max / argmax operations. Cooperation of threads helps to transfer information between global and shared memory. 
@@ -10,7 +10,7 @@ The implementation uses: no atomic operations, no mutexes (lock-free), and very 
 
 Example usage 1 (Connect 4)
 ---------------------------
-Assume the specifics of the Connect 4 game have been defined to MCTS-NC in ``mctsnc_game_specifics.py`` module (i.e. functions ``is_action_legal``, ``take_action``, etc.), 
+Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in ``mctsnc_game_mechanics.py`` module (with device functions ``is_action_legal``, ``take_action``, etc.), 
 and that ``c4`` - instance of ``C4(State)`` - represents a state of an ongoing Connect 4 game shown below.
 
 .. code-block:: console
@@ -62,7 +62,7 @@ results in finding the best action for black - move 4 (winning in two plies), an
 
 Example usage 2 (Gomoku)
 ------------------------
-Assume the specifics of the Gomoku game have been defined to MCTS-NC in ``mctsnc_game_specifics.py`` module (i.e. functions ``is_action_legal``, ``take_action``, etc.), 
+Assume the mechanics of the Gomoku game have been defined to MCTS-NC in ``mctsnc_game_mechanics.py`` module (with device functions ``is_action_legal``, ``take_action``, etc.), 
 and that ``g`` - instance of ``Gomoku(State)`` - represents a state of an ongoing Gomoku game shown below.
 
 .. code-block:: console
@@ -137,11 +137,12 @@ Link to project repository
 --------------------------
 `https://github.com/pklesk/mcts_numba_cuda <https://github.com/pklesk/mcts_numba_cuda>`_
 
-Notes on code
--------------
+Notes
+-----
 Private functions of ``MCTSNC`` class are named with a single leading underscore (e.g.: ``_set_cuda_constants``, 
 ``_make_performance_info``, ``_playout_acp_prodigal``, etc.). Among them, the kernel functions are additionally 
 described by ``@cuda.jit`` decorators coming from ``numba`` module. Exact specifications of types come along with the decorators.
+For public methods full docstrings are provided (with arguments and returns described). For private functions short docstrings are provided.    
 
 """
 
@@ -154,7 +155,7 @@ import time
 import math
 from numba.core.errors import NumbaPerformanceWarning
 import warnings
-from mctsnc_game_specifics import is_action_legal, take_action, legal_actions_playout, take_action_playout, compute_outcome
+from mctsnc_game_mechanics import is_action_legal, take_action, legal_actions_playout, take_action_playout, compute_outcome
 from utils import dict_to_str
 import json
 
@@ -291,7 +292,7 @@ class MCTSNC:
         self._validate_param("verbose_debug", bool, False, False, False, True, self.DEFAULT_VERBOSE_DEBUG)
         self.verbose_info = verbose_info 
         self._validate_param("verbose_info", bool, False, False, False, True, self.DEFAULT_VERBOSE_INFO)        
-        self.action_index_to_name_function = action_index_to_name_function                                                                           
+        self.action_index_to_name_function = action_index_to_name_function                                                                  
     
     def _set_cuda_constants(self):
         """Investigates (via ``numba`` module) if CUDA-based computations are available and, if so, sets suitable constants."""
@@ -437,7 +438,7 @@ class MCTSNC:
             root_turn {-1, 1}:
                 indicator of player, minimizing or maximizing, to act first.
         Returns:
-            self.best_action:
+            self.best_action (int):
                 best action resulting from search.
         """
         print(f"MCTSNC RUN... [{self}]")        

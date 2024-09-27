@@ -75,10 +75,10 @@
              
   <h1>Source code for mctsnc</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module contains the core algorithmic functionalities of the project, embodied by the class `MCTSNC`. </span>
+<span class="sd">This module contains the core algorithmic functionalities of the project, embodied by the class ``MCTSNC``. </span>
 
-<span class="sd">With CUDA computational model in mind, we have proposed and implemented in `MCTSNC` four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm. </span>
-<span class="sd">The provided implementation takes advantage of `Numba &lt;https://numba.pydata.org&gt;`_, a just-in-time Python compiler, and its `numba.cuda` package (hence the &quot;NC&quot; suffix in the name). </span>
+<span class="sd">With CUDA computational model in mind, we have proposed and implemented in class ``MCTSNC`` four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm. </span>
+<span class="sd">The provided implementation takes advantage of `Numba &lt;https://numba.pydata.org&gt;`_, a just-in-time Python compiler, and its ``numba.cuda`` package (hence the &quot;NC&quot; suffix in the name). </span>
 <span class="sd">By `thoroughly parallel` we understand an algorithmic design that applies to both: (1) the structural elements of trees - leaf-/root-/tree-level parallelization </span>
 <span class="sd">(all those three are combined), and (2) the stages of MCTS - each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. </span>
 <span class="sd">We apply suitable `reduction` patterns to carry out summations or max / argmax operations. Cooperation of threads helps to transfer information between global and shared memory. </span>
@@ -86,7 +86,7 @@
 
 <span class="sd">Example usage 1 (Connect 4)</span>
 <span class="sd">---------------------------</span>
-<span class="sd">Assume the specifics of the Connect 4 game have been defined to MCTS-NC in ``mctsnc_game_specifics.py`` module (i.e. functions ``is_action_legal``, ``take_action``, etc.), </span>
+<span class="sd">Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in ``mctsnc_game_mechanics.py`` module (with device functions ``is_action_legal``, ``take_action``, etc.), </span>
 <span class="sd">and that ``c4`` - instance of ``C4(State)`` - represents a state of an ongoing Connect 4 game shown below.</span>
 
 <span class="sd">.. code-block:: console</span>
@@ -138,7 +138,7 @@
 
 <span class="sd">Example usage 2 (Gomoku)</span>
 <span class="sd">------------------------</span>
-<span class="sd">Assume the specifics of the Gomoku game have been defined to MCTS-NC in ``mctsnc_game_specifics.py`` module (i.e. functions ``is_action_legal``, ``take_action``, etc.), </span>
+<span class="sd">Assume the mechanics of the Gomoku game have been defined to MCTS-NC in ``mctsnc_game_mechanics.py`` module (with device functions ``is_action_legal``, ``take_action``, etc.), </span>
 <span class="sd">and that ``g`` - instance of ``Gomoku(State)`` - represents a state of an ongoing Gomoku game shown below.</span>
 
 <span class="sd">.. code-block:: console</span>
@@ -213,11 +213,12 @@
 <span class="sd">--------------------------</span>
 <span class="sd">`https://github.com/pklesk/mcts_numba_cuda &lt;https://github.com/pklesk/mcts_numba_cuda&gt;`_</span>
 
-<span class="sd">Notes on code</span>
-<span class="sd">-------------</span>
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
 <span class="sd">Private functions of ``MCTSNC`` class are named with a single leading underscore (e.g.: ``_set_cuda_constants``, </span>
 <span class="sd">``_make_performance_info``, ``_playout_acp_prodigal``, etc.). Among them, the kernel functions are additionally </span>
 <span class="sd">described by ``@cuda.jit`` decorators coming from ``numba`` module. Exact specifications of types come along with the decorators.</span>
+<span class="sd">For public methods full docstrings are provided (with arguments and returns described). For private functions short docstrings are provided.    </span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -230,7 +231,7 @@
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">from</span> <span class="nn">numba.core.errors</span> <span class="kn">import</span> <span class="n">NumbaPerformanceWarning</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">mctsnc_game_specifics</span> <span class="kn">import</span> <span class="n">is_action_legal</span><span class="p">,</span> <span class="n">take_action</span><span class="p">,</span> <span class="n">legal_actions_playout</span><span class="p">,</span> <span class="n">take_action_playout</span><span class="p">,</span> <span class="n">compute_outcome</span>
+<span class="kn">from</span> <span class="nn">mctsnc_game_mechanics</span> <span class="kn">import</span> <span class="n">is_action_legal</span><span class="p">,</span> <span class="n">take_action</span><span class="p">,</span> <span class="n">legal_actions_playout</span><span class="p">,</span> <span class="n">take_action_playout</span><span class="p">,</span> <span class="n">compute_outcome</span>
 <span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">dict_to_str</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
@@ -371,7 +372,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_param</span><span class="p">(</span><span class="s2">&quot;verbose_debug&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_VERBOSE_DEBUG</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose_info</span> <span class="o">=</span> <span class="n">verbose_info</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_param</span><span class="p">(</span><span class="s2">&quot;verbose_info&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_VERBOSE_INFO</span><span class="p">)</span>        
-        <span class="bp">self</span><span class="o">.</span><span class="n">action_index_to_name_function</span> <span class="o">=</span> <span class="n">action_index_to_name_function</span>                                                                           </div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_index_to_name_function</span> <span class="o">=</span> <span class="n">action_index_to_name_function</span>                                                                  </div>
 
     
 <div class="viewcode-block" id="MCTSNC._set_cuda_constants">
@@ -535,7 +536,7 @@
 <span class="sd">            root_turn {-1, 1}:</span>
 <span class="sd">                indicator of player, minimizing or maximizing, to act first.</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            self.best_action:</span>
+<span class="sd">            self.best_action (int):</span>
 <span class="sd">                best action resulting from search.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MCTSNC RUN... [</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>        
