@@ -121,23 +121,24 @@ def scores_array_plot_ocp_prodigal_vs_vanilla():
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "OCP-PRODIGAL (1s) vs VANILLA (4s)")
 
 def scores_array_plot_acp_thrifty_vs_vanilla():
+    
     experiments_hs_array = np.array([
-        ["1310340073_54420_427_[mcts_4_inf_vanilla;mctsnc_1_inf_1_32_acp_thrifty;C4_6x7;100]",
-         "0168259081_36852_427_[mcts_4_inf_vanilla;mctsnc_1_inf_1_64_acp_thrifty;C4_6x7;100]",
-         "3498321957_42768_427_[mcts_4_inf_vanilla;mctsnc_1_inf_1_128_acp_thrifty;C4_6x7;100]",         
-         "2946161757_52712_427_[mcts_4_inf_vanilla;mctsnc_1_inf_1_256_acp_thrifty;C4_6x7;100]"],
-        ["3773732745_00084_427_[mcts_4_inf_vanilla;mctsnc_1_inf_2_32_acp_thrifty;C4_6x7;100]",
-         "2631651753_15220_427_[mcts_4_inf_vanilla;mctsnc_1_inf_2_64_acp_thrifty;C4_6x7;100]",
-         "3477248679_90098_427_[mcts_4_inf_vanilla;mctsnc_1_inf_2_128_acp_thrifty;C4_6x7;100]",
-         "2925088479_00042_427_[mcts_4_inf_vanilla;mctsnc_1_inf_2_256_acp_thrifty;C4_6x7;100]"],
-        ["0110583497_56820_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_32_acp_thrifty;C4_6x7;100]",         
-         "3263469801_39252_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_64_acp_thrifty;C4_6x7;100]",
-         "3435102123_17462_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_128_acp_thrifty;C4_6x7;100]",
-         "2882941923_94702_427_[mcts_4_inf_vanilla;mctsnc_1_inf_4_256_acp_thrifty;C4_6x7;100]"],
-        ["1374219593_04884_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_32_acp_thrifty;C4_6x7;100]",
-         "0232138601_20020_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_64_acp_thrifty;C4_6x7;100]",
-         "3350809011_06782_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_128_acp_thrifty;C4_6x7;100]",
-         "2798648811_16726_427_[mcts_4_inf_vanilla;mctsnc_1_inf_8_256_acp_thrifty;C4_6x7;100]"]
+        ["3340130505_78932_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_acp_thrifty;C4_6x7;100]",
+         "2198049513_94068_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_acp_thrifty;C4_6x7;100]",
+         "4211774725_67120_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_acp_thrifty;C4_6x7;100]",         
+         "3659614525_44360_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_acp_thrifty;C4_6x7;100]"],
+        ["1508555881_57300_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_acp_thrifty;C4_6x7;100]",
+         "0366474889_39732_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_acp_thrifty;C4_6x7;100]",
+         "4190701447_14450_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_acp_thrifty;C4_6x7;100]",
+         "3638541247_91690_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_acp_thrifty;C4_6x7;100]"],
+        ["2140373929_81332_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_acp_thrifty;C4_6x7;100]",         
+         "0998292937_96468_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_acp_thrifty;C4_6x7;100]",
+         "4148554891_09110_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_acp_thrifty;C4_6x7;100]",
+         "3596394691_19054_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_acp_thrifty;C4_6x7;100]"],
+        ["3404010025_62100_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_acp_thrifty;C4_6x7;100]",
+         "2261929033_44532_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_acp_thrifty;C4_6x7;100]",
+         "4064261779_31134_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_acp_thrifty;C4_6x7;100]",
+         "2248035465_25460_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_thrifty;C4_6x7;10]"]
         ])
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "ACP-THRIFTY (1s) vs VANILLA (4s)")
 
@@ -324,7 +325,7 @@ if __name__ == "__main__":
     
     # scores_array_plot_ocp_prodigal_vs_vanilla()
     
-    # scores_array_plot_acp_thrifty_vs_vanilla()
+    scores_array_plot_acp_thrifty_vs_vanilla()
     
     # scores_array_plot_acp_prodigal_vs_vanilla()
 
@@ -339,10 +340,10 @@ if __name__ == "__main__":
     #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF GOMOKU")
     
     
-    depths_plot_generator("3356143073_10572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 61,  
-                          "MEAN DEPTHS - MCTS_4_INF_VANILLA", "MAX DEPTHS - MCTS_4_INF_VANILLA",
-                          "MEAN DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "MAX DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",                                  
-                          "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 61/100)")
+    # depths_plot_generator("3356143073_10572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 61,  
+    #                       "MEAN DEPTHS - MCTS_4_INF_VANILLA", "MAX DEPTHS - MCTS_4_INF_VANILLA",
+    #                       "MEAN DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "MAX DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",                                  
+    #                       "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 61/100)")
 
     # best_action_plot_generator("0500042733_17720_427_[mctsnc_30_inf_2_128_ocp_prodigal_16g;mctsnc_30_inf_2_128_acp_prodigal_16g;Gomoku_15x15;100]", 55,
     #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_2_128_OCP_PRODIGAL", "UCB - MCTS-NC_30_INF_2_128_OCP_PRODIGAL",

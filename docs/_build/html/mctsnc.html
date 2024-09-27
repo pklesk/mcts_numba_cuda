@@ -163,7 +163,7 @@ We apply suitable <cite>reduction</cite> patterns to carry out summations or max
 The implementation uses: no atomic operations, no mutexes (lock-free), and very few host-device memory transfers.</p>
 <section id="example-usage-1-connect-4">
 <h2>Example usage 1 (Connect 4)<a class="headerlink" href="#example-usage-1-connect-4" title="Link to this heading"></a></h2>
-<p>Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in <code class="docutils literal notranslate"><span class="pre">mctsnc_game_mechanics.py</span></code> module (with device functions <code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action</span></code>, etc.), 
+<p>Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in <code class="docutils literal notranslate"><span class="pre">mctsnc_game_mechanics.py</span></code> (via device functions <code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action</span></code>, etc.), 
 and that <code class="docutils literal notranslate"><span class="pre">c4</span></code> - instance of <code class="docutils literal notranslate"><span class="pre">C4(State)</span></code> - represents a state of an ongoing Connect 4 game shown below.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">|.|.|●|○|.|.|.|</span>
 <span class="go">|.|.|●|○|.|.|○|</span>
@@ -210,7 +210,7 @@ and that <code class="docutils literal notranslate"><span class="pre">c4</span><
 </section>
 <section id="example-usage-2-gomoku">
 <h2>Example usage 2 (Gomoku)<a class="headerlink" href="#example-usage-2-gomoku" title="Link to this heading"></a></h2>
-<p>Assume the mechanics of the Gomoku game have been defined to MCTS-NC in <code class="docutils literal notranslate"><span class="pre">mctsnc_game_mechanics.py</span></code> module (with device functions <code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action</span></code>, etc.), 
+<p>Assume the mechanics of the Gomoku game have been defined to MCTS-NC in <code class="docutils literal notranslate"><span class="pre">mctsnc_game_mechanics.py</span></code> (via device functions <code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action</span></code>, etc.), 
 and that <code class="docutils literal notranslate"><span class="pre">g</span></code> - instance of <code class="docutils literal notranslate"><span class="pre">Gomoku(State)</span></code> - represents a state of an ongoing Gomoku game shown below.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">  ABCDEFGHIJKLMNO</span>
 <span class="go">15+++++++++++++++15</span>
@@ -292,36 +292,7 @@ For public methods full docstrings are provided (with arguments and returns desc
 <dt class="sig sig-object py" id="mctsnc.MCTSNC">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mctsnc.</span></span><span class="sig-name descname"><span class="pre">MCTSNC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_board_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_extra_info_memory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_max_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_time_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_trees</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_playouts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'acp_prodigal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_memory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucb_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_index_to_name_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Monte Carlo Tree Search (GPU-parallelized) implemented via <code class="docutils literal notranslate"><span class="pre">numba.cuda</span></code>.</p>
-<dl class="simple">
-<dt>Parameters:</dt><dd><dl class="simple">
-<dt>state_board_shape (tuple(int, int)):</dt><dd><p>shape of board for states in a given game, at most <code class="docutils literal notranslate"><span class="pre">(32,</span> <span class="pre">32)</span></code>.</p>
-</dd>
-<dt>state_extra_info_memory (int):</dt><dd><p>number of bytes for extra information on states, at most <code class="docutils literal notranslate"><span class="pre">4096</span></code>.</p>
-</dd>
-<dt>state_max_actions (int): </dt><dd><p>maximum branching factor, at most <code class="docutils literal notranslate"><span class="pre">512</span></code>.</p>
-</dd>
-<dt>search_time_limit (float):</dt><dd><p>time limit in seconds (computational budget), <code class="docutils literal notranslate"><span class="pre">np.inf</span></code> if no limit, defaults to <code class="docutils literal notranslate"><span class="pre">5.0</span></code>.</p>
-</dd>
-<dt>search_steps_limit (float): </dt><dd><p>steps limit (computational budget), <code class="docutils literal notranslate"><span class="pre">np.inf</span></code> if no limit, defaults to <code class="docutils literal notranslate"><span class="pre">np.inf</span></code>.</p>
-</dd>
-<dt>n_trees (int): </dt><dd><p>number of independent trees, defaults to <code class="docutils literal notranslate"><span class="pre">8</span></code>.</p>
-</dd>
-<dt>n_playouts (int):</dt><dd><p>number of independent playouts from an expanded child (corresponds to m), must be a power of two, defaults to <code class="docutils literal notranslate"><span class="pre">128</span></code>.</p>
-</dd>
-<dt>variant (str):</dt><dd><p>choice of algorithmic variant from {<code class="docutils literal notranslate"><span class="pre">&quot;ocp_thrifty&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ocp_prodigal&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_thrifty</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal</span></code>}, defaults to <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal&quot;</span></code>.</p>
-</dd>
-<dt>device_memory (float): </dt><dd><p>GPU memory in gigabytes to be available for this instance, defaults to <code class="docutils literal notranslate"><span class="pre">2.0</span></code>.</p>
-</dd>
-<dt>verbose_debug (bool):</dt><dd><p>debug verbosity flag, if <code class="docutils literal notranslate"><span class="pre">True</span></code> then detailed information about each kernel invocation are printed to console (in each iteration), defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</dd>
-<dt>verbose_info (bool): </dt><dd><p>verbosity flag, if <code class="docutils literal notranslate"><span class="pre">True</span></code> then standard information on actions and performance are printed to console (after a full run), defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-</dd>
-<dt>action_index_to_name_function (callable):</dt><dd><p>pointer to user-provided function converting action indexes to a human-friendly names (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;e2:e4&quot;</span></code> for chess), defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<p>Monte Carlo Tree Search implemented via <code class="docutils literal notranslate"><span class="pre">numba.cuda</span></code> meant for multi-threaded executions on GPU involving multiple concurrent trees and playouts (four algorithmic variants available).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC.VARIANTS">
 <span class="sig-name descname"><span class="pre">VARIANTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['ocp_thrifty',</span> <span class="pre">'ocp_prodigal',</span> <span class="pre">'acp_thrifty',</span> <span class="pre">'acp_prodigal']</span></em><a class="headerlink" href="#mctsnc.MCTSNC.VARIANTS" title="Link to this definition"></a></dt>
@@ -434,7 +405,9 @@ For public methods full docstrings are provided (with arguments and returns desc
 </dd>
 <dt>variant (str):</dt><dd><p>choice of algorithmic variant from {<code class="docutils literal notranslate"><span class="pre">&quot;ocp_thrifty&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ocp_prodigal&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_thrifty</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal</span></code>}, defaults to <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal&quot;</span></code>.</p>
 </dd>
-<dt>device_memory (float): </dt><dd><p>GPU memory in gigabytes to be available for this instance, defaults to <code class="docutils literal notranslate"><span class="pre">2.0</span></code>.</p>
+<dt>device_memory (float): </dt><dd><p>GPU memory in GiBs (gibibytes) to be available for this instance, defaults to <code class="docutils literal notranslate"><span class="pre">2.0</span></code>.</p>
+</dd>
+<dt>ucb_c (float):</dt><dd><p>value of C constant, influencing exploration tendency, appearing in UCT formula (upper confidence bounds for trees), defaults to <code class="docutils literal notranslate"><span class="pre">2.0</span></code>.</p>
 </dd>
 <dt>verbose_debug (bool):</dt><dd><p>debug verbosity flag, if <code class="docutils literal notranslate"><span class="pre">True</span></code> then detailed information about each kernel invocation are printed to console (in each iteration), defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </dd>
@@ -488,15 +461,17 @@ For public methods full docstrings are provided (with arguments and returns desc
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_extra_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_search_steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC.run" title="Link to this definition"></a></dt>
-<dd><p>Runs the Monte Carlo Tree Search on GPU using multiple independent trees and playouts.                 
-Computations are carried out according to the formerly chosen algorithmic <code class="docutils literal notranslate"><span class="pre">variant</span></code> i.e. one of {<code class="docutils literal notranslate"><span class="pre">&quot;ocp_thrifty&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ocp_prodigal&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_thrifty</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal</span></code>}, defaults to <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal&quot;</span></code>}.</p>
+<dd><p>Runs the Monte Carlo Tree Search on GPU involving multiple concurrent trees and playouts.                 
+Computations are carried out according to the formerly chosen algorithmic variant, i.e. one of {<code class="docutils literal notranslate"><span class="pre">&quot;ocp_thrifty&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ocp_prodigal&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_thrifty</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal</span></code>}, defaults to <code class="docutils literal notranslate"><span class="pre">&quot;acp_prodigal&quot;</span></code>}.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><dl class="simple">
-<dt>root_board (ndarray): </dt><dd><p>two-dimensional array with board (or other representation) of root state from which search starts.</p>
+<dt>root_board (ndarray): </dt><dd><p>two-dimensional array with board (or other representation) of root state from which the search starts.</p>
 </dd>
-<dt>root_extra_info (ndarray): </dt><dd><p>any additional information not implied by the contents of the board itself (e.g. possibilities of castling or en-passant captures in chess, the contract in double dummy bridge, etc.), or technical information useful to generate legal actions faster.</p>
+<dt>root_extra_info (ndarray): </dt><dd><p>any additional information of root state not implied by the contents of the board itself (e.g. possibilities of castling or en-passant captures in chess, the contract in double dummy bridge, etc.), or technical information useful to generate legal actions faster.</p>
 </dd>
-<dt>root_turn {-1, 1}:</dt><dd><p>indicator of player, minimizing or maximizing, to act first.</p>
+<dt>root_turn {-1, 1}:</dt><dd><p>indicator of the player, minimizing or maximizing, to act first at root state.</p>
+</dd>
+<dt>forced_search_steps_limit (int):</dt><dd><p>steps limit used only when reproducing results of a previous experiment; if less than``np.inf`` then has a priority over the standard computational budget given by <code class="docutils literal notranslate"><span class="pre">search_time_limit</span></code> and <code class="docutils literal notranslate"><span class="pre">search_steps_limit</span></code>.</p>
 </dd>
 </dl>
 </dd>
@@ -517,19 +492,22 @@ Computations are carried out according to the formerly chosen algorithmic <code 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._make_performance_info">
 <span class="sig-name descname"><span class="pre">_make_performance_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._make_performance_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._make_performance_info" title="Link to this definition"></a></dt>
-<dd><p>Prepares a dictionary with information on performance during the last run.</p>
+<dd><p>Prepares and returns a dictionary with information on performance during the last run. 
+After the call, available via <code class="docutils literal notranslate"><span class="pre">performance_info</span></code> attribute.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._make_actions_info_thrifty">
 <span class="sig-name descname"><span class="pre">_make_actions_info_thrifty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._make_actions_info_thrifty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._make_actions_info_thrifty" title="Link to this definition"></a></dt>
-<dd><p>Prepares a dictionary with information on root actions (using thrifty indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.</p>
+<dd><p>Prepares and returns a dictionary with information on root actions (using thrifty indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.
+After the call, available via <code class="docutils literal notranslate"><span class="pre">actions_info</span></code> attribute.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mctsnc.MCTSNC._make_actions_info_prodigal">
 <span class="sig-name descname"><span class="pre">_make_actions_info_prodigal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc.html#MCTSNC._make_actions_info_prodigal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc.MCTSNC._make_actions_info_prodigal" title="Link to this definition"></a></dt>
-<dd><p>Prepares a dictionary with information on root actions (using prodigal indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.</p>
+<dd><p>Prepares and returns a dictionary with information on root actions (using prodigal indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.
+After the call, available via <code class="docutils literal notranslate"><span class="pre">actions_info</span></code> attribute.</p>
 </dd></dl>
 
 <dl class="py method">

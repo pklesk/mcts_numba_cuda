@@ -86,7 +86,7 @@
 
 <span class="sd">Example usage 1 (Connect 4)</span>
 <span class="sd">---------------------------</span>
-<span class="sd">Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in ``mctsnc_game_mechanics.py`` module (with device functions ``is_action_legal``, ``take_action``, etc.), </span>
+<span class="sd">Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in ``mctsnc_game_mechanics.py`` (via device functions ``is_action_legal``, ``take_action``, etc.), </span>
 <span class="sd">and that ``c4`` - instance of ``C4(State)`` - represents a state of an ongoing Connect 4 game shown below.</span>
 
 <span class="sd">.. code-block:: console</span>
@@ -138,7 +138,7 @@
 
 <span class="sd">Example usage 2 (Gomoku)</span>
 <span class="sd">------------------------</span>
-<span class="sd">Assume the mechanics of the Gomoku game have been defined to MCTS-NC in ``mctsnc_game_mechanics.py`` module (with device functions ``is_action_legal``, ``take_action``, etc.), </span>
+<span class="sd">Assume the mechanics of the Gomoku game have been defined to MCTS-NC in ``mctsnc_game_mechanics.py`` (via device functions ``is_action_legal``, ``take_action``, etc.), </span>
 <span class="sd">and that ``g`` - instance of ``Gomoku(State)`` - represents a state of an ongoing Gomoku game shown below.</span>
 
 <span class="sd">.. code-block:: console</span>
@@ -246,33 +246,7 @@
 <a class="viewcode-back" href="../mctsnc.html#mctsnc.MCTSNC">[docs]</a>
 <span class="k">class</span> <span class="nc">MCTSNC</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Monte Carlo Tree Search (GPU-parallelized) implemented via ``numba.cuda``.</span>
-<span class="sd">    </span>
-<span class="sd">    Parameters:</span>
-<span class="sd">        state_board_shape (tuple(int, int)):</span>
-<span class="sd">            shape of board for states in a given game, at most ``(32, 32)``.</span>
-<span class="sd">        state_extra_info_memory (int):</span>
-<span class="sd">            number of bytes for extra information on states, at most ``4096``.        </span>
-<span class="sd">        state_max_actions (int): </span>
-<span class="sd">            maximum branching factor, at most ``512``.            </span>
-<span class="sd">        search_time_limit (float):</span>
-<span class="sd">            time limit in seconds (computational budget), ``np.inf`` if no limit, defaults to ``5.0``.             </span>
-<span class="sd">        search_steps_limit (float): </span>
-<span class="sd">            steps limit (computational budget), ``np.inf`` if no limit, defaults to ``np.inf``.</span>
-<span class="sd">        n_trees (int): </span>
-<span class="sd">            number of independent trees, defaults to ``8``.                                    </span>
-<span class="sd">        n_playouts (int):</span>
-<span class="sd">            number of independent playouts from an expanded child (corresponds to m), must be a power of two, defaults to ``128``.            </span>
-<span class="sd">        variant (str):</span>
-<span class="sd">            choice of algorithmic variant from {``&quot;ocp_thrifty&quot;``, ``&quot;ocp_prodigal&quot;``, ``&quot;acp_thrifty``, ``&quot;acp_prodigal``}, defaults to ``&quot;acp_prodigal&quot;``.        </span>
-<span class="sd">        device_memory (float): </span>
-<span class="sd">            GPU memory in gigabytes to be available for this instance, defaults to ``2.0``.            </span>
-<span class="sd">        verbose_debug (bool):</span>
-<span class="sd">            debug verbosity flag, if ``True`` then detailed information about each kernel invocation are printed to console (in each iteration), defaults to ``False``.</span>
-<span class="sd">        verbose_info (bool): </span>
-<span class="sd">            verbosity flag, if ``True`` then standard information on actions and performance are printed to console (after a full run), defaults to ``True``.</span>
-<span class="sd">        action_index_to_name_function (callable):</span>
-<span class="sd">            pointer to user-provided function converting action indexes to a human-friendly names (e.g. ``&quot;e2:e4&quot;`` for chess), defaults to ``None``.                    </span>
+<span class="sd">    Monte Carlo Tree Search implemented via ``numba.cuda`` meant for multi-threaded executions on GPU involving multiple concurrent trees and playouts (four algorithmic variants available). </span>
 <span class="sd">    &quot;&quot;&quot;</span>    
     
     <span class="c1"># constants</span>
@@ -324,14 +298,16 @@
 <span class="sd">            variant (str):</span>
 <span class="sd">                choice of algorithmic variant from {``&quot;ocp_thrifty&quot;``, ``&quot;ocp_prodigal&quot;``, ``&quot;acp_thrifty``, ``&quot;acp_prodigal``}, defaults to ``&quot;acp_prodigal&quot;``.        </span>
 <span class="sd">            device_memory (float): </span>
-<span class="sd">                GPU memory in gigabytes to be available for this instance, defaults to ``2.0``.            </span>
+<span class="sd">                GPU memory in GiBs (gibibytes) to be available for this instance, defaults to ``2.0``.</span>
+<span class="sd">            ucb_c (float):</span>
+<span class="sd">                value of C constant, influencing exploration tendency, appearing in UCT formula (upper confidence bounds for trees), defaults to ``2.0``. </span>
 <span class="sd">            verbose_debug (bool):</span>
 <span class="sd">                debug verbosity flag, if ``True`` then detailed information about each kernel invocation are printed to console (in each iteration), defaults to ``False``.</span>
 <span class="sd">            verbose_info (bool): </span>
 <span class="sd">                verbosity flag, if ``True`` then standard information on actions and performance are printed to console (after a full run), defaults to ``True``.</span>
 <span class="sd">            action_index_to_name_function (callable):</span>
 <span class="sd">                pointer to user-provided function converting action indexes to a human-friendly names (e.g. ``&quot;e2:e4&quot;`` for chess), defaults to ``None``.            </span>
-<span class="sd">        &quot;&quot;&quot;</span>        
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_cuda_constants</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cuda_available</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[MCTSNC.__init__(): exiting due to cuda computations not available]&quot;</span><span class="p">)</span>        
@@ -365,7 +341,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">variant</span> <span class="o">=</span> <span class="n">variant</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ucb_c</span> <span class="o">=</span> <span class="n">ucb_c</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_param</span><span class="p">(</span><span class="s2">&quot;ucb_c&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_UCB_C</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">device_memory</span> <span class="o">=</span> <span class="n">device_memory</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">3</span> <span class="c1"># gigabytes to bytes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device_memory</span> <span class="o">=</span> <span class="n">device_memory</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">3</span> <span class="c1"># gibibytes (GiB) to bytes (B)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_param</span><span class="p">(</span><span class="s2">&quot;device_memory&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_DEVICE_MEMORY</span><span class="p">)</span>    
         <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose_debug</span> <span class="o">=</span> <span class="n">verbose_debug</span> 
@@ -525,16 +501,18 @@
 <a class="viewcode-back" href="../mctsnc.html#mctsnc.MCTSNC.run">[docs]</a>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_board</span><span class="p">,</span> <span class="n">root_extra_info</span><span class="p">,</span> <span class="n">root_turn</span><span class="p">,</span> <span class="n">forced_search_steps_limit</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Runs the Monte Carlo Tree Search on GPU using multiple independent trees and playouts.                 </span>
-<span class="sd">        Computations are carried out according to the formerly chosen algorithmic ``variant`` i.e. one of {``&quot;ocp_thrifty&quot;``, ``&quot;ocp_prodigal&quot;``, ``&quot;acp_thrifty``, ``&quot;acp_prodigal``}, defaults to ``&quot;acp_prodigal&quot;``}.</span>
+<span class="sd">        Runs the Monte Carlo Tree Search on GPU involving multiple concurrent trees and playouts.                 </span>
+<span class="sd">        Computations are carried out according to the formerly chosen algorithmic variant, i.e. one of {``&quot;ocp_thrifty&quot;``, ``&quot;ocp_prodigal&quot;``, ``&quot;acp_thrifty``, ``&quot;acp_prodigal``}, defaults to ``&quot;acp_prodigal&quot;``}.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            root_board (ndarray): </span>
-<span class="sd">                two-dimensional array with board (or other representation) of root state from which search starts.</span>
+<span class="sd">                two-dimensional array with board (or other representation) of root state from which the search starts.</span>
 <span class="sd">            root_extra_info (ndarray): </span>
-<span class="sd">                any additional information not implied by the contents of the board itself (e.g. possibilities of castling or en-passant captures in chess, the contract in double dummy bridge, etc.), or technical information useful to generate legal actions faster.</span>
+<span class="sd">                any additional information of root state not implied by the contents of the board itself (e.g. possibilities of castling or en-passant captures in chess, the contract in double dummy bridge, etc.), or technical information useful to generate legal actions faster.</span>
 <span class="sd">            root_turn {-1, 1}:</span>
-<span class="sd">                indicator of player, minimizing or maximizing, to act first.</span>
+<span class="sd">                indicator of the player, minimizing or maximizing, to act first at root state.</span>
+<span class="sd">            forced_search_steps_limit (int):</span>
+<span class="sd">                steps limit used only when reproducing results of a previous experiment; if less than``np.inf`` then has a priority over the standard computational budget given by ``search_time_limit`` and ``search_steps_limit``.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            self.best_action (int):</span>
 <span class="sd">                best action resulting from search.</span>
@@ -567,7 +545,10 @@
 <div class="viewcode-block" id="MCTSNC._make_performance_info">
 <a class="viewcode-back" href="../mctsnc.html#mctsnc.MCTSNC._make_performance_info">[docs]</a>
     <span class="k">def</span> <span class="nf">_make_performance_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepares a dictionary with information on performance during the last run.&quot;&quot;&quot;</span>        
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepares and returns a dictionary with information on performance during the last run. </span>
+<span class="sd">        After the call, available via ``performance_info`` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">performance_info</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">performance_info</span><span class="p">[</span><span class="s2">&quot;steps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span>
         <span class="n">performance_info</span><span class="p">[</span><span class="s2">&quot;steps_per_second&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_total</span>                
@@ -615,7 +596,10 @@
 <div class="viewcode-block" id="MCTSNC._make_actions_info_thrifty">
 <a class="viewcode-back" href="../mctsnc.html#mctsnc.MCTSNC._make_actions_info_thrifty">[docs]</a>
     <span class="k">def</span> <span class="nf">_make_actions_info_thrifty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepares a dictionary with information on root actions (using thrifty indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepares and returns a dictionary with information on root actions (using thrifty indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.</span>
+<span class="sd">        After the call, available via ``actions_info`` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">root_actions_expanded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev_root_actions_expanded</span><span class="p">)</span>        
         <span class="n">root_ns_thrifty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev_root_ns</span><span class="p">)</span>                
         <span class="n">actions_win_flags_thrifty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev_actions_win_flags</span><span class="p">)</span>
@@ -650,7 +634,10 @@
 <div class="viewcode-block" id="MCTSNC._make_actions_info_prodigal">
 <a class="viewcode-back" href="../mctsnc.html#mctsnc.MCTSNC._make_actions_info_prodigal">[docs]</a>
     <span class="k">def</span> <span class="nf">_make_actions_info_prodigal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepares a dictionary with information on root actions (using prodigal indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepares and returns a dictionary with information on root actions (using prodigal indexing) implied by the last run, in particular: estimates of action values, their UCBs, counts of times actions were taken, etc.</span>
+<span class="sd">        After the call, available via ``actions_info`` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">root_ns_prodigal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev_root_ns</span><span class="p">)</span>            
         <span class="n">actions_win_flags_prodigal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev_actions_win_flags</span><span class="p">)</span>
         <span class="n">actions_ns_prodigal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev_actions_ns</span><span class="p">)</span>

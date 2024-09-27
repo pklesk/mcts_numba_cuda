@@ -171,8 +171,13 @@
 <span class="sig-name descname"><span class="pre">take_action_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.take_action_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.take_action_job" title="Link to this definition"></a></dt>
 <dd><p>[To be implemented in subclasses.]</p>
 <p>Should performs changes on this state implied by the given action, and return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the action is legal.
-Otherwise, should do no changes and return <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+Otherwise, should do no changes and return <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>action_index (int): </dt><dd><p>index of action to be taken.</p>
+</dd>
+</dl>
+</dd>
 <dt>Returns:</dt><dd><dl class="simple">
 <dt>action_legal (bool):</dt><dd><p>boolean flag indicated if the specified action was legal and performed.</p>
 </dd>
@@ -207,7 +212,7 @@ For an ongoing game the result should be <code class="docutils literal notransla
 <dt class="sig sig-object py" id="gomoku.Gomoku.take_random_action_playout">
 <span class="sig-name descname"><span class="pre">take_random_action_playout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.take_random_action_playout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.take_random_action_playout" title="Link to this definition"></a></dt>
 <dd><p>[To be implemented in subclasses.]</p>
-<p>Should pick a uniformly random action from currently available actions in this state and return the result of calling <code class="docutils literal notranslate"><span class="pre">take_action</span></code> with the action index as argument.</p>
+<p>Should pick a uniformly random action from actions available in this state and return the result of calling <code class="docutils literal notranslate"><span class="pre">take_action</span></code> with the action index as argument.</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
 <dt>child (State): </dt><dd><p>result of <code class="docutils literal notranslate"><span class="pre">take_action</span></code> call for the random action.</p>
@@ -220,7 +225,7 @@ For an ongoing game the result should be <code class="docutils literal notransla
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_board">
 <span class="sig-name descname"><span class="pre">get_board</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_board"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_board" title="Link to this definition"></a></dt>
-<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned, not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
+<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
 <p>Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g. chessboard, backgammon board, etc.),
 even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).</p>
 <dl class="simple">
@@ -235,7 +240,7 @@ even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).<
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_extra_info">
 <span class="sig-name descname"><span class="pre">get_extra_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_extra_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_extra_info" title="Link to this definition"></a></dt>
-<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned, not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
+<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
 <p>Should return additional information associated with this state (as a one-dimensional array of bytes)
 not implied by the contents of the board itself (e.g. possibilities of castling or en-passant 
 captures in chess, the contract in double dummy bridge, etc.), or any technical information useful to generate 
@@ -290,7 +295,7 @@ legal actions faster. If no additional information is needed should return <code
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_board_shape">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_board_shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_board_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_board_shape" title="Link to this definition"></a></dt>
-<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned, not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
+<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
 <p>Returns a tuple with board shape for the game (or sequential decision problem) represented by this class.</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
@@ -304,7 +309,7 @@ legal actions faster. If no additional information is needed should return <code
 <dl class="py method">
 <dt class="sig sig-object py" id="gomoku.Gomoku.get_extra_info_memory">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_extra_info_memory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gomoku.html#Gomoku.get_extra_info_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gomoku.Gomoku.get_extra_info_memory" title="Link to this definition"></a></dt>
-<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned, not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
+<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
 <p>Returns amount of memory (in bytes) needed to memorize additional information associated with states of the game (or sequential decision problem) represented by this class.</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
