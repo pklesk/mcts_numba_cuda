@@ -109,7 +109,7 @@ def scores_array_plot_ocp_prodigal_vs_vanilla():
          "3131473593_90340_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_ocp_prodigal;C4_6x7;100]",
          "0789940897_67564_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_ocp_prodigal;C4_6x7;100]",
          "4160630561_62284_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_ocp_prodigal;C4_6x7;100]"],
-        ["1952747451_24774_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_ocp_prodigal;C4_6x7;100]",         
+        ["3132763072_24774_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_ocp_prodigal;C4_6x7;100]",         
          "3089327037_85000_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_ocp_prodigal;C4_6x7;100]",
          "4280420705_15852_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_ocp_prodigal;C4_6x7;100]",
          "3356143073_10572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]"],
@@ -131,7 +131,7 @@ def scores_array_plot_acp_thrifty_vs_vanilla():
          "0366474889_39732_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_acp_thrifty;C4_6x7;100]",
          "4190701447_14450_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_acp_thrifty;C4_6x7;100]",
          "3638541247_91690_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_acp_thrifty;C4_6x7;100]"],
-        ["2140373929_81332_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_acp_thrifty;C4_6x7;100]",         
+        ["3320389550_81332_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_acp_thrifty;C4_6x7;100]",         
          "0998292937_96468_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_acp_thrifty;C4_6x7;100]",
          "4148554891_09110_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_acp_thrifty;C4_6x7;100]",
          "3596394691_19054_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_acp_thrifty;C4_6x7;100]"],
@@ -158,7 +158,7 @@ def scores_array_plot_acp_prodigal_vs_vanilla():
          "2289938726_11276_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_acp_prodigal;C4_6x7;100]"],
         ["1258712287_26730_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_acp_prodigal;C4_6x7;100]",
          "2395291873_54252_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_acp_prodigal;C4_6x7;100]",
-         "0425225761_13132_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_acp_prodigal;C4_6x7;100]",
+         "1605241382_13132_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_acp_prodigal;C4_6x7;100]",
          "3795915425_07852_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_prodigal;C4_6x7;100]"]
         ])
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "ACP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)")
