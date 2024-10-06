@@ -18,8 +18,8 @@ FOLDER_EXTRAS = "../extras/"
 # main settings
 STATE_CLASS = C4 # C4 or Gomoku
 N_GAMES = 100
-AI_A_SHORTNAME = "mctsnc_5_inf_4_128_ocp_thrifty"
-AI_B_SHORTNAME = "mctsnc_5_inf_4_256_acp_thrifty" 
+AI_A_SHORTNAME = "mctsnc_5_inf_4_256_acp_thrifty"
+AI_B_SHORTNAME = "mctsnc_5_inf_4_256_ocp_prodigal" 
 REPRODUCE_EXPERIMENT = False
 _BOARD_SHAPE = STATE_CLASS.get_board_shape()
 _EXTRA_INFO_MEMORY = STATE_CLASS.get_extra_info_memory()
