@@ -2,6 +2,7 @@ import numpy as np
 from mcts import MCTS
 from mctsnc import MCTSNC
 from c4 import C4
+from gomoku import Gomoku
 from game_runner import GameRunner
 import time
 from utils import cpu_and_system_props, gpu_props, dict_to_str, Logger, experiment_hash_str, save_and_zip_experiment, unzip_and_load_experiment
@@ -99,9 +100,9 @@ AIS = {
     "mctsnc_5_inf_4_256_ocp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=4, n_playouts=256, variant="ocp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),    
     "mctsnc_5_inf_4_256_acp_thrifty": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=4, n_playouts=256, variant="acp_thrifty", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
     "mctsnc_5_inf_4_256_acp_prodigal": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=5.0, search_steps_limit=np.inf, n_trees=4, n_playouts=256, variant="acp_prodigal", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),                                                                    
-    "mctsnc_30_inf_4_128_ocp_thriftyl_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=30.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, variant="ocp_thrifty", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
+    "mctsnc_30_inf_4_128_ocp_thrifty_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=30.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, variant="ocp_thrifty", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
     "mctsnc_30_inf_4_256_ocp_prodigal_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=30.0, search_steps_limit=np.inf, n_trees=4, n_playouts=256, variant="ocp_prodigal", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),        
-    "mctsnc_30_inf_4_256_acp_thrifty_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=30.0, search_steps_limit=np.inf, n_trees=4, n_playouts=128, variant="acp_thrifty", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
+    "mctsnc_30_inf_4_256_acp_thrifty_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=30.0, search_steps_limit=np.inf, n_trees=4, n_playouts=256, variant="acp_thrifty", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
     "mctsnc_30_inf_4_256_acp_prodigal_16g": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=30.0, search_steps_limit=np.inf, n_trees=4, n_playouts=256, variant="acp_prodigal", device_memory=16.0, action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION)                            
     }
 
