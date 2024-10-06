@@ -91,7 +91,7 @@ def scores_array_plot_ocp_thrifty_vs_vanilla():
         ["1125939049_86804_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_ocp_thrifty;C4_6x7;100]",
          "4278825353_01940_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_ocp_thrifty;C4_6x7;100]",
          "1535824679_72914_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_ocp_thrifty;C4_6x7;100]",
-         "0983664479_50154_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_thrifty;C4_6x7;100]"],
+         "2163680100_50154_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_thrifty;C4_6x7;100]"],
         ["2389575145_67572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_ocp_thrifty;C4_6x7;100]",
          "1247494153_50004_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_ocp_thrifty;C4_6x7;100]",
          "1451531567_62234_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_ocp_thrifty;C4_6x7;100]",
@@ -321,13 +321,13 @@ def depths_plot_generator(experiments_hs, game_index,
 
 if __name__ == "__main__":        
     
-    # scores_array_plot_ocp_thrifty_vs_vanilla()
+    scores_array_plot_ocp_thrifty_vs_vanilla()
     
     # scores_array_plot_ocp_prodigal_vs_vanilla()
     
     # scores_array_plot_acp_thrifty_vs_vanilla()
     
-    scores_array_plot_acp_prodigal_vs_vanilla()
+    # scores_array_plot_acp_prodigal_vs_vanilla()
 
     # best_action_plot_generator("3356143073_10572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 61,
     #                            "BEST $\widehat{q}$ - MCTS_4_INF_VANILLA", "UCB - MCTS_4_INF_VANILLA",      
