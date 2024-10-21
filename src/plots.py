@@ -321,7 +321,7 @@ def depths_plot_generator(experiments_hs, game_index,
 
 if __name__ == "__main__":        
     
-    scores_array_plot_ocp_thrifty_vs_vanilla()
+    # scores_array_plot_ocp_thrifty_vs_vanilla()
     
     # scores_array_plot_ocp_prodigal_vs_vanilla()
     
@@ -345,10 +345,10 @@ if __name__ == "__main__":
     #                       "MEAN DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "MAX DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",                                  
     #                       "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 61/100)")
 
-    # best_action_plot_generator("0500042733_17720_427_[mctsnc_30_inf_2_128_ocp_prodigal_16g;mctsnc_30_inf_2_128_acp_prodigal_16g;Gomoku_15x15;100]", 55,
-    #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_2_128_OCP_PRODIGAL", "UCB - MCTS-NC_30_INF_2_128_OCP_PRODIGAL",
-    #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_2_128_ACP_PRODIGAL", "UCB - MCTS-NC_30_INF_2_128_ACP_PRODIGAL",                                  
-    #                            "MOVES ROUND", "MEAN DEPTHS, MAX_DEPTHS", None, "SAMPLE GAME OF GOMOKU")
+    best_action_plot_generator("2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]", 49,
+                               "BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_THRIFTY", "UCB - MCTS-NC_30_INF_4_256_ACP_THRIFTY",
+                               "BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_PRODIGAL", "UCB - MCTS-NC_30_INF_4_256_ACP_PRODIGAL",                                  
+                               "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF GOMOKU (NO. 49/100)")
     
     # depths_plot_generator("0500042733_17720_427_[mctsnc_30_inf_2_128_ocp_prodigal_16g;mctsnc_30_inf_2_128_acp_prodigal_16g;Gomoku_15x15;100]", 55,  
     #                       "MEAN DEPTHS - MCTS-NC_30_INF_2_128_OCP_PRODIGAL", "MAX DEPTHS - MCTS-NC_30_INF_2_128_OCP_PRODIGAL",
