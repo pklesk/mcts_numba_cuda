@@ -12,8 +12,8 @@ def take_action(m, n, board, extra_info, turn, action):
 
 @cuda.jit(device=True)
 def legal_actions_playout(m, n, board, extra_info, turn, legal_actions_with_count):
-    #legal_actions_playout_c4(m, n, board, extra_info, turn, legal_actions_with_count)    
-    legal_actions_playout_gomoku(m, n, board, extra_info, turn, legal_actions_with_count)    
+    legal_actions_playout_c4(m, n, board, extra_info, turn, legal_actions_with_count)    
+    #legal_actions_playout_gomoku(m, n, board, extra_info, turn, legal_actions_with_count)    
 
 @cuda.jit(device=True)    
 def take_action_playout(m, n, board, extra_info, turn, action, action_ord, legal_actions_with_count):        
