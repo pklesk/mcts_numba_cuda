@@ -7,7 +7,6 @@ from game_runner import GameRunner
 import time
 from utils import cpu_and_system_props, gpu_props, dict_to_str, Logger, experiment_hash_str, save_and_zip_experiment, unzip_and_load_experiment
 import sys
-from anaconda_navigator.api.conda_api import REPO_CACHE
 
 __author__ = "Przemysław Klęsk"
 __email__ = "pklesk@zut.edu.pl"
