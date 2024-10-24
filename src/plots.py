@@ -163,7 +163,6 @@ def scores_array_plot_acp_prodigal_vs_vanilla():
         ])
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "ACP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)")
 
-
 def scores_curve_plot(data, label_x, label_y, ticks_x, title_1, title_2):    
     figsize = (6, 6)
     fontsize_suptitle = 20
@@ -199,16 +198,17 @@ def scores_curve_plot_generator(experiments_hs_array, label_x, label_y, ticks_x,
     scores_curve_plot(data, label_x, label_y, ticks_x, title_1, title_2)    
 
 def best_action_plot(moves_rounds_black, qs_black, ucbs_black, moves_rounds_white, qs_white, ucbs_white, 
-                     label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2):
-    figsize = (10, 6.0)        
+                     label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2,
+                     ucbs_factor=1.0, ucbs_black_color=None, ucbs_white_color=None):
+    figsize = (10.0, 5.0)        
     fontsize_suptitle = 20
     fontsize_title = 21
-    fontsize_ticks = 13
+    fontsize_ticks = 11
     fontsize_labels = 18
-    fontsize_legend = 13
+    fontsize_legend = 11
     grid_color = (0.4, 0.4, 0.4) 
     grid_dashes = (4.0, 4.0)
-    legend_loc = "upper left"
+    legend_loc = "best" # "upper left"
     legend_handlelength = 4
     legend_labelspacing = 0.1
     alpha_ucb=0.25
@@ -218,16 +218,22 @@ def best_action_plot(moves_rounds_black, qs_black, ucbs_black, moves_rounds_whit
         plt.suptitle(title_1, fontsize=fontsize_suptitle)
     if title_2:
         plt.title(title_2, fontsize=fontsize_title)
+    if ucbs_black_color is None:
+        ucbs_black_color = "red"
+    if ucbs_white_color is None:
+        ucbs_white_color = "blue"                
     markers = {"marker": "o", "markersize": markersize}
     plt.plot(moves_rounds_black, qs_black, label=label_qs_black, color="red", **markers)    
-    plt.fill_between(moves_rounds_black, qs_black, ucbs_black, color="red", alpha=alpha_ucb, label=label_ucbs_black)
-    plt.plot(moves_rounds_white, qs_white, label=label_qs_white, color="blue", **markers)    
-    plt.fill_between(moves_rounds_white, qs_white, ucbs_white, color="blue", alpha=0.25, label=label_ucbs_white)
+    ucbs_black = ucbs_factor * (np.array(ucbs_black) - np.array(qs_black)) + np.array(qs_black)     
+    plt.fill_between(moves_rounds_black, qs_black, ucbs_black, color=ucbs_black_color, alpha=alpha_ucb, label=label_ucbs_black)
+    plt.plot(moves_rounds_white, qs_white, label=label_qs_white, color="blue", **markers)
+    ucbs_white = ucbs_factor * (np.array(ucbs_white) - np.array(qs_white)) + np.array(qs_white)    
+    plt.fill_between(moves_rounds_white, qs_white, ucbs_white, color=ucbs_white_color, alpha=0.25, label=label_ucbs_white)
     plt.xlabel(label_x, fontsize=fontsize_labels)
     plt.ylabel(label_y, fontsize=fontsize_labels)
     plt.legend(loc=legend_loc, prop={"size": fontsize_legend}, handlelength=legend_handlelength, labelspacing=legend_labelspacing)
     plt.gca().xaxis.set_major_locator(MultipleLocator(1))
-    plt.gca().yaxis.set_major_locator(FixedLocator([0, 0.25, 0.5, 0.75, 1.0]))
+    plt.gca().yaxis.set_major_locator(FixedLocator(np.arange(0, 1.125, 0.125)))
     plt.xticks(fontsize=fontsize_ticks)
     plt.yticks(fontsize=fontsize_ticks)    
     plt.grid(color=grid_color, zorder=0, dashes=grid_dashes)  
@@ -235,7 +241,8 @@ def best_action_plot(moves_rounds_black, qs_black, ucbs_black, moves_rounds_whit
     plt.show()
     
 def best_action_plot_generator(experiments_hs, game_index, 
-                               label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2):
+                               label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2,
+                               ucbs_factor=1.0, ucbs_black_color=None, ucbs_white_color=None):
     print("BEST-ACTION-PLOT GENERATOR...") 
     experiment_info = unzip_and_load_experiment(experiments_hs, FOLDER_EXPERIMENTS)
     moves_rounds = experiment_info["games_infos"][str(game_index)]["moves_rounds"]
@@ -256,19 +263,19 @@ def best_action_plot_generator(experiments_hs, game_index,
             qs_white.append(mr["white_best_action_info"]["q"])
             ucbs_white.append( mr["white_best_action_info"]["ucb"])
     print("BEST-ACTION-PLOT GENERATOR DONE")
-    best_action_plot(moves_rounds_black, qs_black, ucbs_black, moves_rounds_white, qs_white, ucbs_white, label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2)    
+    best_action_plot(moves_rounds_black, qs_black, ucbs_black, moves_rounds_white, qs_white, ucbs_white, label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2, ucbs_factor, ucbs_black_color, ucbs_white_color)    
 
 def depths_plot(moves_rounds_black, mean_depths_black, max_depths_black, moves_rounds_white, mean_depths_white, max_depths_white, 
                 label_mean_depths_black, label_max_depths_black, label_mean_depths_white, label_max_depths_white, label_x, label_y, title_1, title_2):
-    figsize = (10, 6.0)        
+    figsize = (10, 5.0)        
     fontsize_suptitle = 20
     fontsize_title = 21
-    fontsize_ticks = 13
+    fontsize_ticks = 11
     fontsize_labels = 18
-    fontsize_legend = 13
+    fontsize_legend = 11
     grid_color = (0.4, 0.4, 0.4) 
     grid_dashes = (4.0, 4.0)
-    legend_loc = "lower left"
+    legend_loc = "best" # "lower left"
     legend_handlelength = 4
     legend_labelspacing = 0.1
     alpha_ucb=0.25
@@ -318,7 +325,122 @@ def depths_plot_generator(experiments_hs, game_index,
     depths_plot(moves_rounds_black, mean_depths_black, max_depths_black, moves_rounds_white, mean_depths_white, max_depths_white, 
                 label_mean_depths_black, label_max_depths_black, label_mean_depths_white, label_max_depths_white, label_x, label_y, title_1, title_2)
 
+def averages_printout_generator(experiments_hs_array, ai_instance_name):
+    print("MEANS PRINTOUT...")
+    playouts = []
+    steps = []            
+    mean_depths = []
+    max_depths = []            
+    for i in range(experiments_hs_array.shape[0]):
+        experiment_info = unzip_and_load_experiment(experiments_hs_array[i], FOLDER_EXPERIMENTS)
+        n_games = experiment_info["matchup_info"]["n_games"]
+        for g in range(n_games):            
+            main_player_prefix = "white_" if experiment_info["games_infos"][str(g + 1)]["white"] == ai_instance_name else "black_"            
+            moves_rounds = experiment_info["games_infos"][str(g + 1)]["moves_rounds"]
+            for m in range(len(moves_rounds)):
+                moves_round = moves_rounds[str(m + 1)]
+                mppi = main_player_prefix + "performance_info"
+                if mppi in moves_round:
+                    playouts.append(moves_round[mppi]["playouts"])
+                    steps.append(moves_round[mppi]["steps"])
+                    trees_key = "trees" if "trees" in moves_round[mppi] else "tree"
+                    mean_depths.append(moves_round[mppi][trees_key]["mean_depth"])
+                    max_depths.append(moves_round[mppi][trees_key]["max_depth"])
+    print(f"THE AVERAGES -> PLAYOUTS/STEPS: {np.mean(playouts)}/{np.mean(steps)}, MEAN DEPTH/MAX DEPTH: {np.mean(mean_depths)}/{np.mean(max_depths)}]")
+    print("AVERAGES PRINTOUT GENERATOR DONE.")
 
+def averages_printout_c4_5s_vanilla():    
+    averages_printout_generator(np.array([
+        "1779966119_01490_427_[mcts_5_inf_vanilla;mctsnc_5_inf_4_128_ocp_thrifty;C4_6x7;100]",
+        "1569951977_89204_427_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
+        "0725584456_47630_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]",
+        "0503747630_89908_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]"
+        ]), 
+        "MCTS(search_time_limit=5.0, search_steps_limit=inf, vanilla=True, ucb_c=2.0, seed: 0)")    
+    
+def averages_printout_c4_5s_ocp_thrifty():    
+    averages_printout_generator(np.array([
+        "1779966119_01490_427_[mcts_5_inf_vanilla;mctsnc_5_inf_4_128_ocp_thrifty;C4_6x7;100]",
+        "1311471072_93670_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
+        "3070453690_29088_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]",
+        "3360218400_94374_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]"
+        ]), 
+        "MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=128, variant='ocp_thrifty', device_memory=2.0, ucb_c=2.0, seed: 0)")  
+
+def averages_printout_c4_5s_ocp_prodigal():    
+    averages_printout_generator(np.array([
+        "1569951977_89204_427_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
+        "1311471072_93670_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
+        "1714786244_73898_048_[mctsnc_5_inf_4_256_acp_thrifty;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
+        "2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]"
+        ]), 
+        "MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='ocp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)")
+    
+def averages_printout_c4_5s_acp_thrifty():    
+    averages_printout_generator(np.array([
+        "0725584456_47630_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]",
+        "3070453690_29088_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]",
+        "1714786244_73898_048_[mctsnc_5_inf_4_256_acp_thrifty;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
+        "3763533572_41898_048_[mctsnc_5_inf_4_256_acp_thrifty;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]"
+        ]), 
+        "MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='acp_thrifty', device_memory=2.0, ucb_c=2.0, seed: 0)")    
+
+def averages_printout_c4_5s_acp_prodigal():    
+    averages_printout_generator(np.array([
+        "0503747630_89908_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]",
+        "3360218400_94374_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]",
+        "2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]",
+        "3763533572_41898_048_[mctsnc_5_inf_4_256_acp_thrifty;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]"
+        ]), 
+        "MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='acp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)")
+
+def averages_printout_gomoku_30s_vanilla():
+    averages_printout_generator(np.array([
+        "3014955156_02650_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_128_ocp_thrifty_16g;Gomoku_15x15;100]",
+        "1681612016_34230_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_ocp_prodigal_16g;Gomoku_15x15;100]",
+        "4070724948_30746_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]",
+        "3240654036_09850_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]"
+        ]), 
+        "MCTS(search_time_limit=30.0, search_steps_limit=inf, vanilla=True, ucb_c=2.0, seed: 0)")
+
+
+def averages_printout_gomoku_30s_ocp_thrifty():
+    averages_printout_generator(np.array([
+        "3014955156_02650_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_128_ocp_thrifty_16g;Gomoku_15x15;100]",
+        "4039933000_53870_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_ocp_prodigal_16g;Gomoku_15x15;100]",
+        "2602789548_96434_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]",
+        "1304007724_29490_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]"
+        ]), 
+        "MCTSNC(search_time_limit=30.0, search_steps_limit=inf, n_trees=4, n_playouts=128, variant='ocp_thrifty', device_memory=16.0, ucb_c=2.0, seed: 0)")
+
+def averages_printout_gomoku_30s_ocp_prodigal():
+    averages_printout_generator(np.array([
+        "1681612016_34230_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_ocp_prodigal_16g;Gomoku_15x15;100]",
+        "4039933000_53870_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_ocp_prodigal_16g;Gomoku_15x15;100]",
+        "1988707178_17328_048_[mctsnc_30_inf_4_256_ocp_prodigal_16g;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]",
+        "3876337002_15280_048_[mctsnc_30_inf_4_256_ocp_prodigal_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]"
+        ]), 
+        "MCTSNC(search_time_limit=30.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='ocp_prodigal', device_memory=16.0, ucb_c=2.0, seed: 0)")
+
+
+def averages_printout_gomoku_30s_acp_thrifty():
+    averages_printout_generator(np.array([
+        "4070724948_30746_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]",
+        "2602789548_96434_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]",
+        "1988707178_17328_048_[mctsnc_30_inf_4_256_ocp_prodigal_16g;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]",
+        "2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]"
+        ]), 
+        "MCTSNC(search_time_limit=30.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='acp_thrifty', device_memory=16.0, ucb_c=2.0, seed: 0)")
+
+def averages_printout_gomoku_30s_acp_prodigal():
+    averages_printout_generator(np.array([
+        "3240654036_09850_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]",
+        "1304007724_29490_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]",
+        "0500042733_17720_427_[mctsnc_30_inf_2_128_ocp_prodigal_16g;mctsnc_30_inf_2_128_acp_prodigal_16g;Gomoku_15x15;100]",
+        "2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]"
+        ]), 
+        "MCTSNC(search_time_limit=30.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='acp_prodigal', device_memory=16.0, ucb_c=2.0, seed: 0)")
+    
 if __name__ == "__main__":        
     
     # scores_array_plot_ocp_thrifty_vs_vanilla()
@@ -333,27 +455,41 @@ if __name__ == "__main__":
     #                            "BEST $\widehat{q}$ - MCTS_4_INF_VANILLA", "UCB - MCTS_4_INF_VANILLA",      
     #                            "BEST $\widehat{q}$ - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "UCB - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",     
     #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 61/100)")
-    
-    # best_action_plot_generator("0500042733_17720_427_[mctsnc_30_inf_2_128_ocp_prodigal_16g;mctsnc_30_inf_2_128_acp_prodigal_16g;Gomoku_15x15;100]", 87,
-    #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_2_128_OCP_PRODIGAL", "UCB - MCTS-NC_30_INF_2_128_OCP_PRODIGAL",                               
-    #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_2_128_ACP_PRODIGAL", "UCB - MCTS-NC_30_INF_2_128_ACP_PRODIGAL",                                          
-    #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF GOMOKU")
-    
-    
+        
     # depths_plot_generator("3356143073_10572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 61,  
     #                       "MEAN DEPTHS - MCTS_4_INF_VANILLA", "MAX DEPTHS - MCTS_4_INF_VANILLA",
     #                       "MEAN DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "MAX DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",                                  
     #                       "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 61/100)")
-
-    best_action_plot_generator("2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]", 49,
-                               "BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_THRIFTY", "UCB - MCTS-NC_30_INF_4_256_ACP_THRIFTY",
-                               "BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_PRODIGAL", "UCB - MCTS-NC_30_INF_4_256_ACP_PRODIGAL",                                  
-                               "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF GOMOKU (NO. 49/100)")
     
-    # depths_plot_generator("0500042733_17720_427_[mctsnc_30_inf_2_128_ocp_prodigal_16g;mctsnc_30_inf_2_128_acp_prodigal_16g;Gomoku_15x15;100]", 55,  
-    #                       "MEAN DEPTHS - MCTS-NC_30_INF_2_128_OCP_PRODIGAL", "MAX DEPTHS - MCTS-NC_30_INF_2_128_OCP_PRODIGAL",
-    #                       "MEAN DEPTHS - MCTS-NC_30_INF_2_128_ACP_PRODIGAL", "MAX DEPTHS - MCTS-NC_30_INF_2_128_ACP_PRODIGAL",                                  
-    #                       "MOVES ROUND", "MEAN DEPTHS, MAX_DEPTHS", None, "SAMPLE GAME OF GOMOKU")
+    # best_action_plot_generator("2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]", 51,
+    #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_THRIFTY", "25 x UCB - MCTS-NC_30_INF_4_256_ACP_THRIFTY",
+    #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_PRODIGAL", "25 x UCB - MCTS-NC_30_INF_4_256_ACP_PRODIGAL",                                  
+    #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF GOMOKU (NO. 51/100)", 25.0)
+    
+    # depths_plot_generator("2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]", 51,  
+    #                       "MEAN DEPTHS - MCTS-NC_30_INF_4_256_ACP_THRIFTY", "MAX DEPTHS - MCTS-NC_30_INF_4_256_ACP_THRIFTY",
+    #                       "MEAN DEPTHS - MCTS-NC_30_INF_4_256_ACP_PRODIGAL", "MAX DEPTHS - MCTS-NC_30_INF_4_256_ACP_PRODIGAL",                                  
+    #                       "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF GOMOKU (NO. 51/100)")
+        
+    # averages_printout_c4_5s_vanilla()
+    
+    # averages_printout_c4_5s_ocp_thrifty()
+    
+    # averages_printout_c4_5s_ocp_prodigal()
+    
+    # averages_printout_c4_5s_acp_thrifty()
+    
+    # averages_printout_c4_5s_acp_prodigal()
+    
+    # averages_printout_gomoku_30s_vanilla()
+    
+    # averages_printout_gomoku_30s_ocp_thrifty()
+    
+    # averages_printout_gomoku_30s_ocp_prodigal()
+    
+    # averages_printout_gomoku_30s_acp_thrifty()
+    
+    # averages_printout_gomoku_30s_acp_prodigal()
             
     # experiments_hs_array = np.array([
     #     ["1302514517_91136_427_[mcts_4_inf_vanilla;mctsnc_1_inf_1_32_ocp_prodigal;C4_6x7;100]",

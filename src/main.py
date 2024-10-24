@@ -7,25 +7,34 @@ from game_runner import GameRunner
 import time
 from utils import cpu_and_system_props, gpu_props, dict_to_str, Logger, experiment_hash_str, save_and_zip_experiment, unzip_and_load_experiment
 import sys
-
+from anaconda_navigator.api.conda_api import REPO_CACHE
 
 __author__ = "Przemysław Klęsk"
 __email__ = "pklesk@zut.edu.pl"
+
+# main settings
+STATE_CLASS = C4 # C4 or Gomoku
+N_GAMES = 100
+AI_A_SHORTNAME = "mcts_5_inf_vanilla"
+AI_B_SHORTNAME = "mctsnc_1_inf_1_32_ocp_thrifty" 
+REPRODUCE_EXPERIMENT = False
 
 # folders
 FOLDER_EXPERIMENTS = "../experiments/"
 FOLDER_EXTRAS = "../extras/"
 
-# main settings
-STATE_CLASS = C4 # C4 or Gomoku
-N_GAMES = 100
-AI_A_SHORTNAME = "mctsnc_5_inf_4_256_acp_thrifty"
-AI_B_SHORTNAME = "mctsnc_5_inf_4_256_ocp_prodigal" 
-REPRODUCE_EXPERIMENT = False
+# automatic settings
 _BOARD_SHAPE = STATE_CLASS.get_board_shape()
 _EXTRA_INFO_MEMORY = STATE_CLASS.get_extra_info_memory()
 _MAX_ACTIONS = STATE_CLASS.get_max_actions()
 _ACTION_INDEX_TO_NAME_FUNCTION = STATE_CLASS.action_index_to_name
+_HUMAN_PARTICIPANT = AI_A_SHORTNAME is None or AI_B_SHORTNAME is None
+if _HUMAN_PARTICIPANT:
+    REPRODUCE_EXPERIMENT = False
+    if AI_A_SHORTNAME is None:
+        AI_A_SHORTNAME = "human"
+    if AI_B_SHORTNAME is None:
+        AI_B_SHORTNAME = "human"         
 
 # dictionary of AIs
 AIS = {
@@ -109,8 +118,8 @@ AIS = {
 LINE_SEPARATOR = 208 * "="
 
 if __name__ == "__main__":    
-    ai_a = AIS[AI_A_SHORTNAME]
-    ai_b = AIS[AI_B_SHORTNAME]    
+    ai_a = AIS[AI_A_SHORTNAME] if AI_A_SHORTNAME in AIS else None 
+    ai_b = AIS[AI_B_SHORTNAME] if AI_B_SHORTNAME in AIS else None   
     matchup_info = {
         "ai_a_shortname": AI_A_SHORTNAME, "ai_a_instance": str(ai_a), 
         "ai_b_shortname": AI_B_SHORTNAME, "ai_b_instance": str(ai_b),
@@ -121,7 +130,7 @@ if __name__ == "__main__":
     g_props = gpu_props()
     experiment_hs = experiment_hash_str(matchup_info, c_props, g_props)
     experiment_info = {"matchup_info":  matchup_info, "cpu_and_system_props": c_props, "gpu_props": g_props, "games_infos": {}, "stats": {}}
-    if not REPRODUCE_EXPERIMENT:
+    if not (REPRODUCE_EXPERIMENT or _HUMAN_PARTICIPANT):
         logger = Logger(f"{FOLDER_EXPERIMENTS}{experiment_hs}.log")    
         sys.stdout = logger
     
@@ -192,7 +201,7 @@ if __name__ == "__main__":
     t2 = time.time()
     print(f"MCTS-NC EXPERIMENT DONE. [time: {t2 - t1} s]")
     
-    if not REPRODUCE_EXPERIMENT:
+    if not (REPRODUCE_EXPERIMENT or _HUMAN_PARTICIPANT):
         sys.stdout = sys.__stdout__
         logger.logfile.close()
         save_and_zip_experiment(experiment_hs, experiment_info, FOLDER_EXPERIMENTS)    

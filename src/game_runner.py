@@ -50,16 +50,16 @@ class GameRunner:
                 move_name = self.game_class.action_index_to_name(move_index)
                 print(f"MOVE PLAYED: {move_name}")
                 game = game.take_action(move_index)
-            print(str(game), flush=True)
-            moves_round_info["black_best_action_info"] = self.black_ai.actions_info["best"]
-            moves_round_info["black_performance_info"] = self.black_ai.performance_info                                                
+                moves_round_info["black_best_action_info"] = self.black_ai.actions_info["best"]
+                moves_round_info["black_performance_info"] = self.black_ai.performance_info                
+            print(str(game), flush=True)                                                
             outcome = game.compute_outcome()
             if outcome is not None:
                 outcome_message = GameRunner.OUTCOME_MESSAGES[outcome + 1]           
                 print(f"GAME OUTCOME: {outcome_message}")
                 game_info["moves_rounds"][str(move_count + 1)] = moves_round_info
                 game_info["outcome"] = outcome
-                game_info["outcome_message"] = outcome_message                
+                game_info["outcome_message"] = outcome_message
                 break                
             if not self.white_ai:
                 move_valid = False
@@ -88,9 +88,9 @@ class GameRunner:
                 move_name = self.game_class.action_index_to_name(move_index)
                 print(f"MOVE PLAYED: {move_name}")
                 game = game.take_action(move_index)
-            print(str(game), flush=True)
-            moves_round_info["white_best_action_info"] = self.white_ai.actions_info["best"]            
-            moves_round_info["white_performance_info"] = self.white_ai.performance_info                                        
+                moves_round_info["white_best_action_info"] = self.white_ai.actions_info["best"]            
+                moves_round_info["white_performance_info"] = self.white_ai.performance_info                
+            print(str(game), flush=True)                                        
             game_info["moves_rounds"][str(move_count + 1)] = moves_round_info  
             outcome = game.compute_outcome()
             if outcome is not None:

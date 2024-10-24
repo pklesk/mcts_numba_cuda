@@ -57,23 +57,23 @@ def compute_outcome_c4(m, n, board, extra_info, turn, last_action):
     i = m - extra_info[j]
     # N-S
     total = 0
-    for k in range(1, 4 + 1):
+    for k in range(1, 4):
         if i -  k < 0 or board[i - k, j] != last_token:
             break
         total += 1
-    for k in range(1, 4 + 1):
+    for k in range(1, 4):
         if i + k >= m or board[i + k, j] != last_token:
             break            
         total += 1
     if total >= 3:            
-        return last_token            
+        return last_token
     # E-W
     total = 0
-    for k in range(1, 4 + 1):
+    for k in range(1, 4):
         if j + k >= n or board[i, j + k] != last_token:
             break
         total += 1
-    for k in range(1, 4 + 1):
+    for k in range(1, 4):
         if j - k < 0 or board[i, j - k] != last_token:
             break            
         total += 1
@@ -81,11 +81,11 @@ def compute_outcome_c4(m, n, board, extra_info, turn, last_action):
         return last_token            
     # NE-SW
     total = 0
-    for k in range(1, 4 + 1):
+    for k in range(1, 4):
         if i - k < 0 or j + k >= n or board[i - k, j + k] != last_token:
             break
         total += 1
-    for k in range(1, 4 + 1):
+    for k in range(1, 4):
         if i + k >= m or j - k < 0 or board[i + k, j - k] != last_token:
             break
         total += 1
@@ -93,11 +93,11 @@ def compute_outcome_c4(m, n, board, extra_info, turn, last_action):
         return last_token            
     # NW-SE
     total = 0
-    for k in range(1, 4 + 1):
+    for k in range(1, 4):
         if i - k < 0 or j - k < 0 or board[i - k, j - k] != last_token:
             break
         total += 1
-    for k in range(1, 4 + 1):
+    for k in range(1, 4):
         if i + k >= m or j + k >= n or board[i + k, j + k] != last_token:
             break
         total += 1            
@@ -153,11 +153,11 @@ def compute_outcome_gomoku(m, n, board, extra_info, turn, last_action):
     j = last_action % n
     # N-S
     total = 0
-    for k in range(1, 6 + 1):
+    for k in range(1, 6):
         if i -  k < 0 or board[i - k, j] != last_token:
             break
         total += 1
-    for k in range(1, 6 + 1):
+    for k in range(1, 6):
         if i + k >= m or board[i + k, j] != last_token:
             break            
         total += 1
@@ -165,11 +165,11 @@ def compute_outcome_gomoku(m, n, board, extra_info, turn, last_action):
         return last_token            
     # E-W
     total = 0
-    for k in range(1, 6 + 1):
+    for k in range(1, 6):
         if j + k >= n or board[i, j + k] != last_token:
             break
         total += 1
-    for k in range(1, 6 + 1):
+    for k in range(1, 6):
         if j - k < 0 or board[i, j - k] != last_token:
             break            
         total += 1
@@ -177,11 +177,11 @@ def compute_outcome_gomoku(m, n, board, extra_info, turn, last_action):
         return last_token            
     # NE-SW
     total = 0
-    for k in range(1, 6 + 1):
+    for k in range(1, 6):
         if i - k < 0 or j + k >= n or board[i - k, j + k] != last_token:
             break
         total += 1
-    for k in range(1, 6 + 1):
+    for k in range(1, 6):
         if i + k >= m or j - k < 0 or board[i + k, j - k] != last_token:
             break
         total += 1
@@ -189,11 +189,11 @@ def compute_outcome_gomoku(m, n, board, extra_info, turn, last_action):
         return last_token            
     # NW-SE
     total = 0
-    for k in range(1, 6 + 1):
+    for k in range(1, 6):
         if i - k < 0 or j - k < 0 or board[i - k, j - k] != last_token:
             break
         total += 1
-    for k in range(1, 6 + 1):
+    for k in range(1, 6):
         if i + k >= m or j + k >= n or board[i + k, j + k] != last_token:
             break
         total += 1            
