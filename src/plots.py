@@ -80,86 +80,86 @@ def scores_array_plot_generator(experiments_hs_array, label_x, label_y, ticks_x,
 
 def scores_array_plot_ocp_thrifty_vs_vanilla():
     experiments_hs_array = np.array([
-        ["2325695625_84404_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_ocp_thrifty;C4_6x7;100]",
-         "1183614633_99540_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_ocp_thrifty;C4_6x7;100]",
-         "1599044513_98220_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_ocp_thrifty;C4_6x7;100]",
-         "1046884313_08164_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_ocp_thrifty;C4_6x7;100]"],
-        ["0494121001_62772_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_ocp_thrifty;C4_6x7;100]",
-         "3647007305_45204_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_ocp_thrifty;C4_6x7;100]",
-         "1577971235_45550_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_ocp_thrifty;C4_6x7;100]",
-         "1025811035_55494_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_ocp_thrifty;C4_6x7;100]"],
-        ["1125939049_86804_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_ocp_thrifty;C4_6x7;100]",
-         "4278825353_01940_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_ocp_thrifty;C4_6x7;100]",
-         "1535824679_72914_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_ocp_thrifty;C4_6x7;100]",
+        ["3505711246_84404_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_ocp_thrifty;C4_6x7;100]",
+         "2363630254_99540_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_ocp_thrifty;C4_6x7;100]",
+         "2779060134_98220_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_ocp_thrifty;C4_6x7;100]",
+         "2226899934_08164_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_ocp_thrifty;C4_6x7;100]"],
+        ["1674136622_62772_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_ocp_thrifty;C4_6x7;100]",
+         "0532055630_45204_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_ocp_thrifty;C4_6x7;100]",
+         "2757986856_45550_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_ocp_thrifty;C4_6x7;100]",
+         "2205826656_55494_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_ocp_thrifty;C4_6x7;100]"],
+        ["2305954670_86804_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_ocp_thrifty;C4_6x7;100]",
+         "1163873678_01940_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_ocp_thrifty;C4_6x7;100]",
+         "2715840300_72914_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_ocp_thrifty;C4_6x7;100]",
          "2163680100_50154_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_thrifty;C4_6x7;100]"],
-        ["2389575145_67572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_ocp_thrifty;C4_6x7;100]",
-         "1247494153_50004_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_ocp_thrifty;C4_6x7;100]",
-         "1451531567_62234_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_ocp_thrifty;C4_6x7;100]",
-         "0899371367_72178_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_thrifty;C4_6x7;100]"]
+        ["3569590766_67572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_ocp_thrifty;C4_6x7;100]",
+         "2427509774_50004_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_ocp_thrifty;C4_6x7;100]",
+         "2631547188_62234_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_ocp_thrifty;C4_6x7;100]",
+         "2079386988_72178_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_thrifty;C4_6x7;100]"]
         ])
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "OCP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)")    
 
 def scores_array_plot_ocp_prodigal_vs_vanilla():    
     experiments_hs_array = np.array([
-        ["2015967285_82784_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_ocp_prodigal;C4_6x7;100]",
-         "3152546871_43010_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_ocp_prodigal;C4_6x7;100]",
-         "3339668289_77068_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_ocp_prodigal;C4_6x7;100]",
-         "2415390657_71788_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_ocp_prodigal;C4_6x7;100]"],
-        ["1994894007_30114_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_ocp_prodigal;C4_6x7;100]",
-         "3131473593_90340_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_ocp_prodigal;C4_6x7;100]",
-         "0789940897_67564_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_ocp_prodigal;C4_6x7;100]",
-         "4160630561_62284_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_ocp_prodigal;C4_6x7;100]"],
+        ["3195982906_82784_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_ocp_prodigal;C4_6x7;100]",
+         "0037595196_43010_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_ocp_prodigal;C4_6x7;100]",
+         "0224716614_77068_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_ocp_prodigal;C4_6x7;100]",
+         "3595406278_71788_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_ocp_prodigal;C4_6x7;100]"],
+        ["3174909628_30114_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_ocp_prodigal;C4_6x7;100]",
+         "0016521918_90340_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_ocp_prodigal;C4_6x7;100]",
+         "1969956518_67564_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_ocp_prodigal;C4_6x7;100]",
+         "1045678886_62284_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_ocp_prodigal;C4_6x7;100]"],
         ["3132763072_24774_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_ocp_prodigal;C4_6x7;100]",         
-         "3089327037_85000_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_ocp_prodigal;C4_6x7;100]",
-         "4280420705_15852_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_ocp_prodigal;C4_6x7;100]",
-         "3356143073_10572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]"],
-        ["1868454339_46798_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_ocp_prodigal;C4_6x7;100]",
-         "3005033925_07024_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_ocp_prodigal;C4_6x7;100]",
-         "2671445729_45132_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_ocp_prodigal;C4_6x7;100]",
-         "1747168097_39852_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_prodigal;C4_6x7;100]"]
+         "4269342658_85000_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_ocp_prodigal;C4_6x7;100]",
+         "1165469030_15852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_ocp_prodigal;C4_6x7;100]",
+         "0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]"],
+        ["3048469960_46798_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_ocp_prodigal;C4_6x7;100]",
+         "4185049546_07024_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_ocp_prodigal;C4_6x7;100]",
+         "3851461350_45132_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_ocp_prodigal;C4_6x7;100]",
+         "2927183718_39852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_prodigal;C4_6x7;100]"]
         ])
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "OCP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)")
 
 def scores_array_plot_acp_thrifty_vs_vanilla():
     
     experiments_hs_array = np.array([
-        ["3340130505_78932_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_acp_thrifty;C4_6x7;100]",
+        ["0225178830_78932_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_acp_thrifty;C4_6x7;100]",
          "3378065134_94068_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_acp_thrifty;C4_6x7;100]",
-         "4211774725_67120_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_acp_thrifty;C4_6x7;100]",         
-         "3659614525_44360_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_acp_thrifty;C4_6x7;100]"],
-        ["1508555881_57300_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_acp_thrifty;C4_6x7;100]",
-         "0366474889_39732_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_acp_thrifty;C4_6x7;100]",
-         "4190701447_14450_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_acp_thrifty;C4_6x7;100]",
-         "3638541247_91690_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_acp_thrifty;C4_6x7;100]"],
+         "1096823050_67120_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_acp_thrifty;C4_6x7;100]",         
+         "0544662850_44360_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_acp_thrifty;C4_6x7;100]"],
+        ["2688571502_57300_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_acp_thrifty;C4_6x7;100]",
+         "1546490510_39732_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_acp_thrifty;C4_6x7;100]",
+         "1075749772_14450_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_acp_thrifty;C4_6x7;100]",
+         "0523589572_91690_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_acp_thrifty;C4_6x7;100]"],
         ["3320389550_81332_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_acp_thrifty;C4_6x7;100]",         
-         "0998292937_96468_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_acp_thrifty;C4_6x7;100]",
-         "4148554891_09110_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_acp_thrifty;C4_6x7;100]",
-         "3596394691_19054_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_acp_thrifty;C4_6x7;100]"],
-        ["3404010025_62100_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_acp_thrifty;C4_6x7;100]",
-         "2261929033_44532_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_acp_thrifty;C4_6x7;100]",
-         "4064261779_31134_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_acp_thrifty;C4_6x7;100]",
-         "3512101579_08374_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_thrifty;C4_6x7;100]"]
+         "2178308558_96468_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_acp_thrifty;C4_6x7;100]",
+         "1033603216_09110_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_acp_thrifty;C4_6x7;100]",
+         "0481443016_19054_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_acp_thrifty;C4_6x7;100]"],
+        ["0289058350_62100_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_acp_thrifty;C4_6x7;100]",
+         "3441944654_44532_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_acp_thrifty;C4_6x7;100]",
+         "0949310104_31134_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_acp_thrifty;C4_6x7;100]",
+         "0397149904_08374_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_thrifty;C4_6x7;100]"]
         ])
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "ACP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)")
 
 def scores_array_plot_acp_prodigal_vs_vanilla():        
     experiments_hs_array = np.array([
-        ["1406225233_62716_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_acp_prodigal;C4_6x7;100]",
-         "2542804819_90238_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_acp_prodigal;C4_6x7;100]",
-         "1093448321_77772_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_acp_prodigal;C4_6x7;100]",
-         "0169170689_72492_427_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_acp_prodigal;C4_6x7;100]"],
+        ["2586240854_62716_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_acp_prodigal;C4_6x7;100]",
+         "3722820440_90238_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_acp_prodigal;C4_6x7;100]",
+         "2273463942_77772_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_acp_prodigal;C4_6x7;100]",
+         "1349186310_72492_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_acp_prodigal;C4_6x7;100]"],
         ["2565167576_10046_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_acp_prodigal;C4_6x7;100]",
-         "2521731541_70272_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_acp_prodigal;C4_6x7;100]",
-         "2838688225_35564_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_acp_prodigal;C4_6x7;100]",
-         "1914410593_62988_427_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_acp_prodigal;C4_6x7;100]"],
-        ["1343005399_04706_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_acp_prodigal;C4_6x7;100]",                  
+         "3701747162_70272_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_acp_prodigal;C4_6x7;100]",
+         "4018703846_35564_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_acp_prodigal;C4_6x7;100]",
+         "3094426214_62988_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_acp_prodigal;C4_6x7;100]"],
+        ["2523021020_04706_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_acp_prodigal;C4_6x7;100]",                  
          "3659600606_64932_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_acp_prodigal;C4_6x7;100]",
          "3214216358_16556_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_acp_prodigal;C4_6x7;100]",
          "2289938726_11276_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_acp_prodigal;C4_6x7;100]"],
-        ["1258712287_26730_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_acp_prodigal;C4_6x7;100]",
-         "2395291873_54252_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_acp_prodigal;C4_6x7;100]",
+        ["2438727908_26730_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_acp_prodigal;C4_6x7;100]",
+         "3575307494_54252_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_acp_prodigal;C4_6x7;100]",
          "1605241382_13132_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_acp_prodigal;C4_6x7;100]",
-         "3795915425_07852_427_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_prodigal;C4_6x7;100]"]
+         "0680963750_07852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_prodigal;C4_6x7;100]"]
         ])
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "ACP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)")
 
@@ -443,13 +443,13 @@ def averages_printout_gomoku_30s_acp_prodigal():
     
 if __name__ == "__main__":        
     
-    scores_array_plot_ocp_thrifty_vs_vanilla()
+    # scores_array_plot_ocp_thrifty_vs_vanilla()
     
     # scores_array_plot_ocp_prodigal_vs_vanilla()
     
     # scores_array_plot_acp_thrifty_vs_vanilla()
     
-    # scores_array_plot_acp_prodigal_vs_vanilla()
+    scores_array_plot_acp_prodigal_vs_vanilla()
 
     # best_action_plot_generator("3356143073_10572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 61,
     #                            "BEST $\widehat{q}$ - MCTS_4_INF_VANILLA", "UCB - MCTS_4_INF_VANILLA",      
