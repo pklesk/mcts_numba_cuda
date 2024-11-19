@@ -449,7 +449,7 @@ if __name__ == "__main__":
     
     # scores_array_plot_acp_thrifty_vs_vanilla()
     
-    scores_array_plot_acp_prodigal_vs_vanilla()
+    # scores_array_plot_acp_prodigal_vs_vanilla()
 
     # best_action_plot_generator("3356143073_10572_427_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 61,
     #                            "BEST $\widehat{q}$ - MCTS_4_INF_VANILLA", "UCB - MCTS_4_INF_VANILLA",      
