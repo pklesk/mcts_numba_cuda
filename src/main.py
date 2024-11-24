@@ -12,10 +12,10 @@ __author__ = "Przemysław Klęsk"
 __email__ = "pklesk@zut.edu.pl"
 
 # main settings
-STATE_CLASS = Gomoku # C4 or Gomoku
+STATE_CLASS = C4 # C4 or Gomoku
 N_GAMES = 100
-AI_A_SHORTNAME = "mctsnc_30_inf_8_128_ocp_prodigal_16g"
-AI_B_SHORTNAME = "mctsnc_30_inf_4_256_acp_prodigal_16g" 
+AI_A_SHORTNAME = "mcts_5_inf_vanilla"
+AI_B_SHORTNAME = "mctsnc_1_inf_4_128_ocp_prodigal_" 
 REPRODUCE_EXPERIMENT = False
 
 # folders
