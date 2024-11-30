@@ -443,7 +443,7 @@ def averages_printout_gomoku_30s_acp_prodigal():
     
 if __name__ == "__main__":        
     
-    scores_array_plot_ocp_thrifty_vs_vanilla()
+    # scores_array_plot_ocp_thrifty_vs_vanilla()
     
     # scores_array_plot_ocp_prodigal_vs_vanilla()
     
