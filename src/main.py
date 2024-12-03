@@ -14,7 +14,7 @@ __email__ = "pklesk@zut.edu.pl"
 # main settings
 STATE_CLASS = C4 # C4 or Gomoku
 N_GAMES = 100
-AI_A_SHORTNAME = "mctsnc_5_inf_4_256_acp_thrifty"
+AI_A_SHORTNAME = "mctsnc_5_inf_4_128_ocp_thrifty"
 AI_B_SHORTNAME = "mctsnc_5_inf_4_256_acp_prodigal" 
 REPRODUCE_EXPERIMENT = False
 
