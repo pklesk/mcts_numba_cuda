@@ -351,8 +351,8 @@ def averages_printout_generator(experiments_hs_array, ai_instance_name):
 
 def averages_printout_c4_5s_vanilla():    
     averages_printout_generator(np.array([
-        "1779966119_01490_427_[mcts_5_inf_vanilla;mctsnc_5_inf_4_128_ocp_thrifty;C4_6x7;100]",
-        "1569951977_89204_427_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
+        "2959981740_01490_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_128_ocp_thrifty;C4_6x7;100]",
+        "2749967598_89204_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
         "0725584456_47630_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]",
         "0503747630_89908_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]"
         ]), 
@@ -360,7 +360,7 @@ def averages_printout_c4_5s_vanilla():
     
 def averages_printout_c4_5s_ocp_thrifty():    
     averages_printout_generator(np.array([
-        "1779966119_01490_427_[mcts_5_inf_vanilla;mctsnc_5_inf_4_128_ocp_thrifty;C4_6x7;100]",
+        "2959981740_01490_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_128_ocp_thrifty;C4_6x7;100]",
         "1311471072_93670_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
         "3070453690_29088_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]",
         "3360218400_94374_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]"
@@ -369,9 +369,9 @@ def averages_printout_c4_5s_ocp_thrifty():
 
 def averages_printout_c4_5s_ocp_prodigal():    
     averages_printout_generator(np.array([
-        "1569951977_89204_427_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
+        "2749967598_89204_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
         "1311471072_93670_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
-        "1714786244_73898_048_[mctsnc_5_inf_4_256_acp_thrifty;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
+        "0995822742_91740_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]",
         "2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]"
         ]), 
         "MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='ocp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)")
@@ -380,7 +380,7 @@ def averages_printout_c4_5s_acp_thrifty():
     averages_printout_generator(np.array([
         "0725584456_47630_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]",
         "3070453690_29088_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]",
-        "1714786244_73898_048_[mctsnc_5_inf_4_256_acp_thrifty;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
+        "0995822742_91740_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]",
         "3763533572_41898_048_[mctsnc_5_inf_4_256_acp_thrifty;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]"
         ]), 
         "MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='acp_thrifty', device_memory=2.0, ucb_c=2.0, seed: 0)")    
@@ -479,7 +479,7 @@ if __name__ == "__main__":
     
     # averages_printout_c4_5s_acp_thrifty()
     
-    # averages_printout_c4_5s_acp_prodigal()
+    averages_printout_c4_5s_acp_prodigal()
     
     # averages_printout_gomoku_30s_vanilla()
     
