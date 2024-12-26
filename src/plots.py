@@ -4,6 +4,7 @@ import numpy as np
 from utils import unzip_and_load_experiment
 
 FOLDER_EXPERIMENTS = "../experiments/"
+FOLDER_EXTRAS = "../extras/"
 
 def scores_array_plot(data, details, label_x, label_y, ticks_x, ticks_y, title):    
     figsize = (6, 6)
@@ -169,7 +170,7 @@ def best_action_plot(moves_rounds_black, qs_black, ucbs_black, moves_rounds_whit
     figsize = (10.0, 5.0)        
     fontsize_suptitle = 20
     fontsize_title = 21
-    fontsize_ticks = 8.5 # 11
+    fontsize_ticks = 8.5
     fontsize_labels = 18
     fontsize_legend = 11
     grid_color = (0.4, 0.4, 0.4) 
@@ -230,14 +231,15 @@ def best_action_plot_generator(experiments_hs, game_index,
             qs_white.append(mr["white_best_action_info"]["q"])
             ucbs_white.append( mr["white_best_action_info"]["ucb"])
     print("BEST-ACTION-PLOT GENERATOR DONE")
-    best_action_plot(moves_rounds_black, qs_black, ucbs_black, moves_rounds_white, qs_white, ucbs_white, label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2, ucbs_factor, ucbs_black_color, ucbs_white_color)    
+    best_action_plot(moves_rounds_black, qs_black, ucbs_black, moves_rounds_white, qs_white, ucbs_white, 
+                     label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2, ucbs_factor, ucbs_black_color, ucbs_white_color)    
 
 def depths_plot(moves_rounds_black, mean_depths_black, max_depths_black, moves_rounds_white, mean_depths_white, max_depths_white, 
                 label_mean_depths_black, label_max_depths_black, label_mean_depths_white, label_max_depths_white, label_x, label_y, title_1, title_2):
     figsize = (10, 5.0)        
     fontsize_suptitle = 20
     fontsize_title = 21
-    fontsize_ticks = 8.5 # 11
+    fontsize_ticks = 8.5
     fontsize_labels = 18
     fontsize_legend = 11
     grid_color = (0.4, 0.4, 0.4) 
@@ -265,7 +267,7 @@ def depths_plot(moves_rounds_black, mean_depths_black, max_depths_black, moves_r
     plt.xticks(ticks_x, fontsize=fontsize_ticks)
     plt.yticks(fontsize=fontsize_ticks)        
     plt.grid(color=grid_color, zorder=0, dashes=grid_dashes)  
-    plt.tight_layout(pad=0.4) 
+    plt.tight_layout(pad=0.4)
     plt.show()
 
 def depths_plot_generator(experiments_hs, game_index, 
@@ -419,14 +421,23 @@ if __name__ == "__main__":
     
     # scores_array_plot_acp_prodigal_vs_vanilla()
 
-    # best_action_plot_generator("0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 9,
-    #                            "BEST $\widehat{q}$ - MCTS_4_INF_VANILLA", "UCB - MCTS_4_INF_VANILLA",      
-    #                            "BEST $\widehat{q}$ - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "UCB - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",     
-    #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 9/100)")    
-    # depths_plot_generator("0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 9,  
-    #                       "MEAN DEPTHS - MCTS_4_INF_VANILLA", "MAX DEPTHS - MCTS_4_INF_VANILLA",
-    #                       "MEAN DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "MAX DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",                                  
-    #                       "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 9/100)")
+    best_action_plot_generator("0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 9,
+                               "BEST $\widehat{q}$ - MCTS_5_INF_VANILLA", "UCB - MCTS_5_INF_VANILLA",      
+                               "BEST $\widehat{q}$ - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "UCB - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",     
+                               "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 9/100)")    
+    depths_plot_generator("0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 9,  
+                          "MEAN DEPTHS - MCTS_5_INF_VANILLA", "MAX DEPTHS - MCTS_5_INF_VANILLA",
+                          "MEAN DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "MAX DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",                                  
+                          "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 9/100)")
+    
+    # best_action_plot_generator("2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]", 57,
+    #                            "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL", "10 x UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL",      
+    #                            "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL", "10 x UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL",     
+    #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 57/100)", 10.0)    
+    # depths_plot_generator("2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]", 57,  
+    #                       "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL", "UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL",      
+    #                       "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL", "UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL",                                  
+    #                       "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 57/100)")    
     
     # best_action_plot_generator("2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]", 11,
     #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_THRIFTY", "25 x UCB - MCTS-NC_30_INF_4_256_ACP_THRIFTY",
@@ -455,4 +466,4 @@ if __name__ == "__main__":
     
     # averages_printout_gomoku_30s_acp_thrifty()
     
-    averages_printout_gomoku_30s_acp_prodigal()        
+    # averages_printout_gomoku_30s_acp_prodigal()            
