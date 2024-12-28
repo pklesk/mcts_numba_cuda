@@ -19,6 +19,12 @@ class C4(State):
 
     @staticmethod
     def class_repr():
+        """        
+        Returns a string representation of ``C4`` class (meant to instantiate states of Connect 4 game) informing about the size of board.
+        
+        Returns:
+            str: string representation of ``C4`` class (meant to instantiate states of Connect 4 game) informing about the size of board. 
+        """
         return f"{C4.__name__}_{C4.M}x{C4.N}"
             
     def __str__(self):

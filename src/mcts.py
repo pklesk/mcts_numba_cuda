@@ -2,7 +2,8 @@
 Auxiliary module with a referential standard implementation of MCTS algorithm (for CPU, single-threaded).
 The module contains:
 
-- ``State``: class representing an arbitrary state of some game or sequential decision problem (meant to inherit from when searches using ``MCTS`` class are planned),  
+- ``State``: class representing an arbitrary state of some game or sequential decision problem (meant to inherit from when searches using ``MCTS`` class are planned);
+current examples of subclasses are: `C4`` in :doc:`c4` (representation of Connect 4 game), ``Gomoku`` in :doc:`gomoku` (representation of Gomoku game).  
 
 - ``MCTS``: class representing the referential MCTS algorithm.
 
