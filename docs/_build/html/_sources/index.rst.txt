@@ -9,7 +9,7 @@ MCTS-NC: A thorough GPU parallelization of Monte Carlo Tree Search implemented i
 Welcome to MCTS-NC's documentation!
 -----------------------------------
 
-The core machine functionalities of this project are embodied by the class `MCTSNC` present in :doc:`mctsnc`. 
+The core functionalities of this project are embodied by the class `MCTSNC` present in :doc:`mctsnc`. 
 Other modules play the role of auxiliary utilities or demonstrators. 
 
 For additional information on the project (and for more examples) please see also the README.md file in project's repository: `<https://github.com/pklesk/mcts_numba_cuda>`_.

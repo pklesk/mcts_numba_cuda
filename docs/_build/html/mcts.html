@@ -144,7 +144,10 @@
 <p>Auxiliary module with a referential standard implementation of MCTS algorithm (for CPU, single-threaded).
 The module contains:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">State</span></code>: class representing an arbitrary state of some game or sequential decision problem (meant to inherit from when searches using <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> class are planned),</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">State</span></code>: class representing an arbitrary state of some game or sequential decision problem (meant to inherit from when searches using <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> class are planned);</p></li>
+</ul>
+<p>current examples of subclasses are: <cite>C4`</cite> in <a class="reference internal" href="c4.html"><span class="doc">c4 module</span></a> (representation of Connect 4 game), <code class="docutils literal notranslate"><span class="pre">Gomoku</span></code> in <a class="reference internal" href="gomoku.html"><span class="doc">gomoku module</span></a> (representation of Gomoku game).</p>
+<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">MCTS</span></code>: class representing the referential MCTS algorithm.</p></li>
 </ul>
 <section id="link-to-project-repository">
