@@ -3,7 +3,7 @@ Auxiliary module with a referential standard implementation of MCTS algorithm (f
 The module contains:
 
 - ``State``: class representing an arbitrary state of some game or sequential decision problem (meant to inherit from when searches using ``MCTS`` class are planned);
-current examples of subclasses are: `C4`` in :doc:`c4` (representation of Connect 4 game), ``Gomoku`` in :doc:`gomoku` (representation of Gomoku game).  
+    current examples of subclasses are: `C4`` in :doc:`c4` (representation of Connect 4 game), ``Gomoku`` in :doc:`gomoku` (representation of Gomoku game).  
 
 - ``MCTS``: class representing the referential MCTS algorithm.
 
@@ -21,6 +21,10 @@ For public methods full docstrings are provided (with arguments and returns desc
 import numpy as np
 import time
 from utils import dict_to_str
+
+__version__ = "1.0.0"
+__author__ = "Przemysław Klęsk"
+__email__ = "pklesk@zut.edu.pl" 
 
 class State:
     """
@@ -247,7 +251,7 @@ class State:
         """
         [To be optionally implemented by programmer in subclasses.]
         
-        Returns an action's index (numbering from 0) based on its name. E.g., name ``"B4"`` for 15 X 15 Gomoku maps to index ``18``.
+        Returns an action's index (numbering from 0) based on its name. E.g., name ``"B4"`` for 15 x 15 Gomoku maps to index ``18``.
         
         Args:
             action_name (str):
@@ -263,7 +267,7 @@ class State:
         """
         [To be optionally implemented by programmer in subclasses.]
         
-        Returns an action's name based on its index (numbering from 0). E.g., index ``18`` for 15 X 15 Gomoku maps to name ``"B4"``.
+        Returns an action's name based on its index (numbering from 0). E.g., index ``18`` for 15 x 15 Gomoku maps to name ``"B4"``.
         
         Args:
             action_index (int):

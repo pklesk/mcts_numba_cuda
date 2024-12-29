@@ -116,6 +116,18 @@
 <dt class="sig sig-object py" id="c4.C4">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">c4.</span></span><span class="sig-name descname"><span class="pre">C4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="mcts.html#mcts.State" title="mcts.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a></p>
+<p>Class for states of Connect 4 game.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><dl class="simple">
+<dt>M (int): </dt><dd><p>number of rows in the board, defaults to <code class="docutils literal notranslate"><span class="pre">6</span></code>.</p>
+</dd>
+<dt>N (int): </dt><dd><p>number of columns in the board, defaults to <code class="docutils literal notranslate"><span class="pre">7</span></code>.</p>
+</dd>
+<dt>SYMBOLS (List):</dt><dd><p>list of strings representing disc symbols (black, white) or <code class="docutils literal notranslate"><span class="pre">&quot;.&quot;</span></code> for empty cell.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="c4.C4.M">
 <span class="sig-name descname"><span class="pre">M</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#c4.C4.M" title="Link to this definition"></a></dt>
@@ -134,7 +146,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.__init__" title="Link to this definition"></a></dt>
-<dd><p>Constructor (ordinary or copying) of <code class="docutils literal notranslate"><span class="pre">C4</span></code> instances.</p>
+<dd><p>Constructor (ordinary or copying) of <code class="docutils literal notranslate"><span class="pre">C4</span></code> instances - states of Connect 4 game.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><dl class="simple">
 <dt>parent (State): </dt><dd><p>reference to parent state object.</p>
@@ -186,9 +198,9 @@ Otherwise, does no changes and returns <code class="docutils literal notranslate
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.compute_outcome_job">
 <span class="sig-name descname"><span class="pre">compute_outcome_job</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.compute_outcome_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.compute_outcome_job" title="Link to this definition"></a></dt>
-<dd><p>Computes and returns the game outcome for this state in compliance with rules of Connect 4: 
-{-1, 1} denoting a win for the minimizing or maximizing player, respectively,
-if he connected at least 4 his discs; 0 as a tie when the board is filled and no line of 4 exists;   
+<dd><p>Computes and returns the game outcome for this state in compliance with rules of Connect 4 game: 
+{-1, 1} denoting a win for the minimizing or maximizing player, respectively, if he connected at least 4 his discs; 
+0 denoting a tie, when the board is filled and no line of 4 exists;   
 <code class="docutils literal notranslate"><span class="pre">None</span></code> when the game is ongoing.</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
@@ -202,7 +214,8 @@ if he connected at least 4 his discs; 0 as a tie when the board is filled and no
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.compute_outcome_job_numba_jit">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_outcome_job_numba_jit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.compute_outcome_job_numba_jit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.compute_outcome_job_numba_jit" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Called by <code class="docutils literal notranslate"><span class="pre">compute_outcome_job</span></code> for faster outcomes.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.take_random_action_playout">

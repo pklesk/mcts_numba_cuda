@@ -3,17 +3,29 @@ from mcts import State
 from numba import jit
 from numba import int8
 
+__version__ = "1.0.0"
+__author__ = "Przemysław Klęsk"
+__email__ = "pklesk@zut.edu.pl" 
+
 class C4(State):
-    """Number of rows."""
+    """
+    Class for states of Connect 4 game.
+    
+    Attributes:
+        M (int): 
+            number of rows in the board, defaults to ``6``.            
+        N (int): 
+            number of columns in the board, defaults to ``7``.
+        SYMBOLS (List):
+            list of strings representing disc symbols (black, white) or ``"."`` for empty cell. 
+    """        
     M = 6 
-    """Number of columns."""
     N = 7 
-    """String symbols for discs or empty cells."""
-    SYMBOLS = ['\u25CB', '.', '\u25CF'] # or: ["O", ".", "X"]    
+    SYMBOLS = ["\u25CB", ".", "\u25CF"] # or: ["O", ".", "X"]    
     
     def __init__(self, parent=None):
         """
-        Constructor (ordinary or copying) of ``C4`` instances.
+        Constructor (ordinary or copying) of ``C4`` instances - states of Connect 4 game.
          
         Args:
             parent (State): 
@@ -57,7 +69,7 @@ class C4(State):
         return s      
     
     def take_action_job(self, action_index):
-        """        
+        """
         Drops a disc into column indicated by the action_index and returns ``True`` if the action is legal (column not full yet).
         Otherwise, does no changes and returns ``False``.
 
@@ -81,8 +93,8 @@ class C4(State):
     def compute_outcome_job(self):
         """        
         Computes and returns the game outcome for this state in compliance with rules of Connect 4 game: 
-        {-1, 1} denoting a win for the minimizing or maximizing player, respectively,
-        if he connected at least 4 his discs; 0 denoting a tie, when the board is filled and no line of 4 exists;   
+        {-1, 1} denoting a win for the minimizing or maximizing player, respectively, if he connected at least 4 his discs; 
+        0 denoting a tie, when the board is filled and no line of 4 exists;   
         ``None`` when the game is ongoing.
         
         Returns:
@@ -275,8 +287,7 @@ class C4(State):
         Returns:
             shape (tuple(int, int)):
                 shape of boards related to states of this class.
-        """
-        
+        """        
         return (C4.M, C4.N)
 
     @staticmethod
