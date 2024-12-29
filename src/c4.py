@@ -4,8 +4,11 @@ from numba import jit
 from numba import int8
 
 class C4(State):
+    """Number of rows."""
     M = 6 
+    """Number of columns."""
     N = 7 
+    """String symbols for discs or empty cells."""
     SYMBOLS = ['\u25CB', '.', '\u25CF'] # or: ["O", ".", "X"]    
     
     def __init__(self, parent=None):
@@ -77,9 +80,9 @@ class C4(State):
     
     def compute_outcome_job(self):
         """        
-        Computes and returns the game outcome for this state in compliance with rules of Connect 4: 
+        Computes and returns the game outcome for this state in compliance with rules of Connect 4 game: 
         {-1, 1} denoting a win for the minimizing or maximizing player, respectively,
-        if he connected at least 4 his discs; 0 as a tie when the board is filled and no line of 4 exists;   
+        if he connected at least 4 his discs; 0 denoting a tie, when the board is filled and no line of 4 exists;   
         ``None`` when the game is ongoing.
         
         Returns:
@@ -149,6 +152,7 @@ class C4(State):
     @staticmethod
     @jit(int8(int8, int8, int8, int8, int8, int8[:, :]), nopython=True, cache=True)  
     def compute_outcome_job_numba_jit(M, N, turn, last_i, last_j, board):
+        """Called by ``compute_outcome_job`` for faster outcomes."""
         last_token = -turn        
         i, j = last_i, last_j
         # N-S
