@@ -146,7 +146,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        [To be implemented in subclasses.]</span>
 <span class="sd">        </span>
-<span class="sd">        Should return a string representation of this state, e.g. game board with its current contents.</span>
+<span class="sd">        Should return a string representation of this state, e.g., game board with its current contents.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            str: string representation of this state.</span>
@@ -161,7 +161,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        [To be implemented in subclasses.]</span>
 <span class="sd">        </span>
-<span class="sd">        Should return a string representation of this class of states (e.g. game name, its variation, board size if configurable, etc.).</span>
+<span class="sd">        Should return a string representation of this class of states (e.g., game name, its variation, board size if configurable, etc.).</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            str: string representation of this class of states. </span>
@@ -257,7 +257,7 @@
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            action_legal (bool):</span>
-<span class="sd">                boolean flag indicated if the specified action was legal and performed.</span>
+<span class="sd">                boolean flag indicating if the specified action was legal and performed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>            </div>
 
@@ -311,8 +311,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]</span>
 <span class="sd">        </span>
-<span class="sd">        Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g. chessboard, backgammon board, etc.),</span>
-<span class="sd">        even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).</span>
+<span class="sd">        Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g., chessboard, backgammon board, etc.),</span>
+<span class="sd">        even if no board naturally exists in the related game (e.g., bridge, Nim, etc.).</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            board (ndarray[np.int8, ndim=2]):</span>
@@ -328,7 +328,7 @@
 <span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]</span>
 <span class="sd">        </span>
 <span class="sd">        Should return additional information associated with this state (as a one-dimensional array of bytes)</span>
-<span class="sd">        not implied by the contents of the board itself (e.g. possibilities of castling or en-passant </span>
+<span class="sd">        not implied by the contents of the board itself (e.g., possibilities of castling or en-passant </span>
 <span class="sd">        captures in chess, the contract in double dummy bridge, etc.), or any technical information useful to generate </span>
 <span class="sd">        legal actions faster. If no additional information is needed should return ``None``.</span>
 <span class="sd">        </span>
@@ -372,7 +372,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        [To be optionally implemented by programmer in subclasses.]</span>
 <span class="sd">        </span>
-<span class="sd">        Returns an action&#39;s index (numbering from 0) based on its name. E.g. name ``&quot;B4&quot;`` for 15 X 15 Gomoku maps to index ``18``.</span>
+<span class="sd">        Returns an action&#39;s index (numbering from 0) based on its name. E.g., name ``&quot;B4&quot;`` for 15 X 15 Gomoku maps to index ``18``.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            action_name (str):</span>
@@ -391,7 +391,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        [To be optionally implemented by programmer in subclasses.]</span>
 <span class="sd">        </span>
-<span class="sd">        Returns an action&#39;s name based on its index (numbering from 0). E.g. index ``18`` for 15 X 15 Gomoku maps to name ``B4``.</span>
+<span class="sd">        Returns an action&#39;s name based on its index (numbering from 0). E.g., index ``18`` for 15 X 15 Gomoku maps to name ``&quot;B4&quot;``.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            action_index (int):</span>
@@ -399,7 +399,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            action_name (str):</span>
 <span class="sd">                name corresponding to the given index.          </span>
-<span class="sd">        &quot;&quot;&quot;</span>        
+<span class="sd">        &quot;&quot;&quot;</span>       
         <span class="k">pass</span></div>
 
     
@@ -410,7 +410,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]</span>
 <span class="sd">        </span>
-<span class="sd">        Returns a tuple with board shape for the game (or sequential decision problem) represented by this class.</span>
+<span class="sd">        Returns a tuple with shape of boards for the game (or sequential decision problem) represented by this class.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            shape (tuple(int, int)):</span>

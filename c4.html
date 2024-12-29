@@ -134,7 +134,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.__init__" title="Link to this definition"></a></dt>
-<dd><p>Constructor of <code class="docutils literal notranslate"><span class="pre">State</span></code> instances. Should be called (in the first line) in subclasses’ constructors as: <code class="docutils literal notranslate"><span class="pre">super().__init__(parent)</span></code>.</p>
+<dd><p>Constructor (ordinary or copying) of <code class="docutils literal notranslate"><span class="pre">C4</span></code> instances.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><dl class="simple">
 <dt>parent (State): </dt><dd><p>reference to parent state object.</p>
@@ -147,9 +147,9 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.class_repr">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.class_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.class_repr" title="Link to this definition"></a></dt>
-<dd><p>Returns a string representation of <code class="docutils literal notranslate"><span class="pre">C4</span></code> class (meant to instantiate states of Connect 4 game) informing about the size of board.</p>
+<dd><p>Returns a string representation of class <code class="docutils literal notranslate"><span class="pre">C4</span></code> (meant to instantiate states of Connect 4 game), informing about the size of board.</p>
 <dl class="simple">
-<dt>Returns:</dt><dd><p>str: string representation of <code class="docutils literal notranslate"><span class="pre">C4</span></code> class (meant to instantiate states of Connect 4 game) informing about the size of board.</p>
+<dt>Returns:</dt><dd><p>str: string representation of class <code class="docutils literal notranslate"><span class="pre">C4</span></code> (meant to instantiate states of Connect 4 game), informing about the size of board.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -157,10 +157,9 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.__str__">
 <span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.__str__" title="Link to this definition"></a></dt>
-<dd><p>[To be implemented in subclasses.]</p>
-<p>Should return a string representation of this state, e.g. game board with its current contents.</p>
+<dd><p>Returns a string representation of this <code class="docutils literal notranslate"><span class="pre">C4</span></code> state - the contents of its game board.</p>
 <dl class="simple">
-<dt>Returns:</dt><dd><p>str: string representation of this state.</p>
+<dt>Returns:</dt><dd><p>str: string representation of this <code class="docutils literal notranslate"><span class="pre">C4</span></code> state - the contents of its game board.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -168,17 +167,16 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.take_action_job">
 <span class="sig-name descname"><span class="pre">take_action_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.take_action_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.take_action_job" title="Link to this definition"></a></dt>
-<dd><p>[To be implemented in subclasses.]</p>
-<p>Should performs changes on this state implied by the given action, and return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the action is legal.
-Otherwise, should do no changes and return <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+<dd><p>Drops a disc into column indicated by the action_index and returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the action is legal (column not full yet).
+Otherwise, does no changes and returns <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><dl class="simple">
-<dt>action_index (int): </dt><dd><p>index of action to be taken.</p>
+<dt>action_index (int): </dt><dd><p>index of column where to drop a disc.</p>
 </dd>
 </dl>
 </dd>
 <dt>Returns:</dt><dd><dl class="simple">
-<dt>action_legal (bool):</dt><dd><p>boolean flag indicated if the specified action was legal and performed.</p>
+<dt>action_legal (bool):</dt><dd><p>boolean flag indicating if the specified action was legal and performed.</p>
 </dd>
 </dl>
 </dd>
@@ -188,11 +186,10 @@ Otherwise, should do no changes and return <code class="docutils literal notrans
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.compute_outcome_job">
 <span class="sig-name descname"><span class="pre">compute_outcome_job</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.compute_outcome_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.compute_outcome_job" title="Link to this definition"></a></dt>
-<dd><p>[To be implemented in subclasses.]</p>
-<p>Should compute and return the game outcome for this state in compliance with rules of the game it represents.
-Possible results for terminal states are {-1, 0, 1}, indicating respectively: 
-a win for the minimizing player, a draw, a win for the maximizing player.
-For an ongoing game the result should be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dd><p>Computes and returns the game outcome for this state in compliance with rules of Connect 4: 
+{-1, 1} denoting a win for the minimizing or maximizing player, respectively,
+if he connected at least 4 his discs; 0 as a tie when the board is filled and no line of 4 exists;   
+<code class="docutils literal notranslate"><span class="pre">None</span></code> when the game is ongoing.</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
 <dt>outcome ({-1, 0, 1} or <code class="docutils literal notranslate"><span class="pre">None</span></code>)</dt><dd><p>game outcome for this state.</p>
@@ -210,8 +207,7 @@ For an ongoing game the result should be <code class="docutils literal notransla
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.take_random_action_playout">
 <span class="sig-name descname"><span class="pre">take_random_action_playout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.take_random_action_playout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.take_random_action_playout" title="Link to this definition"></a></dt>
-<dd><p>[To be implemented in subclasses.]</p>
-<p>Should pick a uniformly random action from actions available in this state and return the result of calling <code class="docutils literal notranslate"><span class="pre">take_action</span></code> with the action index as argument.</p>
+<dd><p>Picks a uniformly random action from actions available in this state and returns the result of calling <code class="docutils literal notranslate"><span class="pre">take_action</span></code> with the action index as argument.</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
 <dt>child (State): </dt><dd><p>result of <code class="docutils literal notranslate"><span class="pre">take_action</span></code> call for the random action.</p>
@@ -224,12 +220,10 @@ For an ongoing game the result should be <code class="docutils literal notransla
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.get_board">
 <span class="sig-name descname"><span class="pre">get_board</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.get_board"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.get_board" title="Link to this definition"></a></dt>
-<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
-<p>Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g. chessboard, backgammon board, etc.),
-even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).</p>
+<dd><p>Returns the board of this state (a two-dimensional array of bytes).</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
-<dt>board (ndarray[np.int8, ndim=2]):</dt><dd><p>two-dimensional array with representation of this state.</p>
+<dt>board (ndarray[np.int8, ndim=2]):</dt><dd><p>board of this state (a two-dimensional array of bytes).</p>
 </dd>
 </dl>
 </dd>
@@ -239,14 +233,11 @@ even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).<
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.get_extra_info">
 <span class="sig-name descname"><span class="pre">get_extra_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.get_extra_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.get_extra_info" title="Link to this definition"></a></dt>
-<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
-<p>Should return additional information associated with this state (as a one-dimensional array of bytes)
-not implied by the contents of the board itself (e.g. possibilities of castling or en-passant 
-captures in chess, the contract in double dummy bridge, etc.), or any technical information useful to generate 
-legal actions faster. If no additional information is needed should return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dd><p>Returns additional information associated with this state, as one-dimensional array of bytes,
+informing about fills of columns (how many discs have been dropped in each column).</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
-<dt>extra_info (ndarray[np.int8, ndim=1] or <code class="docutils literal notranslate"><span class="pre">None</span></code>):</dt><dd><p>one-dimensional array with additional information associated with this state.</p>
+<dt>extra_info (ndarray[np.int8, ndim=1] or <code class="docutils literal notranslate"><span class="pre">None</span></code>):</dt><dd><p>one-dimensional array with additional information associated with this state - fills of columns.</p>
 </dd>
 </dl>
 </dd>
@@ -256,8 +247,7 @@ legal actions faster. If no additional information is needed should return <code
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.action_name_to_index">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_name_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.action_name_to_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.action_name_to_index" title="Link to this definition"></a></dt>
-<dd><p>[To be optionally implemented by programmer in subclasses.]</p>
-<p>Returns an action’s index (numbering from 0) based on its name. E.g. name <code class="docutils literal notranslate"><span class="pre">&quot;B4&quot;</span></code> for 15 X 15 Gomoku maps to index <code class="docutils literal notranslate"><span class="pre">18</span></code>.</p>
+<dd><p>Returns an action’s index (numbering from 0) based on its name. E.g., name <code class="docutils literal notranslate"><span class="pre">&quot;0&quot;</span></code>, denoting a drop into the leftmost column, maps to index <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><dl class="simple">
 <dt>action_name (str):</dt><dd><p>name of an action.</p>
@@ -275,8 +265,7 @@ legal actions faster. If no additional information is needed should return <code
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.action_index_to_name">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_index_to_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.action_index_to_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.action_index_to_name" title="Link to this definition"></a></dt>
-<dd><p>[To be optionally implemented by programmer in subclasses.]</p>
-<p>Returns an action’s name based on its index (numbering from 0). E.g. index <code class="docutils literal notranslate"><span class="pre">18</span></code> for 15 X 15 Gomoku maps to name <code class="docutils literal notranslate"><span class="pre">B4</span></code>.</p>
+<dd><p>Returns an action’s name based on its index (numbering from 0). E.g., index <code class="docutils literal notranslate"><span class="pre">0</span></code> maps to name <code class="docutils literal notranslate"><span class="pre">&quot;0&quot;</span></code>, denoting a drop into the leftmost column.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><dl class="simple">
 <dt>action_index (int):</dt><dd><p>index of an action.</p>
@@ -294,8 +283,7 @@ legal actions faster. If no additional information is needed should return <code
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.get_board_shape">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_board_shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.get_board_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.get_board_shape" title="Link to this definition"></a></dt>
-<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
-<p>Returns a tuple with board shape for the game (or sequential decision problem) represented by this class.</p>
+<dd><p>Returns a tuple with shape of boards for Connect 4 game.</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
 <dt>shape (tuple(int, int)):</dt><dd><p>shape of boards related to states of this class.</p>
@@ -313,11 +301,11 @@ legal actions faster. If no additional information is needed should return <code
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.get_extra_info_memory">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_extra_info_memory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.get_extra_info_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.get_extra_info_memory" title="Link to this definition"></a></dt>
-<dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
-<p>Returns amount of memory (in bytes) needed to memorize additional information associated with states of the game (or sequential decision problem) represented by this class.</p>
+<dd><p>Returns amount of memory (in bytes) needed to memorize additional information associated with Connect 4 states, i.e., the memory for fills of columns.
+That number is equal to the number of columns.</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
-<dt>extra_info_memory (int):</dt><dd><p>number of bytes required to memorize additional information relate to states of this class.</p>
+<dt>extra_info_memory (int):</dt><dd><p>number of bytes required to memorize fills of columns.</p>
 </dd>
 </dl>
 </dd>
@@ -327,11 +315,10 @@ legal actions faster. If no additional information is needed should return <code
 <dl class="py method">
 <dt class="sig sig-object py" id="c4.C4.get_max_actions">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_max_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/c4.html#C4.get_max_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#c4.C4.get_max_actions" title="Link to this definition"></a></dt>
-<dd><p>[To be implemented in subclasses.]</p>
-<p>Returns the maximum number of actions (the largest branching factor) possible in the game represented by this class.</p>
+<dd><p>Returns the maximum number of actions (the largest branching factor) equal to the number of columns.</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
-<dt>max_actions (int):</dt><dd><p>maximum number of actions (the largest branching factor) possible in the game represented by this class.</p>
+<dt>max_actions (int):</dt><dd><p>maximum number of actions (the largest branching factor) equal to the number of columns.</p>
 </dd>
 </dl>
 </dd>
