@@ -1,7 +1,18 @@
+"""
+Auxiliary module with utility functions for plots related MCTS-NC project and its experiments.
+
+Link to project repository
+--------------------------
+`https://github.com/pklesk/mcts_numba_cuda <https://github.com/pklesk/mcts_numba_cuda>`_ 
+"""
+
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FixedLocator
 import numpy as np
 from utils import unzip_and_load_experiment
+
+__author__ = "Przemysław Klęsk"
+__email__ = "pklesk@zut.edu.pl"
 
 FOLDER_EXPERIMENTS = "../experiments/"
 FOLDER_EXTRAS = "../extras/"
@@ -411,7 +422,8 @@ def averages_printout_gomoku_30s_acp_prodigal():
         ]), 
         "MCTSNC(search_time_limit=30.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='acp_prodigal', device_memory=16.0, ucb_c=2.0, seed: 0)")
     
-if __name__ == "__main__":        
+if __name__ == "__main__":
+    print("PLOTS FOR MCTS-NC EXPERIMENTS...")
     
     # scores_array_plot_ocp_thrifty_vs_vanilla()
     
@@ -466,4 +478,6 @@ if __name__ == "__main__":
     
     # averages_printout_gomoku_30s_acp_thrifty()
     
-    # averages_printout_gomoku_30s_acp_prodigal()            
+    # averages_printout_gomoku_30s_acp_prodigal()
+    
+    print("PLOTS FOR MCTS-NC EXPERIMENTS DONE.")

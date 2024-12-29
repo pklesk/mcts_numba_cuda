@@ -6,7 +6,7 @@ The provided implementation takes advantage of `Numba <https://numba.pydata.org>
 By `thoroughly parallel` we understand an algorithmic design that applies to both: (1) the structural elements of trees - leaf-/root-/tree-level parallelization 
 (all those three are combined), and (2) the stages of MCTS - each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. 
 We apply suitable `reduction` patterns to carry out summations or max / argmax operations. Cooperation of threads helps to transfer information between global and shared memory. 
-The implementation uses: no atomic operations, no mutexes (lock-free), and very few host-device memory transfers. 
+The implementation uses: no atomic operations, no mutexes (lock-free), and very few device-host memory transfers. 
 
 Example usage 1 (Connect 4)
 ---------------------------
@@ -131,6 +131,7 @@ Dependencies
 - ``numpy``, ``math``: required for mathematical computations.
 
 - ``numba``: required for just-in-time compilation of CUDA kernels (decorated by ``@cuda.jit``).
+
 - For usage of ``MCTSNC`` class, NVIDIA CUDA drivers must be present in the operating system. 
 
 Link to project repository

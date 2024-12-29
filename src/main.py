@@ -1,3 +1,27 @@
+"""
+Main script to carry out experiments with MCTS-NC project, i.e., matches of multiple games played by AIs (or human vs AI), using Monte Carlo Tree Search algorithm.
+AIs can be instances of class ``MCTSNC`` from :doc:`mctsnc` representing the CUDA-based MCTS implementation, 
+or instances of class ``MCTS`` from :doc:`mcts` representing the standard CPU-based (single-threaded) implementation serving as reference;
+or ``None``s for human players.  
+
+The following variables allow to define the settings of an experiment:
+
+.. code-block:: python
+    
+    # main settings
+    STATE_CLASS = C4 # C4 or Gomoku
+    N_GAMES = 100
+    AI_A_SHORTNAME = None # human
+    AI_B_SHORTNAME = "mctsnc_5_inf_4_256_acp_prodigal" 
+    REPRODUCE_EXPERIMENT = False
+ 
+String names of predefined AI instances can be found in dictionary name ``AIS``.
+
+Link to project repository
+--------------------------
+`https://github.com/pklesk/mcts_numba_cuda <https://github.com/pklesk/mcts_numba_cuda>`_
+"""
+
 import numpy as np
 from mcts import MCTS
 from mctsnc import MCTSNC
@@ -203,4 +227,4 @@ if __name__ == "__main__":
     if not (REPRODUCE_EXPERIMENT or _HUMAN_PARTICIPANT):
         sys.stdout = sys.__stdout__
         logger.logfile.close()
-        save_and_zip_experiment(experiment_hs, experiment_info, FOLDER_EXPERIMENTS)    
+        save_and_zip_experiment(experiment_hs, experiment_info, FOLDER_EXPERIMENTS)

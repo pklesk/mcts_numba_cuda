@@ -1,4 +1,28 @@
+"""
+Set of CUDA device functions defining the mechanics of a certain game (Connect 4, Gomoku, etc.) required by the class ``MCTSNC`` from :doc:`mctsnc`.
+
+The following arguments are common for all the functions:
+    m (int): 
+        number of rows in board.
+    n (int): 
+        number of columns in board.
+    board (array[int8, ndim=2] shared or local):
+        two-dimensional array of bytes representing a given state.
+    extra_info (array[int8, ndim=1] shared or local):
+        one-dimensional array with additional information associated with this state - fills of columns.s
+    turn {-1, 1}:
+        indicator of the player, minimizing or maximizing, to act now.
+
+Link to project repository
+--------------------------
+`https://github.com/pklesk/mcts_numba_cuda <https://github.com/pklesk/mcts_numba_cuda>`_ 
+"""
+
 from numba import cuda
+
+__version__ = "1.0.0"
+__author__ = "Przemysław Klęsk"
+__email__ = "pklesk@zut.edu.pl" 
 
 @cuda.jit(device=True)
 def is_action_legal(m, n, board, extra_info, turn, action, legal_actions):

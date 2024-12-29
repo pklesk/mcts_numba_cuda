@@ -1,11 +1,53 @@
 import numpy as np
 from mctsnc import MCTSNC
 
+__version__ = "1.0.0"
+__author__ = "Przemysław Klęsk"
+__email__ = "pklesk@zut.edu.pl" 
+
 class GameRunner:
+    """
+    Class responsible for carrying out a single game (game class specified via parameter) within a match between two AIs or human vs AI. 
+    
+    Parameters:
+        game_class (class): 
+            class object allowing to instantiate the initial state of some two-person game (e.g., Connect4, Gomoku, chess, etc.) and to carry out a game on it.            
+        black_ai (object): 
+            reference to AI instance responsible for the black player (instance of class ``MCTS`` or ``MCTSNC``) or ``None`` for human.
+        white_ai (object): 
+            reference to AI instance responsible for the white player (instance of class ``MCTS`` or ``MCTSNC``) or ``None`` for human.            
+        game_index (int):
+            index of game with a match (for informative purposes).
+        n_games (int):
+            total of games in a match (for informative purposes).
+        experiment_info_old (dict):
+            dictionary allowing to reproduce a former experiment (allows to force the limit of steps rather than time on an AI instance) or ``None`` for a new experiment, , defaults to ``None``.
+            
+    Attributes:
+        OUTCOME_MESSAGES (list):
+            list of strings with messages describing outcomes of games.
+    """
     
     OUTCOME_MESSAGES = ["WHITE WINS", "DRAW", "BLACK WINS"]
     
     def __init__(self, game_class, black_ai, white_ai, game_index, n_games, experiment_info_old=None):
+        """
+        Constructor ``GameRunner`` instances.
+         
+        Args:
+            game_class (class): 
+                class object allowing to instantiate the initial state of some two-person game (e.g., Connect4, Gomoku, chess, etc.) and to carry out a game on it.            
+            black_ai (object): 
+                reference to AI instance responsible for the black player (instance of class ``MCTS`` or ``MCTSNC``) or ``None`` for human.
+            white_ai (object): 
+                reference to AI instance responsible for the white player (instance of class ``MCTS`` or ``MCTSNC``) or ``None`` for human.            
+            game_index (int):
+                index of game with a match (for informative purposes).
+            n_games (int):
+                total of games in a match (for informative purposes).
+            experiment_info_old (dict):
+                dictionary allowing to reproduce a former experiment (allows to force the limit of steps rather than time on an AI instance) or ``None`` for a new experiment, , defaults to ``None``.
+        """        
         self.game_class = game_class
         self.black_ai = black_ai
         self.white_ai = white_ai
@@ -14,6 +56,7 @@ class GameRunner:
         self.experiment_info_old = experiment_info_old
         
     def run(self):
+        """Carries out a game."""
         game = self.game_class()   
         print(game)
         outcome = 0
