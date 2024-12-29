@@ -53,7 +53,10 @@
 <li class="toctree-l2"><a class="reference internal" href="c4.html">c4 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="game_runner.html">game_runner module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gomoku.html">gomoku module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">main module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">main module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#link-to-project-repository">Link to project repository</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="mcts.html">mcts module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mctsnc.html">mctsnc module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html">mctsnc_game_mechanics module</a></li>
@@ -89,6 +92,24 @@
              
   <section id="module-main">
 <span id="main-module"></span><h1>main module<a class="headerlink" href="#module-main" title="Link to this heading"></a></h1>
+<p>Main script to carry out experiments with MCTS-NC project, i.e., matches of multiple games played by AIs (or human vs AI), using Monte Carlo Tree Search algorithm.
+AIs can be instances of class <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> from <a class="reference internal" href="mctsnc.html"><span class="doc">mctsnc module</span></a> representing the CUDA-based MCTS implementation, 
+or instances of class <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> from <a class="reference internal" href="mcts.html"><span class="doc">mcts module</span></a> representing the standard CPU-based (single-threaded) implementation serving as reference;
+or <a href="#id1"><span class="problematic" id="id2">``</span></a>None``s for human players.</p>
+<p>The following variables allow to define the settings of an experiment:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># main settings</span>
+<span class="n">STATE_CLASS</span> <span class="o">=</span> <span class="n">C4</span> <span class="c1"># C4 or Gomoku</span>
+<span class="n">N_GAMES</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">AI_A_SHORTNAME</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># human</span>
+<span class="n">AI_B_SHORTNAME</span> <span class="o">=</span> <span class="s2">&quot;mctsnc_5_inf_4_256_acp_prodigal&quot;</span> 
+<span class="n">REPRODUCE_EXPERIMENT</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>String names of predefined AI instances can be found in dictionary name <code class="docutils literal notranslate"><span class="pre">AIS</span></code>.</p>
+<section id="link-to-project-repository">
+<h2>Link to project repository<a class="headerlink" href="#link-to-project-repository" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://github.com/pklesk/mcts_numba_cuda">https://github.com/pklesk/mcts_numba_cuda</a></p>
+</section>
 </section>
 
 

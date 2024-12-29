@@ -77,15 +77,57 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mctsnc</span> <span class="kn">import</span> <span class="n">MCTSNC</span>
 
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;1.0.0&quot;</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Przemysław Klęsk&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;pklesk@zut.edu.pl&quot;</span> 
+
 <div class="viewcode-block" id="GameRunner">
 <a class="viewcode-back" href="../game_runner.html#game_runner.GameRunner">[docs]</a>
 <span class="k">class</span> <span class="nc">GameRunner</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class responsible for carrying out a single game (game class specified via parameter) within a match between two AIs or human vs AI. </span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        game_class (class): </span>
+<span class="sd">            class object allowing to instantiate the initial state of some two-person game (e.g., Connect4, Gomoku, chess, etc.) and to carry out a game on it.            </span>
+<span class="sd">        black_ai (object): </span>
+<span class="sd">            reference to AI instance responsible for the black player (instance of class ``MCTS`` or ``MCTSNC``) or ``None`` for human.</span>
+<span class="sd">        white_ai (object): </span>
+<span class="sd">            reference to AI instance responsible for the white player (instance of class ``MCTS`` or ``MCTSNC``) or ``None`` for human.            </span>
+<span class="sd">        game_index (int):</span>
+<span class="sd">            index of game with a match (for informative purposes).</span>
+<span class="sd">        n_games (int):</span>
+<span class="sd">            total of games in a match (for informative purposes).</span>
+<span class="sd">        experiment_info_old (dict):</span>
+<span class="sd">            dictionary allowing to reproduce a former experiment (allows to force the limit of steps rather than time on an AI instance) or ``None`` for a new experiment, , defaults to ``None``.</span>
+<span class="sd">            </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        OUTCOME_MESSAGES (list):</span>
+<span class="sd">            list of strings with messages describing outcomes of games.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">OUTCOME_MESSAGES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;WHITE WINS&quot;</span><span class="p">,</span> <span class="s2">&quot;DRAW&quot;</span><span class="p">,</span> <span class="s2">&quot;BLACK WINS&quot;</span><span class="p">]</span>
     
 <div class="viewcode-block" id="GameRunner.__init__">
 <a class="viewcode-back" href="../game_runner.html#game_runner.GameRunner.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_class</span><span class="p">,</span> <span class="n">black_ai</span><span class="p">,</span> <span class="n">white_ai</span><span class="p">,</span> <span class="n">game_index</span><span class="p">,</span> <span class="n">n_games</span><span class="p">,</span> <span class="n">experiment_info_old</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor ``GameRunner`` instances.</span>
+<span class="sd">         </span>
+<span class="sd">        Args:</span>
+<span class="sd">            game_class (class): </span>
+<span class="sd">                class object allowing to instantiate the initial state of some two-person game (e.g., Connect4, Gomoku, chess, etc.) and to carry out a game on it.            </span>
+<span class="sd">            black_ai (object): </span>
+<span class="sd">                reference to AI instance responsible for the black player (instance of class ``MCTS`` or ``MCTSNC``) or ``None`` for human.</span>
+<span class="sd">            white_ai (object): </span>
+<span class="sd">                reference to AI instance responsible for the white player (instance of class ``MCTS`` or ``MCTSNC``) or ``None`` for human.            </span>
+<span class="sd">            game_index (int):</span>
+<span class="sd">                index of game with a match (for informative purposes).</span>
+<span class="sd">            n_games (int):</span>
+<span class="sd">                total of games in a match (for informative purposes).</span>
+<span class="sd">            experiment_info_old (dict):</span>
+<span class="sd">                dictionary allowing to reproduce a former experiment (allows to force the limit of steps rather than time on an AI instance) or ``None`` for a new experiment, , defaults to ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="bp">self</span><span class="o">.</span><span class="n">game_class</span> <span class="o">=</span> <span class="n">game_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">black_ai</span> <span class="o">=</span> <span class="n">black_ai</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">white_ai</span> <span class="o">=</span> <span class="n">white_ai</span>
@@ -97,6 +139,7 @@
 <div class="viewcode-block" id="GameRunner.run">
 <a class="viewcode-back" href="../game_runner.html#game_runner.GameRunner.run">[docs]</a>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Carries out a game.&quot;&quot;&quot;</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_class</span><span class="p">()</span>   
         <span class="nb">print</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
         <span class="n">outcome</span> <span class="o">=</span> <span class="mi">0</span>

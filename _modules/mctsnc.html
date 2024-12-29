@@ -82,7 +82,7 @@
 <span class="sd">By `thoroughly parallel` we understand an algorithmic design that applies to both: (1) the structural elements of trees - leaf-/root-/tree-level parallelization </span>
 <span class="sd">(all those three are combined), and (2) the stages of MCTS - each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. </span>
 <span class="sd">We apply suitable `reduction` patterns to carry out summations or max / argmax operations. Cooperation of threads helps to transfer information between global and shared memory. </span>
-<span class="sd">The implementation uses: no atomic operations, no mutexes (lock-free), and very few host-device memory transfers. </span>
+<span class="sd">The implementation uses: no atomic operations, no mutexes (lock-free), and very few device-host memory transfers. </span>
 
 <span class="sd">Example usage 1 (Connect 4)</span>
 <span class="sd">---------------------------</span>
@@ -207,6 +207,7 @@
 <span class="sd">- ``numpy``, ``math``: required for mathematical computations.</span>
 
 <span class="sd">- ``numba``: required for just-in-time compilation of CUDA kernels (decorated by ``@cuda.jit``).</span>
+
 <span class="sd">- For usage of ``MCTSNC`` class, NVIDIA CUDA drivers must be present in the operating system. </span>
 
 <span class="sd">Link to project repository</span>
