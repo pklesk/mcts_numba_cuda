@@ -160,7 +160,7 @@ The provided implementation takes advantage of <a class="reference external" hre
 By <cite>thoroughly parallel</cite> we understand an algorithmic design that applies to both: (1) the structural elements of trees - leaf-/root-/tree-level parallelization 
 (all those three are combined), and (2) the stages of MCTS - each stage in itself (selection, expansion, playouts, backup) employs multiple GPU threads. 
 We apply suitable <cite>reduction</cite> patterns to carry out summations or max / argmax operations. Cooperation of threads helps to transfer information between global and shared memory. 
-The implementation uses: no atomic operations, no mutexes (lock-free), and very few host-device memory transfers.</p>
+The implementation uses: no atomic operations, no mutexes (lock-free), and very few device-host memory transfers.</p>
 <section id="example-usage-1-connect-4">
 <h2>Example usage 1 (Connect 4)<a class="headerlink" href="#example-usage-1-connect-4" title="Link to this heading"></a></h2>
 <p>Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in <code class="docutils literal notranslate"><span class="pre">mctsnc_game_mechanics.py</span></code> (via device functions <code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action</span></code>, etc.), 

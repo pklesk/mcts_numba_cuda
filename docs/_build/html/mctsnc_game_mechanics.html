@@ -57,6 +57,7 @@
 <li class="toctree-l2"><a class="reference internal" href="mcts.html">mcts module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mctsnc.html">mctsnc module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">mctsnc_game_mechanics module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#link-to-project-repository">Link to project repository</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#mctsnc_game_mechanics.is_action_legal"><code class="docutils literal notranslate"><span class="pre">is_action_legal()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#mctsnc_game_mechanics.take_action"><code class="docutils literal notranslate"><span class="pre">take_action()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#mctsnc_game_mechanics.legal_actions_playout"><code class="docutils literal notranslate"><span class="pre">legal_actions_playout()</span></code></a></li>
@@ -106,6 +107,26 @@
              
   <section id="module-mctsnc_game_mechanics">
 <span id="mctsnc-game-mechanics-module"></span><h1>mctsnc_game_mechanics module<a class="headerlink" href="#module-mctsnc_game_mechanics" title="Link to this heading"></a></h1>
+<p>Set of CUDA device functions defining the mechanics of a certain game (Connect 4, Gomoku, etc.) required by the class <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> from <a class="reference internal" href="mctsnc.html"><span class="doc">mctsnc module</span></a>.</p>
+<dl class="simple">
+<dt>The following arguments are common for all the functions:</dt><dd><dl class="simple">
+<dt>m (int): </dt><dd><p>number of rows in board.</p>
+</dd>
+<dt>n (int): </dt><dd><p>number of columns in board.</p>
+</dd>
+<dt>board (array[int8, ndim=2] shared or local):</dt><dd><p>two-dimensional array of bytes representing a given state.</p>
+</dd>
+<dt>extra_info (array[int8, ndim=1] shared or local):</dt><dd><p>one-dimensional array with additional information associated with this state - fills of columns.s</p>
+</dd>
+<dt>turn {-1, 1}:</dt><dd><p>indicator of the player, minimizing or maximizing, to act now.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<section id="link-to-project-repository">
+<h2>Link to project repository<a class="headerlink" href="#link-to-project-repository" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://github.com/pklesk/mcts_numba_cuda">https://github.com/pklesk/mcts_numba_cuda</a></p>
+</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="mctsnc_game_mechanics.is_action_legal">
 <span class="sig-prename descclassname"><span class="pre">mctsnc_game_mechanics.</span></span><span class="sig-name descname"><span class="pre">is_action_legal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legal_actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mctsnc_game_mechanics.html#is_action_legal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mctsnc_game_mechanics.is_action_legal" title="Link to this definition"></a></dt>

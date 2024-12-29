@@ -102,6 +102,29 @@
 <dt class="sig sig-object py" id="game_runner.GameRunner">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game_runner.</span></span><span class="sig-name descname"><span class="pre">GameRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">black_ai</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">white_ai</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_games</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_info_old</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/game_runner.html#GameRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#game_runner.GameRunner" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class responsible for carrying out a single game (game class specified via parameter) within a match between two AIs or human vs AI.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><dl class="simple">
+<dt>game_class (class): </dt><dd><p>class object allowing to instantiate the initial state of some two-person game (e.g., Connect4, Gomoku, chess, etc.) and to carry out a game on it.</p>
+</dd>
+<dt>black_ai (object): </dt><dd><p>reference to AI instance responsible for the black player (instance of class <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> or <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code>) or <code class="docutils literal notranslate"><span class="pre">None</span></code> for human.</p>
+</dd>
+<dt>white_ai (object): </dt><dd><p>reference to AI instance responsible for the white player (instance of class <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> or <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code>) or <code class="docutils literal notranslate"><span class="pre">None</span></code> for human.</p>
+</dd>
+<dt>game_index (int):</dt><dd><p>index of game with a match (for informative purposes).</p>
+</dd>
+<dt>n_games (int):</dt><dd><p>total of games in a match (for informative purposes).</p>
+</dd>
+<dt>experiment_info_old (dict):</dt><dd><p>dictionary allowing to reproduce a former experiment (allows to force the limit of steps rather than time on an AI instance) or <code class="docutils literal notranslate"><span class="pre">None</span></code> for a new experiment, , defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt>Attributes:</dt><dd><dl class="simple">
+<dt>OUTCOME_MESSAGES (list):</dt><dd><p>list of strings with messages describing outcomes of games.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="game_runner.GameRunner.OUTCOME_MESSAGES">
 <span class="sig-name descname"><span class="pre">OUTCOME_MESSAGES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['WHITE</span> <span class="pre">WINS',</span> <span class="pre">'DRAW',</span> <span class="pre">'BLACK</span> <span class="pre">WINS']</span></em><a class="headerlink" href="#game_runner.GameRunner.OUTCOME_MESSAGES" title="Link to this definition"></a></dt>
@@ -110,12 +133,31 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="game_runner.GameRunner.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">black_ai</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">white_ai</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_games</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_info_old</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/game_runner.html#GameRunner.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#game_runner.GameRunner.__init__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Constructor <code class="docutils literal notranslate"><span class="pre">GameRunner</span></code> instances.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>game_class (class): </dt><dd><p>class object allowing to instantiate the initial state of some two-person game (e.g., Connect4, Gomoku, chess, etc.) and to carry out a game on it.</p>
+</dd>
+<dt>black_ai (object): </dt><dd><p>reference to AI instance responsible for the black player (instance of class <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> or <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code>) or <code class="docutils literal notranslate"><span class="pre">None</span></code> for human.</p>
+</dd>
+<dt>white_ai (object): </dt><dd><p>reference to AI instance responsible for the white player (instance of class <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> or <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code>) or <code class="docutils literal notranslate"><span class="pre">None</span></code> for human.</p>
+</dd>
+<dt>game_index (int):</dt><dd><p>index of game with a match (for informative purposes).</p>
+</dd>
+<dt>n_games (int):</dt><dd><p>total of games in a match (for informative purposes).</p>
+</dd>
+<dt>experiment_info_old (dict):</dt><dd><p>dictionary allowing to reproduce a former experiment (allows to force the limit of steps rather than time on an AI instance) or <code class="docutils literal notranslate"><span class="pre">None</span></code> for a new experiment, , defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="game_runner.GameRunner.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/game_runner.html#GameRunner.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#game_runner.GameRunner.run" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Carries out a game.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="game_runner.GameRunner.__module__">
