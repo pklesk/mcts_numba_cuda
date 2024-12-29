@@ -17,6 +17,12 @@ class Gomoku(State):
     
     @staticmethod
     def class_repr():
+        """        
+        Returns a string representation of class ``Gomoku`` (meant to instantiate states of Gomoku game), informing about the size of board.
+        
+        Returns:
+            str: string representation of class ``Gomoku`` (meant to instantiate states of Gomoku game), informing about the size of board. 
+        """        
         return f"{Gomoku.__name__}_{Gomoku.M}x{Gomoku.N}"    
             
     def __str__(self):

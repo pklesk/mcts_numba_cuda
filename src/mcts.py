@@ -63,7 +63,7 @@ class State:
         """
         [To be implemented in subclasses.]
         
-        Should return a string representation of this state, e.g. game board with its current contents.
+        Should return a string representation of this state, e.g., game board with its current contents.
         
         Returns:
             str: string representation of this state.
@@ -75,7 +75,7 @@ class State:
         """
         [To be implemented in subclasses.]
         
-        Should return a string representation of this class of states (e.g. game name, its variation, board size if configurable, etc.).
+        Should return a string representation of this class of states (e.g., game name, its variation, board size if configurable, etc.).
         
         Returns:
             str: string representation of this class of states. 
@@ -153,7 +153,7 @@ class State:
         
         Returns:
             action_legal (bool):
-                boolean flag indicated if the specified action was legal and performed.
+                boolean flag indicating if the specified action was legal and performed.
         """
         pass            
     
@@ -198,8 +198,8 @@ class State:
         """
         [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]
         
-        Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g. chessboard, backgammon board, etc.),
-        even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).
+        Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g., chessboard, backgammon board, etc.),
+        even if no board naturally exists in the related game (e.g., bridge, Nim, etc.).
         
         Returns:
             board (ndarray[np.int8, ndim=2]):
@@ -212,7 +212,7 @@ class State:
         [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]
         
         Should return additional information associated with this state (as a one-dimensional array of bytes)
-        not implied by the contents of the board itself (e.g. possibilities of castling or en-passant 
+        not implied by the contents of the board itself (e.g., possibilities of castling or en-passant 
         captures in chess, the contract in double dummy bridge, etc.), or any technical information useful to generate 
         legal actions faster. If no additional information is needed should return ``None``.
         
@@ -247,7 +247,7 @@ class State:
         """
         [To be optionally implemented by programmer in subclasses.]
         
-        Returns an action's index (numbering from 0) based on its name. E.g. name ``"B4"`` for 15 X 15 Gomoku maps to index ``18``.
+        Returns an action's index (numbering from 0) based on its name. E.g., name ``"B4"`` for 15 X 15 Gomoku maps to index ``18``.
         
         Args:
             action_name (str):
@@ -263,7 +263,7 @@ class State:
         """
         [To be optionally implemented by programmer in subclasses.]
         
-        Returns an action's name based on its index (numbering from 0). E.g. index ``18`` for 15 X 15 Gomoku maps to name ``B4``.
+        Returns an action's name based on its index (numbering from 0). E.g., index ``18`` for 15 X 15 Gomoku maps to name ``"B4"``.
         
         Args:
             action_index (int):
@@ -271,7 +271,7 @@ class State:
         Returns:
             action_name (str):
                 name corresponding to the given index.          
-        """        
+        """       
         pass
     
     @staticmethod
@@ -279,7 +279,7 @@ class State:
         """
         [To be implemented in subclasses only when a search using ``MCTSNC`` is planned. Not required for ``MCTS`` searches.]
         
-        Returns a tuple with board shape for the game (or sequential decision problem) represented by this class.
+        Returns a tuple with shape of boards for the game (or sequential decision problem) represented by this class.
         
         Returns:
             shape (tuple(int, int)):

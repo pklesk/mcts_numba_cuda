@@ -9,6 +9,13 @@ class C4(State):
     SYMBOLS = ['\u25CB', '.', '\u25CF'] # or: ["O", ".", "X"]    
     
     def __init__(self, parent=None):
+        """
+        Constructor (ordinary or copying) of ``C4`` instances.
+         
+        Args:
+            parent (State): 
+                reference to parent state object.            
+        """
         super().__init__(parent)
         if self.parent:
             self.board = np.copy(self.parent.board)
@@ -20,14 +27,20 @@ class C4(State):
     @staticmethod
     def class_repr():
         """        
-        Returns a string representation of ``C4`` class (meant to instantiate states of Connect 4 game) informing about the size of board.
+        Returns a string representation of class ``C4`` (meant to instantiate states of Connect 4 game), informing about the size of board.
         
         Returns:
-            str: string representation of ``C4`` class (meant to instantiate states of Connect 4 game) informing about the size of board. 
+            str: string representation of class ``C4`` (meant to instantiate states of Connect 4 game), informing about the size of board. 
         """
         return f"{C4.__name__}_{C4.M}x{C4.N}"
             
     def __str__(self):
+        """        
+        Returns a string representation of this ``C4`` state - the contents of its game board.
+        
+        Returns:
+            str: string representation of this ``C4`` state - the contents of its game board.
+        """        
         s = ""
         for i in range(C4.M):
             s += "|"
@@ -41,6 +54,18 @@ class C4(State):
         return s      
     
     def take_action_job(self, action_index):
+        """        
+        Drops a disc into column indicated by the action_index and returns ``True`` if the action is legal (column not full yet).
+        Otherwise, does no changes and returns ``False``.
+
+        Args:
+            action_index (int): 
+                index of column where to drop a disc.
+        
+        Returns:
+            action_legal (bool):
+                boolean flag indicating if the specified action was legal and performed.
+        """
         j = action_index 
         if self.column_fills[j] == C4.M:
             return False
@@ -51,6 +76,16 @@ class C4(State):
         return True
     
     def compute_outcome_job(self):
+        """        
+        Computes and returns the game outcome for this state in compliance with rules of Connect 4: 
+        {-1, 1} denoting a win for the minimizing or maximizing player, respectively,
+        if he connected at least 4 his discs; 0 as a tie when the board is filled and no line of 4 exists;   
+        ``None`` when the game is ongoing.
+        
+        Returns:
+            outcome ({-1, 0, 1} or ``None``)
+                game outcome for this state.
+        """        
         j = self.last_action_index
         i = C4.M - self.column_fills[j]     
         if True: # a bit faster outcome via numba
@@ -167,33 +202,98 @@ class C4(State):
         return 0
                         
     def take_random_action_playout(self):
+        """        
+        Picks a uniformly random action from actions available in this state and returns the result of calling ``take_action`` with the action index as argument.
+        
+        Returns:
+            child (State): 
+                result of ``take_action`` call for the random action.          
+        """        
         j_indexes = np.where(self.column_fills < C4.M)[0]
         j = np.random.choice(j_indexes) 
         child = self.take_action(j)
         return child
     
     def get_board(self):
+        """                
+        Returns the board of this state (a two-dimensional array of bytes).
+        
+        Returns:
+            board (ndarray[np.int8, ndim=2]):
+                board of this state (a two-dimensional array of bytes).
+        """        
         return self.board
     
     def get_extra_info(self):
+        """
+        Returns additional information associated with this state, as one-dimensional array of bytes,
+        informing about fills of columns (how many discs have been dropped in each column). 
+        
+        Returns:
+            extra_info (ndarray[np.int8, ndim=1] or ``None``):
+                one-dimensional array with additional information associated with this state - fills of columns.        
+        """
         return self.column_fills    
     
     @staticmethod    
     def action_name_to_index(action_name):
+        """
+        Returns an action's index (numbering from 0) based on its name. E.g., name ``"0"``, denoting a drop into the leftmost column, maps to index ``0``.
+        
+        Args:
+            action_name (str):
+                name of an action.
+        Returns:
+            action_index (int):
+                index corresponding to the given name.   
+        """        
         return int(action_name)
 
     @staticmethod
     def action_index_to_name(action_index):
+        """        
+        Returns an action's name based on its index (numbering from 0). E.g., index ``0`` maps to name ``"0"``, denoting a drop into the leftmost column.
+        
+        Args:
+            action_index (int):
+                index of an action.
+        Returns:
+            action_name (str):
+                name corresponding to the given index.          
+        """        
         return str(action_index)
     
     @staticmethod
     def get_board_shape():
+        """
+        Returns a tuple with shape of boards for Connect 4 game.
+        
+        Returns:
+            shape (tuple(int, int)):
+                shape of boards related to states of this class.
+        """
+        
         return (C4.M, C4.N)
 
     @staticmethod
     def get_extra_info_memory():
+        """        
+        Returns amount of memory (in bytes) needed to memorize additional information associated with Connect 4 states, i.e., the memory for fills of columns.
+        That number is equal to the number of columns.
+        
+        Returns:
+            extra_info_memory (int):
+                number of bytes required to memorize fills of columns.         
+        """        
         return C4.N
 
     @staticmethod
     def get_max_actions():
+        """
+        Returns the maximum number of actions (the largest branching factor) equal to the number of columns.
+        
+        Returns:
+            max_actions (int):
+                maximum number of actions (the largest branching factor) equal to the number of columns.
+        """                
         return C4.N

@@ -194,7 +194,7 @@ and the following static ones:
 <dt class="sig sig-object py" id="mcts.State.__str__">
 <span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.__str__" title="Link to this definition"></a></dt>
 <dd><p>[To be implemented in subclasses.]</p>
-<p>Should return a string representation of this state, e.g. game board with its current contents.</p>
+<p>Should return a string representation of this state, e.g., game board with its current contents.</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><p>str: string representation of this state.</p>
 </dd>
@@ -205,7 +205,7 @@ and the following static ones:
 <dt class="sig sig-object py" id="mcts.State.class_repr">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.class_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.class_repr" title="Link to this definition"></a></dt>
 <dd><p>[To be implemented in subclasses.]</p>
-<p>Should return a string representation of this class of states (e.g. game name, its variation, board size if configurable, etc.).</p>
+<p>Should return a string representation of this class of states (e.g., game name, its variation, board size if configurable, etc.).</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><p>str: string representation of this class of states.</p>
 </dd>
@@ -277,7 +277,7 @@ Otherwise, should do no changes and return <code class="docutils literal notrans
 </dl>
 </dd>
 <dt>Returns:</dt><dd><dl class="simple">
-<dt>action_legal (bool):</dt><dd><p>boolean flag indicated if the specified action was legal and performed.</p>
+<dt>action_legal (bool):</dt><dd><p>boolean flag indicating if the specified action was legal and performed.</p>
 </dd>
 </dl>
 </dd>
@@ -322,8 +322,8 @@ For an ongoing game the result should be <code class="docutils literal notransla
 <dt class="sig sig-object py" id="mcts.State.get_board">
 <span class="sig-name descname"><span class="pre">get_board</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_board"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_board" title="Link to this definition"></a></dt>
 <dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
-<p>Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g. chessboard, backgammon board, etc.),
-even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).</p>
+<p>Should return the representation of this state as a two-dimensional array of bytes - in a board-like form (e.g., chessboard, backgammon board, etc.),
+even if no board naturally exists in the related game (e.g., bridge, Nim, etc.).</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
 <dt>board (ndarray[np.int8, ndim=2]):</dt><dd><p>two-dimensional array with representation of this state.</p>
@@ -338,7 +338,7 @@ even if no board naturally exists in the related game (e.g. bridge, Nim, etc.).<
 <span class="sig-name descname"><span class="pre">get_extra_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_extra_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_extra_info" title="Link to this definition"></a></dt>
 <dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
 <p>Should return additional information associated with this state (as a one-dimensional array of bytes)
-not implied by the contents of the board itself (e.g. possibilities of castling or en-passant 
+not implied by the contents of the board itself (e.g., possibilities of castling or en-passant 
 captures in chess, the contract in double dummy bridge, etc.), or any technical information useful to generate 
 legal actions faster. If no additional information is needed should return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <dl class="simple">
@@ -374,7 +374,7 @@ legal actions faster. If no additional information is needed should return <code
 <dt class="sig sig-object py" id="mcts.State.action_name_to_index">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_name_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.action_name_to_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.action_name_to_index" title="Link to this definition"></a></dt>
 <dd><p>[To be optionally implemented by programmer in subclasses.]</p>
-<p>Returns an action’s index (numbering from 0) based on its name. E.g. name <code class="docutils literal notranslate"><span class="pre">&quot;B4&quot;</span></code> for 15 X 15 Gomoku maps to index <code class="docutils literal notranslate"><span class="pre">18</span></code>.</p>
+<p>Returns an action’s index (numbering from 0) based on its name. E.g., name <code class="docutils literal notranslate"><span class="pre">&quot;B4&quot;</span></code> for 15 X 15 Gomoku maps to index <code class="docutils literal notranslate"><span class="pre">18</span></code>.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><dl class="simple">
 <dt>action_name (str):</dt><dd><p>name of an action.</p>
@@ -393,7 +393,7 @@ legal actions faster. If no additional information is needed should return <code
 <dt class="sig sig-object py" id="mcts.State.action_index_to_name">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_index_to_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.action_index_to_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.action_index_to_name" title="Link to this definition"></a></dt>
 <dd><p>[To be optionally implemented by programmer in subclasses.]</p>
-<p>Returns an action’s name based on its index (numbering from 0). E.g. index <code class="docutils literal notranslate"><span class="pre">18</span></code> for 15 X 15 Gomoku maps to name <code class="docutils literal notranslate"><span class="pre">B4</span></code>.</p>
+<p>Returns an action’s name based on its index (numbering from 0). E.g., index <code class="docutils literal notranslate"><span class="pre">18</span></code> for 15 X 15 Gomoku maps to name <code class="docutils literal notranslate"><span class="pre">&quot;B4&quot;</span></code>.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><dl class="simple">
 <dt>action_index (int):</dt><dd><p>index of an action.</p>
@@ -412,7 +412,7 @@ legal actions faster. If no additional information is needed should return <code
 <dt class="sig sig-object py" id="mcts.State.get_board_shape">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_board_shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.get_board_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.get_board_shape" title="Link to this definition"></a></dt>
 <dd><p>[To be implemented in subclasses only when a search using <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> is planned. Not required for <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> searches.]</p>
-<p>Returns a tuple with board shape for the game (or sequential decision problem) represented by this class.</p>
+<p>Returns a tuple with shape of boards for the game (or sequential decision problem) represented by this class.</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
 <dt>shape (tuple(int, int)):</dt><dd><p>shape of boards related to states of this class.</p>
