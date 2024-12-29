@@ -79,18 +79,33 @@
 <span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span>
 <span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">int8</span>
 
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;1.0.0&quot;</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Przemysław Klęsk&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;pklesk@zut.edu.pl&quot;</span> 
+
 <div class="viewcode-block" id="C4">
 <a class="viewcode-back" href="../c4.html#c4.C4">[docs]</a>
 <span class="k">class</span> <span class="nc">C4</span><span class="p">(</span><span class="n">State</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for states of Connect 4 game.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        M (int): </span>
+<span class="sd">            number of rows in the board, defaults to ``6``.            </span>
+<span class="sd">        N (int): </span>
+<span class="sd">            number of columns in the board, defaults to ``7``.</span>
+<span class="sd">        SYMBOLS (List):</span>
+<span class="sd">            list of strings representing disc symbols (black, white) or ``&quot;.&quot;`` for empty cell. </span>
+<span class="sd">    &quot;&quot;&quot;</span>        
     <span class="n">M</span> <span class="o">=</span> <span class="mi">6</span> 
     <span class="n">N</span> <span class="o">=</span> <span class="mi">7</span> 
-    <span class="n">SYMBOLS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="se">\u25CB</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\u25CF</span><span class="s1">&#39;</span><span class="p">]</span> <span class="c1"># or: [&quot;O&quot;, &quot;.&quot;, &quot;X&quot;]    </span>
+    <span class="n">SYMBOLS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="se">\u25CB</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\u25CF</span><span class="s2">&quot;</span><span class="p">]</span> <span class="c1"># or: [&quot;O&quot;, &quot;.&quot;, &quot;X&quot;]    </span>
     
 <div class="viewcode-block" id="C4.__init__">
 <a class="viewcode-back" href="../c4.html#c4.C4.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Constructor (ordinary or copying) of ``C4`` instances.</span>
+<span class="sd">        Constructor (ordinary or copying) of ``C4`` instances - states of Connect 4 game.</span>
 <span class="sd">         </span>
 <span class="sd">        Args:</span>
 <span class="sd">            parent (State): </span>
@@ -143,7 +158,7 @@
 <div class="viewcode-block" id="C4.take_action_job">
 <a class="viewcode-back" href="../c4.html#c4.C4.take_action_job">[docs]</a>
     <span class="k">def</span> <span class="nf">take_action_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_index</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;        </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Drops a disc into column indicated by the action_index and returns ``True`` if the action is legal (column not full yet).</span>
 <span class="sd">        Otherwise, does no changes and returns ``False``.</span>
 
@@ -169,9 +184,9 @@
 <a class="viewcode-back" href="../c4.html#c4.C4.compute_outcome_job">[docs]</a>
     <span class="k">def</span> <span class="nf">compute_outcome_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;        </span>
-<span class="sd">        Computes and returns the game outcome for this state in compliance with rules of Connect 4: </span>
-<span class="sd">        {-1, 1} denoting a win for the minimizing or maximizing player, respectively,</span>
-<span class="sd">        if he connected at least 4 his discs; 0 as a tie when the board is filled and no line of 4 exists;   </span>
+<span class="sd">        Computes and returns the game outcome for this state in compliance with rules of Connect 4 game: </span>
+<span class="sd">        {-1, 1} denoting a win for the minimizing or maximizing player, respectively, if he connected at least 4 his discs; </span>
+<span class="sd">        0 denoting a tie, when the board is filled and no line of 4 exists;   </span>
 <span class="sd">        ``None`` when the game is ongoing.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -244,6 +259,7 @@
     <span class="nd">@staticmethod</span>
     <span class="nd">@jit</span><span class="p">(</span><span class="n">int8</span><span class="p">(</span><span class="n">int8</span><span class="p">,</span> <span class="n">int8</span><span class="p">,</span> <span class="n">int8</span><span class="p">,</span> <span class="n">int8</span><span class="p">,</span> <span class="n">int8</span><span class="p">,</span> <span class="n">int8</span><span class="p">[:,</span> <span class="p">:]),</span> <span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
     <span class="k">def</span> <span class="nf">compute_outcome_job_numba_jit</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">last_i</span><span class="p">,</span> <span class="n">last_j</span><span class="p">,</span> <span class="n">board</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called by ``compute_outcome_job`` for faster outcomes.&quot;&quot;&quot;</span>
         <span class="n">last_token</span> <span class="o">=</span> <span class="o">-</span><span class="n">turn</span>        
         <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">last_i</span><span class="p">,</span> <span class="n">last_j</span>
         <span class="c1"># N-S</span>
@@ -384,8 +400,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            shape (tuple(int, int)):</span>
 <span class="sd">                shape of boards related to states of this class.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">return</span> <span class="p">(</span><span class="n">C4</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="n">C4</span><span class="o">.</span><span class="n">N</span><span class="p">)</span></div>
 
 

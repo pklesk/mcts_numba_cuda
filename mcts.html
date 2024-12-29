@@ -144,10 +144,11 @@
 <p>Auxiliary module with a referential standard implementation of MCTS algorithm (for CPU, single-threaded).
 The module contains:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">State</span></code>: class representing an arbitrary state of some game or sequential decision problem (meant to inherit from when searches using <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> class are planned);</p></li>
-</ul>
-<p>current examples of subclasses are: <cite>C4`</cite> in <a class="reference internal" href="c4.html"><span class="doc">c4 module</span></a> (representation of Connect 4 game), <code class="docutils literal notranslate"><span class="pre">Gomoku</span></code> in <a class="reference internal" href="gomoku.html"><span class="doc">gomoku module</span></a> (representation of Gomoku game).</p>
-<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">State</span></code>: class representing an arbitrary state of some game or sequential decision problem (meant to inherit from when searches using <code class="docutils literal notranslate"><span class="pre">MCTS</span></code> class are planned);</dt><dd><p>current examples of subclasses are: <cite>C4`</cite> in <a class="reference internal" href="c4.html"><span class="doc">c4 module</span></a> (representation of Connect 4 game), <code class="docutils literal notranslate"><span class="pre">Gomoku</span></code> in <a class="reference internal" href="gomoku.html"><span class="doc">gomoku module</span></a> (representation of Gomoku game).</p>
+</dd>
+</dl>
+</li>
 <li><p><code class="docutils literal notranslate"><span class="pre">MCTS</span></code>: class representing the referential MCTS algorithm.</p></li>
 </ul>
 <section id="link-to-project-repository">
@@ -374,7 +375,7 @@ legal actions faster. If no additional information is needed should return <code
 <dt class="sig sig-object py" id="mcts.State.action_name_to_index">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_name_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.action_name_to_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.action_name_to_index" title="Link to this definition"></a></dt>
 <dd><p>[To be optionally implemented by programmer in subclasses.]</p>
-<p>Returns an action’s index (numbering from 0) based on its name. E.g., name <code class="docutils literal notranslate"><span class="pre">&quot;B4&quot;</span></code> for 15 X 15 Gomoku maps to index <code class="docutils literal notranslate"><span class="pre">18</span></code>.</p>
+<p>Returns an action’s index (numbering from 0) based on its name. E.g., name <code class="docutils literal notranslate"><span class="pre">&quot;B4&quot;</span></code> for 15 x 15 Gomoku maps to index <code class="docutils literal notranslate"><span class="pre">18</span></code>.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><dl class="simple">
 <dt>action_name (str):</dt><dd><p>name of an action.</p>
@@ -393,7 +394,7 @@ legal actions faster. If no additional information is needed should return <code
 <dt class="sig sig-object py" id="mcts.State.action_index_to_name">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_index_to_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcts.html#State.action_index_to_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcts.State.action_index_to_name" title="Link to this definition"></a></dt>
 <dd><p>[To be optionally implemented by programmer in subclasses.]</p>
-<p>Returns an action’s name based on its index (numbering from 0). E.g., index <code class="docutils literal notranslate"><span class="pre">18</span></code> for 15 X 15 Gomoku maps to name <code class="docutils literal notranslate"><span class="pre">&quot;B4&quot;</span></code>.</p>
+<p>Returns an action’s name based on its index (numbering from 0). E.g., index <code class="docutils literal notranslate"><span class="pre">18</span></code> for 15 x 15 Gomoku maps to name <code class="docutils literal notranslate"><span class="pre">&quot;B4&quot;</span></code>.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><dl class="simple">
 <dt>action_index (int):</dt><dd><p>index of an action.</p>
