@@ -29,6 +29,19 @@ In ACP, all such children become played out. In the figure, terminal rewards fro
 in: blue (losses of the first "red" player), gray (draws) or red (wins of the first player). Their counts suitably update
 the statistics at ancestor nodes. For shortness, Q stands for an action-value estimate and U for its upper confidence bound.
 
+## Example usage via `main.py`
+
+By executing `python main.py` one can play via console 10 games of Connect 4 against the default AI instance `MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='acp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)`.
+
+The default settings accessible within `main.py` are:
+```python
+STATE_CLASS = C4 # C4 or Gomoku
+N_GAMES = 10
+AI_A_SHORTNAME = None # human
+AI_B_SHORTNAME = "mctsnc_5_inf_4_256_acp_prodigal" 
+REPRODUCE_EXPERIMENT = False
+```
+
 ## Example usage 1 (Connect 4)
 
 Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in `mctsnc_game_mechanics.py` (via device functions `is_action_legal`, `take_action`, etc.), 
