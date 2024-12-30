@@ -10,12 +10,12 @@ The following variables allow to define the settings of an experiment:
     
     # main settings
     STATE_CLASS = C4 # C4 or Gomoku
-    N_GAMES = 100
+    N_GAMES = 10
     AI_A_SHORTNAME = None # human
     AI_B_SHORTNAME = "mctsnc_5_inf_4_256_acp_prodigal" 
     REPRODUCE_EXPERIMENT = False
  
-String names of predefined AI instances can be found in dictionary name ``AIS``.
+String names of predefined AI instances can be found in dictionary named ``AIS``.
 
 Link to project repository
 --------------------------
@@ -37,7 +37,7 @@ __email__ = "pklesk@zut.edu.pl"
 
 # main settings
 STATE_CLASS = C4 # C4 or Gomoku
-N_GAMES = 100
+N_GAMES = 10
 AI_A_SHORTNAME = None # human
 AI_B_SHORTNAME = "mctsnc_5_inf_4_256_acp_prodigal" 
 REPRODUCE_EXPERIMENT = False
