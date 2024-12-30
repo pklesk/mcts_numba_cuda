@@ -136,20 +136,20 @@ MCTSNC RUN... [MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, 
 MCTSNC RUN DONE. [time: 5.008184909820557 s; best action: 115 (K8), best win_flag: False, best n: 1093632, best n_wins: 452284, best q: 0.41356141736891383]
 BEST ACTION: 115
 ```
-## Plots for sample games 
+## Selected experimental results 
 
-#### Connect 4: MCTS_5_INF_VANILLA (5s per move) vs MCTS-NC_1_INF_4_256_OCP_PRODIGAL (1s per move)
+#### Sample game of Connect 4: MCTS_5_INF_VANILLA (5s per move) vs MCTS-NC_1_INF_4_256_OCP_PRODIGAL (1s per move)
 |estimates on best actions' values and UCBs|avgs of: mean and maximum depths of tree nodes|
 |-|-|
 |<img src="https://github.com/user-attachments/assets/b66289f9-4fda-401f-ba41-004dd478e1c9"/>|<img src="https://github.com/user-attachments/assets/fc1c877b-77d9-4688-9071-6519f9df5fb4"/>|
 
-#### Connect 4: MCTS-NC_5_INF_4_256_OCP_PRODIGAL vs MCTS-NC_5_INF_4_256_ACP_PRODIGAL (5s per move each side)
+#### Sample game of Connect 4: MCTS-NC_5_INF_4_256_OCP_PRODIGAL vs MCTS-NC_5_INF_4_256_ACP_PRODIGAL (5s per move each side)
 |estimates on best actions' values and UCBs|avgs of: mean and maximum depths of tree nodes|
 |-|-|
 |<img src="https://github.com/user-attachments/assets/662ef5a3-4007-41ff-8f8c-dc8a8a31b895"/>|<img src="https://github.com/user-attachments/assets/ff9aac3c-eda8-4534-9d96-9ba1862cbc81"/>|
 
-#### Gomoku: MCTS-NC_30_INF_4_256_ACP_THRIFTY vs MCTS-NC_30_INF_4_256_ACP_PRODIGAL (30s per move each side)
-|estimates on best actions' values and UCBs|averages of: mean and maximum depths of tree nodes|
+#### Sample game of Gomoku: MCTS-NC_30_INF_4_256_ACP_THRIFTY vs MCTS-NC_30_INF_4_256_ACP_PRODIGAL (30s per move each side)
+|estimates on best actions' values and UCBs|avgs of: mean and maximum depths of tree nodes|
 |-|-|
 |<img src="https://github.com/user-attachments/assets/bbfd8cab-d7aa-46cd-8256-994b6b12394c"/>|<img src="https://github.com/user-attachments/assets/4bcea756-d66f-4a1c-b670-acb441561808"/>|
 
