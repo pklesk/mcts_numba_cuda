@@ -42,6 +42,8 @@ AI_B_SHORTNAME = "mctsnc_5_inf_4_256_acp_prodigal"
 REPRODUCE_EXPERIMENT = False
 ```
 
+String names of other predefined AI instances can be found in dictionary name ``AIS``.
+
 ## Example usage 1 (Connect 4)
 
 Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in `mctsnc_game_mechanics.py` (via device functions `is_action_legal`, `take_action`, etc.), 
