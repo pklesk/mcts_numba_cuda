@@ -78,7 +78,7 @@
 <span class="sd">Set of five CUDA device functions defining the mechanics of a certain game (Connect 4, Gomoku, etc.) </span>
 <span class="sd">required by the class ``MCTSNC`` (callable by its kernel functions) from :doc:`mctsnc`. </span>
 <span class="sd">The five functions are: ``is_action_legal``, ``take_action``, ``legal_actions_playout``, ``take_action_playout``, ``compute_outcome``.</span>
-<span class="sd">To define a new custom game or search problem the user should provide his implementations either directly as bodies of the aforementioned functions, </span>
+<span class="sd">To define a new custom game or a search problem the user should provide his implementations either directly as bodies of the aforementioned functions, </span>
 <span class="sd">or write his own device functions and forward the calls.</span>
 <span class="sd">Currently, the module contains examples of how those functions are implemented for the games of Connect 4 and Gomoku.</span>
 
@@ -94,9 +94,9 @@
 <span class="sd">    n (int): </span>
 <span class="sd">        number of columns in board.</span>
 <span class="sd">    board (array[int8, ndim=2] shared or local):</span>
-<span class="sd">        two-dimensional array of bytes representing a given state.</span>
+<span class="sd">        two-dimensional array of bytes representing the board of a state.</span>
 <span class="sd">    extra_info (array[int8, ndim=1] shared or local):</span>
-<span class="sd">        one-dimensional array with any additional information associated with this state.</span>
+<span class="sd">        one-dimensional array with any additional information associated with a state (not implied by the contents of the board itself).</span>
 <span class="sd">    turn {-1, 1}:</span>
 <span class="sd">        indicator of the player, minimizing or maximizing, to act now.</span>
 <span class="sd">        </span>
