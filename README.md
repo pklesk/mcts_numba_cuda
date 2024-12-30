@@ -157,8 +157,7 @@ BEST ACTION: 115
 ## Selected experimental results
 
 #### Connect 4 tournament
-
-<font size="1">
+<sub><sup>
    
 |     |                                        |      A |      B |      C |      D |      E |     avg. score |      avgs of: playouts / steps | avgs of: mean depth / max depth|
 |-----|:---------------------------------------|-------:|-------:|-------:|-------:|-------:|---------------:|-------------------------------:|-------------------------------:|
@@ -168,7 +167,7 @@ BEST ACTION: 115
 |**D**| ACP-THRIFTY (5s, T=4, m=256)           |  98.0% |  65.0% |  22.5% |      - |  33.5% |        55.125% |                   15.7M / 3.9k |                    8.07 / 16.25|
 |**E**| ACP-PRODIGAL (5s, T=4, m=256)          |  99.0% |  71.5% |  56.5% |  66.5% |      - |        73.375% |                   20.3M / 5.4k |                    8.62 / 17.54|
 
-</font>
+</sup></sub>
 
 ## Documentation
 
