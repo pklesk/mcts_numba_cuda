@@ -110,7 +110,7 @@
 <p>Set of five CUDA device functions defining the mechanics of a certain game (Connect 4, Gomoku, etc.) 
 required by the class <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> (callable by its kernel functions) from <a class="reference internal" href="mctsnc.html"><span class="doc">mctsnc module</span></a>. 
 The five functions are: <code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action</span></code>, <code class="docutils literal notranslate"><span class="pre">legal_actions_playout</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action_playout</span></code>, <code class="docutils literal notranslate"><span class="pre">compute_outcome</span></code>.
-To define a new custom game or search problem the user should provide his implementations either directly as bodies of the aforementioned functions, 
+To define a new custom game or a search problem the user should provide his implementations either directly as bodies of the aforementioned functions, 
 or write his own device functions and forward the calls.
 Currently, the module contains examples of how those functions are implemented for the games of Connect 4 and Gomoku.</p>
 <p>Function <code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code> is called by each of <code class="docutils literal notranslate"><span class="pre">_expand_1_*</span></code> kernel functions from <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> class;
@@ -124,9 +124,9 @@ function <code class="docutils literal notranslate"><span class="pre">compute_ou
 </dd>
 <dt>n (int): </dt><dd><p>number of columns in board.</p>
 </dd>
-<dt>board (array[int8, ndim=2] shared or local):</dt><dd><p>two-dimensional array of bytes representing a given state.</p>
+<dt>board (array[int8, ndim=2] shared or local):</dt><dd><p>two-dimensional array of bytes representing the board of a state.</p>
 </dd>
-<dt>extra_info (array[int8, ndim=1] shared or local):</dt><dd><p>one-dimensional array with any additional information associated with this state.</p>
+<dt>extra_info (array[int8, ndim=1] shared or local):</dt><dd><p>one-dimensional array with any additional information associated with a state (not implied by the contents of the board itself).</p>
 </dd>
 <dt>turn {-1, 1}:</dt><dd><p>indicator of the player, minimizing or maximizing, to act now.</p>
 </dd>

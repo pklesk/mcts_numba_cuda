@@ -132,7 +132,7 @@ Dependencies
 
 - ``numba``: required for just-in-time compilation of CUDA kernels (decorated by ``@cuda.jit``).
 
-- ``mctsnc_game_mechanics``: required to define the mechanics of a wanted game or search problem via a set of five device-side functions: 
+- ``mctsnc_game_mechanics``: required to define the mechanics of a wanted game or search problem via a set of five device-side functions - 
                             ``is_action_legal``, ``take_action``, ``legal_actions_playout``, ``take_action_playout``, ``compute_outcome`` callable by kernel functions of ``MCTSNC``
                             (see :doc:`mctsnc_game_mechanics`). 
 

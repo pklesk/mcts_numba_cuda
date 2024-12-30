@@ -2,7 +2,7 @@
 Set of five CUDA device functions defining the mechanics of a certain game (Connect 4, Gomoku, etc.) 
 required by the class ``MCTSNC`` (callable by its kernel functions) from :doc:`mctsnc`. 
 The five functions are: ``is_action_legal``, ``take_action``, ``legal_actions_playout``, ``take_action_playout``, ``compute_outcome``.
-To define a new custom game or search problem the user should provide his implementations either directly as bodies of the aforementioned functions, 
+To define a new custom game or a search problem the user should provide his implementations either directly as bodies of the aforementioned functions, 
 or write his own device functions and forward the calls.
 Currently, the module contains examples of how those functions are implemented for the games of Connect 4 and Gomoku.
 
@@ -18,9 +18,9 @@ The following arguments are common for all the functions:
     n (int): 
         number of columns in board.
     board (array[int8, ndim=2] shared or local):
-        two-dimensional array of bytes representing a given state.
+        two-dimensional array of bytes representing the board of a state.
     extra_info (array[int8, ndim=1] shared or local):
-        one-dimensional array with any additional information associated with this state.
+        one-dimensional array with any additional information associated with a state (not implied by the contents of the board itself).
     turn {-1, 1}:
         indicator of the player, minimizing or maximizing, to act now.
         
