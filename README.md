@@ -179,7 +179,7 @@ BEST ACTION: 115
 ## Constructor parameters
 | parameter                                 | description                                                                                                                                            |
 |:------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `state_board_shape (tuple(int, int))`     | shape of board for states in a given game, at most ``32, 32)`                                                                                          |
+| `state_board_shape (tuple(int, int))`     | shape of board for states in a given game, at most `(32, 32)`                                                                                          |
 | `state_extra_info_memory (int)`           | number of bytes for extra information on states, at most `4096`                                                                                        |
 | `state_max_actions (int)`                 | maximum branching factor, at most `512`                                                                                                                |
 | `search_time_limit (float)`               | time limit in seconds (computational budget), `np.inf` if no limit, defaults to `5.0`                                                                  |
