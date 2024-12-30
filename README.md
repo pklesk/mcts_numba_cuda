@@ -142,13 +142,10 @@ BEST ACTION: 115
 |estimates on best actions' values and UCBs|
 |-|
 |<img src="/extras/c4_sample_game_best_actions.png"/>|
-|-|
+
 |averages of: mean and maximum depths of tree nodes|
 |-|
 |<img src="/extras/c4_sample_game_depths.png"/>|
-|-|
-
-
 
 ## Documentation
 
