@@ -136,8 +136,18 @@ MCTSNC RUN... [MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, 
 MCTSNC RUN DONE. [time: 5.008184909820557 s; best action: 115 (K8), best win_flag: False, best n: 1093632, best n_wins: 452284, best q: 0.41356141736891383]
 BEST ACTION: 115
 ```
+## Plots for sample games 
+
+### 'Connect 4 ' 
+|estimates on best actions' values and UCBs|averages of: mean and maximum depths of tree nodes|
+|-|-|
+|<img src="/extras/c4_sample_game_best_actions.png"/>|<img src="/extras/c4_sample_game_depths.png"/>|
 
 ## Documentation
 
 Complete developer documentation of the project is accessible at: [https://pklesk.github.io/mcts_numba_cuda](https://pklesk.github.io/mcts_numba_cuda). <br/>
 Documentation for the `MCTSNC` class alone is at: [https://pklesk.github.io/mcts_numba_cuda/mctsnc.html](https://pklesk.github.io/mcts_numba_cuda/mctsnc.html).
+
+## Acknowledgments and credits
+
+- [Numba](https://numba.pydata.org): a high-performance just-in-time Python compiler.
