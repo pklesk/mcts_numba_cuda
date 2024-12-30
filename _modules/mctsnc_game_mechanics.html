@@ -75,9 +75,20 @@
              
   <h1>Source code for mctsnc_game_mechanics</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Set of CUDA device functions defining the mechanics of a certain game (Connect 4, Gomoku, etc.) required by the class ``MCTSNC`` from :doc:`mctsnc`.</span>
+<span class="sd">Set of five CUDA device functions defining the mechanics of a certain game (Connect 4, Gomoku, etc.) </span>
+<span class="sd">required by the class ``MCTSNC`` (callable by its kernel functions) from :doc:`mctsnc`. </span>
+<span class="sd">The five functions are: ``is_action_legal``, ``take_action``, ``legal_actions_playout``, ``take_action_playout``, ``compute_outcome``.</span>
+<span class="sd">To define a new custom game or search problem the user should provide his implementations either directly as bodies of the aforementioned functions, </span>
+<span class="sd">or write his own device functions and forward the calls.</span>
+<span class="sd">Currently, the module contains examples of how those functions are implemented for the games of Connect 4 and Gomoku.</span>
+
+<span class="sd">Function ``is_action_legal`` is called by each of ``_expand_1_*`` kernel functions from ``MCTSNC`` class;</span>
+<span class="sd">function ``take_action`` is called by each of ``_expand_2_*`` kernel functions; </span>
+<span class="sd">functions ``legal_actions_playout`` and ``take_action_playout`` are called interchangeably by each of ``_playout_*`` kernel functions;</span>
+<span class="sd">function ``compute_outcome`` is called by each of ``_expand_2_*`` and ``_playout_*`` kernel functions.</span>
 
 <span class="sd">The following arguments are common for all the functions:</span>
+
 <span class="sd">    m (int): </span>
 <span class="sd">        number of rows in board.</span>
 <span class="sd">    n (int): </span>
@@ -85,9 +96,27 @@
 <span class="sd">    board (array[int8, ndim=2] shared or local):</span>
 <span class="sd">        two-dimensional array of bytes representing a given state.</span>
 <span class="sd">    extra_info (array[int8, ndim=1] shared or local):</span>
-<span class="sd">        one-dimensional array with additional information associated with this state - fills of columns.s</span>
+<span class="sd">        one-dimensional array with any additional information associated with this state.</span>
 <span class="sd">    turn {-1, 1}:</span>
 <span class="sd">        indicator of the player, minimizing or maximizing, to act now.</span>
+<span class="sd">        </span>
+<span class="sd">The following arguments are function-specific:</span>
+
+<span class="sd">    legal_actions (array[boolean] shared): </span>
+<span class="sd">        one-dimensional array of boolean flags indicating legal actions; becomes populated by multiple calls of ``is_action_legal`` made by an ``_expand_*`` kernel function of ``MCTSNC`` class.</span>
+<span class="sd">    action (int16):</span>
+<span class="sd">        index of action to be taken</span>
+<span class="sd">    legal_actions_with_count (array[int16] local):</span>
+<span class="sd">        array storing legal actions with their count to be applied within a playout; </span>
+<span class="sd">        its last entry contains the count of legal actions, its leftmost entries (in the number equal to that count) contain indexes of legal actions (possibly unordered); </span>
+<span class="sd">        becomes established within calls of ``legal_actions_playout`` or just the first such a call made by a ``_playout_*`` kernel function of ``MCTSNC`` class; </span>
+<span class="sd">        can be updated (but does not have to) within calls of ``take_action_playout`` to avoid future costs of legal moves regeneration during ``legal_actions_playout``.</span>
+<span class="sd">    action_ord (int16):</span>
+<span class="sd">        ordinal index of entry in array ``legal_actions_with_count``, picked on random by a ``xoroshiro128p`` generator within a ``_playout_*`` kernel functions of ``MCTSNC`` class;</span>
+<span class="sd">        this entry defines the index of action to be currently taken during a playout, i.e., ``legal_actions_with_count[action_ord] == action``;</span>
+<span class="sd">        can be used (but does not have to) within calls of ``take_action_playout`` to avoid future costs of legal moves regeneration during ``legal_actions_playout`` calls</span>
+<span class="sd">        by placing the last available legal action (rightmost) under ``action_ord`` index just after the current action is taken.  </span>
+<span class="sd">                            </span>
 
 <span class="sd">Link to project repository</span>
 <span class="sd">--------------------------</span>
@@ -104,6 +133,7 @@
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.is_action_legal">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">is_action_legal</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">legal_actions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks whether action defined by index ``action`` is legal and leaves the result (a boolean indicator) in array ``legal_actions`` under that index.&quot;&quot;&quot;</span>
     <span class="n">is_action_legal_c4</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">legal_actions</span><span class="p">)</span></div>
 
     <span class="c1">#is_action_legal_gomoku(m, n, board, extra_info, turn, action, legal_actions)    </span>
@@ -111,7 +141,8 @@
 <div class="viewcode-block" id="take_action">
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.take_action">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>    
+<span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Takes action defined by index ``action`` during an expansion - modifies the ``board`` and possibly ``extra_info`` arrays.&quot;&quot;&quot;</span>    
     <span class="n">take_action_c4</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span></div>
 
     <span class="c1">#take_action_gomoku(m, n, board, extra_info, turn, action)</span>
@@ -120,6 +151,7 @@
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.legal_actions_playout">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">legal_actions_playout</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">legal_actions_with_count</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Establishes legal actions and their count during a playout; leaves the results in array ``legal_actions_with_count``.&quot;&quot;&quot;</span>
     <span class="n">legal_actions_playout_c4</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">legal_actions_with_count</span><span class="p">)</span>    </div>
 
     <span class="c1">#legal_actions_playout_gomoku(m, n, board, extra_info, turn, legal_actions_with_count)    </span>
@@ -127,7 +159,8 @@
 <div class="viewcode-block" id="take_action_playout">
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.take_action_playout">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>    
-<span class="k">def</span> <span class="nf">take_action_playout</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">action_ord</span><span class="p">,</span> <span class="n">legal_actions_with_count</span><span class="p">):</span>        
+<span class="k">def</span> <span class="nf">take_action_playout</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">action_ord</span><span class="p">,</span> <span class="n">legal_actions_with_count</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Takes action defined by index ``action`` during a playout - modifies the ``board`` and possibly arrays: ``extra_info``, ``legal_actions_with_count``.&quot;&quot;&quot;</span>
     <span class="n">take_action_playout_c4</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">action_ord</span><span class="p">,</span> <span class="n">legal_actions_with_count</span><span class="p">)</span></div>
 
     <span class="c1">#take_action_playout_gomoku(m, n, board, extra_info, turn, action, action_ord, legal_actions_with_count)</span>
@@ -136,6 +169,10 @@
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.compute_outcome">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">compute_outcome</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">last_action</span><span class="p">):</span> <span class="c1"># any outcome other than {-1, 0, 1} implies status: game ongoing</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes and returns the outcome of game state represented by ``board`` and ``extra_info`` arrays. </span>
+<span class="sd">    Outcomes ``{-1, 1}`` denote a win by minimizing or maximizing player, respectively. ``0`` denotes a tie. Any other outcome denotes an ongoing game.</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
     <span class="k">return</span> <span class="n">compute_outcome_c4</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">last_action</span><span class="p">)</span></div>
 
     <span class="c1">#return compute_outcome_gomoku(m, n, board, extra_info, turn, last_action)    </span>
@@ -144,6 +181,7 @@
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.is_action_legal_c4">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">is_action_legal_c4</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">legal_actions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Functionality of function ``is_action_legal`` for the game of Connect 4.&quot;&quot;&quot;</span> 
     <span class="n">legal_actions</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">extra_info</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="k">else</span> <span class="kc">False</span></div>
 
     
@@ -151,6 +189,7 @@
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.take_action_c4">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">take_action_c4</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Functionality of function ``take_action`` for the game of Connect 4.&quot;&quot;&quot;</span>
     <span class="n">extra_info</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="n">row</span> <span class="o">=</span> <span class="n">m</span> <span class="o">-</span> <span class="n">extra_info</span><span class="p">[</span><span class="n">action</span><span class="p">]</span>
     <span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">action</span><span class="p">]</span> <span class="o">=</span> <span class="n">turn</span></div>
@@ -160,6 +199,7 @@
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.legal_actions_playout_c4">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">legal_actions_playout_c4</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">legal_actions_with_count</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Functionality of function ``legal_actions_playout`` for the game of Connect 4.&quot;&quot;&quot;</span>    
     <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">extra_info</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">:</span>            
@@ -172,6 +212,7 @@
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.take_action_playout_c4">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">take_action_playout_c4</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">action_ord</span><span class="p">,</span> <span class="n">legal_actions_with_count</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Functionality of function ``take_action_playout`` for the game of Connect 4.&quot;&quot;&quot;</span>
     <span class="n">extra_info</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="n">row</span> <span class="o">=</span> <span class="n">m</span> <span class="o">-</span> <span class="n">extra_info</span><span class="p">[</span><span class="n">action</span><span class="p">]</span>
     <span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">action</span><span class="p">]</span> <span class="o">=</span> <span class="n">turn</span></div>
@@ -180,7 +221,8 @@
 <div class="viewcode-block" id="compute_outcome_c4">
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.compute_outcome_c4">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">compute_outcome_c4</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">last_action</span><span class="p">):</span>    
+<span class="k">def</span> <span class="nf">compute_outcome_c4</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">last_action</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Functionality of function ``compute_outcome`` for the game of Connect 4.&quot;&quot;&quot;</span>    
     <span class="n">last_token</span> <span class="o">=</span> <span class="o">-</span><span class="n">turn</span>    
     <span class="n">j</span> <span class="o">=</span> <span class="n">last_action</span>            
     <span class="n">i</span> <span class="o">=</span> <span class="n">m</span> <span class="o">-</span> <span class="n">extra_info</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
@@ -246,6 +288,7 @@
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.is_action_legal_gomoku">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">is_action_legal_gomoku</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">legal_actions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Functionality of function ``is_action_legal`` for the game of Gomoku.&quot;&quot;&quot;</span>
     <span class="n">i</span> <span class="o">=</span> <span class="n">action</span> <span class="o">//</span> <span class="n">n</span>
     <span class="n">j</span> <span class="o">=</span> <span class="n">action</span> <span class="o">%</span> <span class="n">n</span>
     <span class="n">legal_actions</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">board</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span></div>
@@ -255,6 +298,7 @@
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.take_action_gomoku">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">take_action_gomoku</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Functionality of function ``take_action`` for the game of Gomoku.&quot;&quot;&quot;</span>
     <span class="n">i</span> <span class="o">=</span> <span class="n">action</span> <span class="o">//</span> <span class="n">n</span>
     <span class="n">j</span> <span class="o">=</span> <span class="n">action</span> <span class="o">%</span> <span class="n">n</span>
     <span class="n">board</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">turn</span></div>
@@ -264,6 +308,7 @@
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.legal_actions_playout_gomoku">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">legal_actions_playout_gomoku</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">legal_actions_with_count</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Functionality of function ``legal_actions_playout`` for the game of Gomoku.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">legal_actions_with_count</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># time-consuming board scan only if legal actions not established yet</span>
         <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span> 
         <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
@@ -280,6 +325,7 @@
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.take_action_playout_gomoku">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">take_action_playout_gomoku</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">action_ord</span><span class="p">,</span> <span class="n">legal_actions_with_count</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Functionality of function ``take_action_playout`` for the game of Gomoku.&quot;&quot;&quot;</span>
     <span class="n">i</span> <span class="o">=</span> <span class="n">action</span> <span class="o">//</span> <span class="n">n</span>
     <span class="n">j</span> <span class="o">=</span> <span class="n">action</span> <span class="o">%</span> <span class="n">n</span>
     <span class="n">board</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">turn</span>    
@@ -291,7 +337,8 @@
 <div class="viewcode-block" id="compute_outcome_gomoku">
 <a class="viewcode-back" href="../mctsnc_game_mechanics.html#mctsnc_game_mechanics.compute_outcome_gomoku">[docs]</a>
 <span class="nd">@cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">compute_outcome_gomoku</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">last_action</span><span class="p">):</span>    
+<span class="k">def</span> <span class="nf">compute_outcome_gomoku</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">extra_info</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">last_action</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Functionality of function ``compute_outcome`` for the game of Gomoku.&quot;&quot;&quot;</span>    
     <span class="n">last_token</span> <span class="o">=</span> <span class="o">-</span><span class="n">turn</span>    
     <span class="n">i</span> <span class="o">=</span> <span class="n">last_action</span> <span class="o">//</span> <span class="n">n</span>
     <span class="n">j</span> <span class="o">=</span> <span class="n">last_action</span> <span class="o">%</span> <span class="n">n</span>
