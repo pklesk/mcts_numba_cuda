@@ -21,7 +21,7 @@ The implementation uses: no atomic operations, no mutexes (lock-free), and very 
 In MCTS-NC, there are two main variants according to which it conducts multiple playouts: OCP (*One Child Playouts*), ACP (*All Children Playouts*). 
 Each of them has two subvariants, named "thrifty" and "prodigal".
 In both OCP and ACP, multiple independent trees are grown concurrently (for readability just two are shown in each illustration).
-Wavy arrows distinguished by colors represent CUDA threads working for different stages of MCTS algorithm:
+Wavy arrows distinguished by different colors represent CUDA threads working for different stages of MCTS algorithm:
 orange for selection, green for expansion, black for playouts, purple for backup. In MCTS-NC, threads are grouped in 
 CUDA blocks that are indexed either by tree indexes alone, or tree-action pairs, depending on the stage and variant / subvariant. 
 In the OCP variant, exactly one random child of each expanded leaf node (accross different trees) becomes played out. 
