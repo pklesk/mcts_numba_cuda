@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>plots module &mdash; MCTS-NC 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8d563738"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="utils module" href="utils.html" />
+    <link rel="prev" title="mctsnc_game_mechanics module" href="mctsnc_game_mechanics.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            MCTS-NC
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="c4.html">c4 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_runner.html">game_runner module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gomoku.html">gomoku module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcts.html">mcts module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc.html">mctsnc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mctsnc_game_mechanics.html">mctsnc_game_mechanics module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">plots module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#link-to-project-repository">Link to project repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.scores_array_plot"><code class="docutils literal notranslate"><span class="pre">scores_array_plot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.scores_array_plot_generator"><code class="docutils literal notranslate"><span class="pre">scores_array_plot_generator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.scores_array_plot_ocp_thrifty_vs_vanilla_c4"><code class="docutils literal notranslate"><span class="pre">scores_array_plot_ocp_thrifty_vs_vanilla_c4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.scores_array_plot_ocp_prodigal_vs_vanilla_c4"><code class="docutils literal notranslate"><span class="pre">scores_array_plot_ocp_prodigal_vs_vanilla_c4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.scores_array_plot_acp_thrifty_vs_vanilla_c4"><code class="docutils literal notranslate"><span class="pre">scores_array_plot_acp_thrifty_vs_vanilla_c4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.scores_array_plot_acp_prodigal_vs_vanilla"><code class="docutils literal notranslate"><span class="pre">scores_array_plot_acp_prodigal_vs_vanilla()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.best_action_plot"><code class="docutils literal notranslate"><span class="pre">best_action_plot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.best_action_plot_generator"><code class="docutils literal notranslate"><span class="pre">best_action_plot_generator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.depths_plot"><code class="docutils literal notranslate"><span class="pre">depths_plot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.depths_plot_generator"><code class="docutils literal notranslate"><span class="pre">depths_plot_generator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.averages_printout_generator"><code class="docutils literal notranslate"><span class="pre">averages_printout_generator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.averages_printout_5s_vanilla_c4"><code class="docutils literal notranslate"><span class="pre">averages_printout_5s_vanilla_c4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.averages_printout_5s_ocp_thrifty_c4"><code class="docutils literal notranslate"><span class="pre">averages_printout_5s_ocp_thrifty_c4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.averages_printout_5s_ocp_prodigal_c4"><code class="docutils literal notranslate"><span class="pre">averages_printout_5s_ocp_prodigal_c4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.averages_printout_5s_acp_thrifty_c4"><code class="docutils literal notranslate"><span class="pre">averages_printout_5s_acp_thrifty_c4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.averages_printout_5s_acp_prodigal_c4"><code class="docutils literal notranslate"><span class="pre">averages_printout_5s_acp_prodigal_c4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.averages_printout_30s_vanilla_gomoku"><code class="docutils literal notranslate"><span class="pre">averages_printout_30s_vanilla_gomoku()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.averages_printout_30s_ocp_thrifty_gomoku"><code class="docutils literal notranslate"><span class="pre">averages_printout_30s_ocp_thrifty_gomoku()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.averages_printout_30s_ocp_prodigal_gomoku"><code class="docutils literal notranslate"><span class="pre">averages_printout_30s_ocp_prodigal_gomoku()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.averages_printout_30s_acp_thrifty_gomoku"><code class="docutils literal notranslate"><span class="pre">averages_printout_30s_acp_thrifty_gomoku()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plots.averages_printout_30s_acp_prodigal_gomoku"><code class="docutils literal notranslate"><span class="pre">averages_printout_30s_acp_prodigal_gomoku()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MCTS-NC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+      <li class="breadcrumb-item active">plots module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/plots.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-plots">
+<span id="plots-module"></span><h1>plots module<a class="headerlink" href="#module-plots" title="Link to this heading"></a></h1>
+<p>Auxiliary module with utility functions for plots related MCTS-NC project and its experiments.</p>
+<section id="link-to-project-repository">
+<h2>Link to project repository<a class="headerlink" href="#link-to-project-repository" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://github.com/pklesk/mcts_numba_cuda">https://github.com/pklesk/mcts_numba_cuda</a></p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.scores_array_plot">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">scores_array_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">details</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ticks_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ticks_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#scores_array_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.scores_array_plot" title="Link to this definition"></a></dt>
+<dd><p>Displays an array-like plot - a color map with averages of: scores, steps and depths - based on data from several experiments.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.scores_array_plot_generator">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">scores_array_plot_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiments_hs_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ticks_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ticks_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#scores_array_plot_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.scores_array_plot_generator" title="Link to this definition"></a></dt>
+<dd><p>Reads data from several experiments computes averages of scores, steps and depths and generates an array-like plot by calling <code class="docutils literal notranslate"><span class="pre">scores_array_plot</span></code> function.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.scores_array_plot_ocp_thrifty_vs_vanilla_c4">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">scores_array_plot_ocp_thrifty_vs_vanilla_c4</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#scores_array_plot_ocp_thrifty_vs_vanilla_c4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.scores_array_plot_ocp_thrifty_vs_vanilla_c4" title="Link to this definition"></a></dt>
+<dd><p>Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: ocp_thrifty vs vanilla (Connect 4).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.scores_array_plot_ocp_prodigal_vs_vanilla_c4">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">scores_array_plot_ocp_prodigal_vs_vanilla_c4</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#scores_array_plot_ocp_prodigal_vs_vanilla_c4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.scores_array_plot_ocp_prodigal_vs_vanilla_c4" title="Link to this definition"></a></dt>
+<dd><p>Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: ocp_prodigal vs vanilla (Connect 4).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.scores_array_plot_acp_thrifty_vs_vanilla_c4">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">scores_array_plot_acp_thrifty_vs_vanilla_c4</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#scores_array_plot_acp_thrifty_vs_vanilla_c4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.scores_array_plot_acp_thrifty_vs_vanilla_c4" title="Link to this definition"></a></dt>
+<dd><p>Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: acp_thrifty vs vanilla (Connect 4).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.scores_array_plot_acp_prodigal_vs_vanilla">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">scores_array_plot_acp_prodigal_vs_vanilla</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#scores_array_plot_acp_prodigal_vs_vanilla"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.scores_array_plot_acp_prodigal_vs_vanilla" title="Link to this definition"></a></dt>
+<dd><p>Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: acp_prodigal vs vanilla (Connect 4).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.best_action_plot">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">best_action_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moves_rounds_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qs_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucbs_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moves_rounds_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qs_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucbs_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_qs_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_ucbs_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_qs_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_ucbs_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucbs_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucbs_black_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucbs_white_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#best_action_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.best_action_plot" title="Link to this definition"></a></dt>
+<dd><p>Displays plot of estimates on best actions’ values (and their UCBs) along a given game.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.best_action_plot_generator">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">best_action_plot_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiments_hs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_qs_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_ucbs_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_qs_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_ucbs_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucbs_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucbs_black_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucbs_white_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#best_action_plot_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.best_action_plot_generator" title="Link to this definition"></a></dt>
+<dd><p>Reads data from an experiment and generates a ‘best action plot’ by calling <code class="docutils literal notranslate"><span class="pre">best_action_plot</span></code> function.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.depths_plot">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">depths_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moves_rounds_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_depths_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depths_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moves_rounds_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_depths_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depths_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_mean_depths_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_max_depths_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_mean_depths_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_max_depths_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#depths_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.depths_plot" title="Link to this definition"></a></dt>
+<dd><p>Displays plot of averages of reached depths (mean and maximum) along a given game.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.depths_plot_generator">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">depths_plot_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiments_hs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_mean_depths_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_max_depths_black</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_mean_depths_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_max_depths_white</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#depths_plot_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.depths_plot_generator" title="Link to this definition"></a></dt>
+<dd><p>Reads data from an experiment and generates a ‘depths plot’ by calling <code class="docutils literal notranslate"><span class="pre">best_action_plot</span></code> function.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.averages_printout_generator">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">averages_printout_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiments_hs_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ai_instance_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#averages_printout_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.averages_printout_generator" title="Link to this definition"></a></dt>
+<dd><p>Prints out averages of: playouts / steps and mean / maximum depths for a given series of experiments.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.averages_printout_5s_vanilla_c4">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">averages_printout_5s_vanilla_c4</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#averages_printout_5s_vanilla_c4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.averages_printout_5s_vanilla_c4" title="Link to this definition"></a></dt>
+<dd><p>Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s vanilla (Connect 4).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.averages_printout_5s_ocp_thrifty_c4">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">averages_printout_5s_ocp_thrifty_c4</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#averages_printout_5s_ocp_thrifty_c4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.averages_printout_5s_ocp_thrifty_c4" title="Link to this definition"></a></dt>
+<dd><p>Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s ocp_thrifty (Connect 4).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.averages_printout_5s_ocp_prodigal_c4">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">averages_printout_5s_ocp_prodigal_c4</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#averages_printout_5s_ocp_prodigal_c4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.averages_printout_5s_ocp_prodigal_c4" title="Link to this definition"></a></dt>
+<dd><p>Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s ocp_prodigal (Connect 4).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.averages_printout_5s_acp_thrifty_c4">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">averages_printout_5s_acp_thrifty_c4</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#averages_printout_5s_acp_thrifty_c4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.averages_printout_5s_acp_thrifty_c4" title="Link to this definition"></a></dt>
+<dd><p>Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s acp_thrifty (Connect 4).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.averages_printout_5s_acp_prodigal_c4">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">averages_printout_5s_acp_prodigal_c4</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#averages_printout_5s_acp_prodigal_c4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.averages_printout_5s_acp_prodigal_c4" title="Link to this definition"></a></dt>
+<dd><p>Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s acp_prodigal (Connect 4).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.averages_printout_30s_vanilla_gomoku">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">averages_printout_30s_vanilla_gomoku</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#averages_printout_30s_vanilla_gomoku"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.averages_printout_30s_vanilla_gomoku" title="Link to this definition"></a></dt>
+<dd><p>Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s vanilla (Gomoku).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.averages_printout_30s_ocp_thrifty_gomoku">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">averages_printout_30s_ocp_thrifty_gomoku</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#averages_printout_30s_ocp_thrifty_gomoku"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.averages_printout_30s_ocp_thrifty_gomoku" title="Link to this definition"></a></dt>
+<dd><p>Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s ocp_thrifty (Gomoku).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.averages_printout_30s_ocp_prodigal_gomoku">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">averages_printout_30s_ocp_prodigal_gomoku</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#averages_printout_30s_ocp_prodigal_gomoku"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.averages_printout_30s_ocp_prodigal_gomoku" title="Link to this definition"></a></dt>
+<dd><p>Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s ocp_prodigal (Gomoku).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.averages_printout_30s_acp_thrifty_gomoku">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">averages_printout_30s_acp_thrifty_gomoku</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#averages_printout_30s_acp_thrifty_gomoku"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.averages_printout_30s_acp_thrifty_gomoku" title="Link to this definition"></a></dt>
+<dd><p>Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s acp_thrifty (Gomoku).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.averages_printout_30s_acp_prodigal_gomoku">
+<span class="sig-prename descclassname"><span class="pre">plots.</span></span><span class="sig-name descname"><span class="pre">averages_printout_30s_acp_prodigal_gomoku</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#averages_printout_30s_acp_prodigal_gomoku"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.averages_printout_30s_acp_prodigal_gomoku" title="Link to this definition"></a></dt>
+<dd><p>Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s acp_prodigal (Gomoku).</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mctsnc_game_mechanics.html" class="btn btn-neutral float-left" title="mctsnc_game_mechanics module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="utils.html" class="btn btn-neutral float-right" title="utils module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Przemysław Klęsk.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

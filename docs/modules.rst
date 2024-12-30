@@ -11,4 +11,5 @@ src
    mcts
    mctsnc
    mctsnc_game_mechanics
+   plots
    utils

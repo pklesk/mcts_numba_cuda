@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>plots &mdash; MCTS-NC 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=8d563738"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MCTS-NC
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MCTS-NC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">plots</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for plots</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Auxiliary module with utility functions for plots related MCTS-NC project and its experiments.</span>
+
+<span class="sd">Link to project repository</span>
+<span class="sd">--------------------------</span>
+<span class="sd">`https://github.com/pklesk/mcts_numba_cuda &lt;https://github.com/pklesk/mcts_numba_cuda&gt;`_ </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">MultipleLocator</span><span class="p">,</span> <span class="n">FixedLocator</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">unzip_and_load_experiment</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Przemysław Klęsk&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;pklesk@zut.edu.pl&quot;</span>
+
+<span class="n">FOLDER_EXPERIMENTS</span> <span class="o">=</span> <span class="s2">&quot;../experiments/&quot;</span>
+<span class="n">FOLDER_EXTRAS</span> <span class="o">=</span> <span class="s2">&quot;../extras/&quot;</span>
+
+<div class="viewcode-block" id="scores_array_plot">
+<a class="viewcode-back" href="../plots.html#plots.scores_array_plot">[docs]</a>
+<span class="k">def</span> <span class="nf">scores_array_plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">ticks_x</span><span class="p">,</span> <span class="n">ticks_y</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Displays an array-like plot - a color map with averages of: scores, steps and depths - based on data from several experiments.&quot;&quot;&quot;</span>     
+    <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="n">fontsize_title</span> <span class="o">=</span> <span class="mi">21</span>
+    <span class="n">fontsize_ticks</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">fontsize_labels</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">fontsize_main</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">fontsize_details</span> <span class="o">=</span> <span class="mi">11</span>       
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>    
+    
+    <span class="n">mean_of_avgs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+    <span class="n">title</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[</span><span class="si">{</span><span class="n">mean_of_avgs</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% : </span><span class="si">{</span><span class="p">(</span><span class="mf">1.0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">mean_of_avgs</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%]&quot;</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_title</span><span class="p">)</span>
+            
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;coolwarm&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>    
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">label_x</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_labels</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">label_y</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_labels</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">ticks</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">labels</span><span class="o">=</span><span class="n">ticks_x</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_ticks</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">ticks</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">labels</span><span class="o">=</span><span class="n">ticks_y</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_ticks</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_main</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">details</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">details</span><span class="p">)):</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span> <span class="o">-</span> <span class="mf">0.25</span> <span class="o">-</span> <span class="mf">0.15</span> <span class="o">*</span> <span class="n">k</span><span class="p">,</span> <span class="n">details</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_details</span><span class="p">)</span>            
+                             
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> 
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="scores_array_plot_generator">
+<a class="viewcode-back" href="../plots.html#plots.scores_array_plot_generator">[docs]</a>
+<span class="k">def</span> <span class="nf">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">ticks_x</span><span class="p">,</span> <span class="n">ticks_y</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads data from several experiments computes averages of scores, steps and depths and generates an array-like plot by calling ``scores_array_plot`` function.&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SCORES-ARRAY-PLOT GENERATOR...&quot;</span><span class="p">)</span>    
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">details_playouts_steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">details_depths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>    
+    <span class="n">ref_playouts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ref_steps</span> <span class="o">=</span> <span class="p">[]</span>            
+    <span class="n">ref_mean_depths</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ref_max_depths</span> <span class="o">=</span> <span class="p">[]</span>    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">experiment_info</span> <span class="o">=</span> <span class="n">unzip_and_load_experiment</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">FOLDER_EXPERIMENTS</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">experiment_info</span><span class="p">[</span><span class="s2">&quot;stats&quot;</span><span class="p">][</span><span class="s2">&quot;score_b_mean&quot;</span><span class="p">]</span>
+            <span class="n">n_games</span> <span class="o">=</span> <span class="n">experiment_info</span><span class="p">[</span><span class="s2">&quot;matchup_info&quot;</span><span class="p">][</span><span class="s2">&quot;n_games&quot;</span><span class="p">]</span>
+            <span class="n">playouts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">steps</span> <span class="o">=</span> <span class="p">[]</span>            
+            <span class="n">mean_depths</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">max_depths</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_games</span><span class="p">):</span>
+                <span class="n">moves_rounds</span> <span class="o">=</span> <span class="n">experiment_info</span><span class="p">[</span><span class="s2">&quot;games_infos&quot;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">g</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="s2">&quot;moves_rounds&quot;</span><span class="p">]</span>
+                <span class="n">main_player_prefix</span> <span class="o">=</span> <span class="s2">&quot;white_&quot;</span> <span class="k">if</span> <span class="n">g</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;black_&quot;</span>
+                <span class="n">ref_player_prefix</span> <span class="o">=</span> <span class="s2">&quot;white_&quot;</span> <span class="k">if</span> <span class="n">g</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;black_&quot;</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">moves_rounds</span><span class="p">)):</span>
+                    <span class="n">moves_round</span> <span class="o">=</span> <span class="n">moves_rounds</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+                    <span class="n">mppi</span> <span class="o">=</span> <span class="n">main_player_prefix</span> <span class="o">+</span> <span class="s2">&quot;performance_info&quot;</span>
+                    <span class="k">if</span> <span class="n">mppi</span> <span class="ow">in</span> <span class="n">moves_round</span><span class="p">:</span>
+                        <span class="n">playouts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moves_round</span><span class="p">[</span><span class="n">mppi</span><span class="p">][</span><span class="s2">&quot;playouts&quot;</span><span class="p">])</span>
+                        <span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moves_round</span><span class="p">[</span><span class="n">mppi</span><span class="p">][</span><span class="s2">&quot;steps&quot;</span><span class="p">])</span>
+                        <span class="n">trees_key</span> <span class="o">=</span> <span class="s2">&quot;trees&quot;</span> <span class="k">if</span> <span class="s2">&quot;trees&quot;</span> <span class="ow">in</span> <span class="n">moves_round</span><span class="p">[</span><span class="n">mppi</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;tree&quot;</span>
+                        <span class="n">mean_depths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moves_round</span><span class="p">[</span><span class="n">mppi</span><span class="p">][</span><span class="n">trees_key</span><span class="p">][</span><span class="s2">&quot;mean_depth&quot;</span><span class="p">])</span>
+                        <span class="n">max_depths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moves_round</span><span class="p">[</span><span class="n">mppi</span><span class="p">][</span><span class="n">trees_key</span><span class="p">][</span><span class="s2">&quot;max_depth&quot;</span><span class="p">])</span>
+                    <span class="n">rppi</span> <span class="o">=</span> <span class="n">ref_player_prefix</span> <span class="o">+</span> <span class="s2">&quot;performance_info&quot;</span>
+                    <span class="k">if</span> <span class="n">rppi</span> <span class="ow">in</span> <span class="n">moves_round</span><span class="p">:</span>
+                        <span class="n">ref_playouts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moves_round</span><span class="p">[</span><span class="n">rppi</span><span class="p">][</span><span class="s2">&quot;playouts&quot;</span><span class="p">])</span>
+                        <span class="n">ref_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moves_round</span><span class="p">[</span><span class="n">rppi</span><span class="p">][</span><span class="s2">&quot;steps&quot;</span><span class="p">])</span>
+                        <span class="n">trees_key</span> <span class="o">=</span> <span class="s2">&quot;trees&quot;</span> <span class="k">if</span> <span class="s2">&quot;trees&quot;</span> <span class="ow">in</span> <span class="n">moves_round</span><span class="p">[</span><span class="n">rppi</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;tree&quot;</span>
+                        <span class="n">ref_mean_depths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moves_round</span><span class="p">[</span><span class="n">rppi</span><span class="p">][</span><span class="s2">&quot;tree&quot;</span><span class="p">][</span><span class="s2">&quot;mean_depth&quot;</span><span class="p">])</span>
+                        <span class="n">ref_max_depths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moves_round</span><span class="p">[</span><span class="n">rppi</span><span class="p">][</span><span class="s2">&quot;tree&quot;</span><span class="p">][</span><span class="s2">&quot;max_depth&quot;</span><span class="p">])</span>                    
+            <span class="n">details_playouts_steps</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">playouts</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">M/</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="o">**</span><span class="mi">3</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">k&quot;</span>
+            <span class="n">details_depths</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">mean_depths</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">max_depths</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">details</span> <span class="o">=</span> <span class="p">[</span><span class="n">details_playouts_steps</span><span class="p">,</span> <span class="n">details_depths</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[reference player details: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ref_playouts</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ref_steps</span><span class="p">)</span><span class="si">}</span><span class="s2">; </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ref_mean_depths</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ref_max_depths</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SCORES-ARRAY-PLOT GENERATOR DONE.&quot;</span><span class="p">)</span>        
+    <span class="n">scores_array_plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">ticks_x</span><span class="p">,</span> <span class="n">ticks_y</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="scores_array_plot_ocp_thrifty_vs_vanilla_c4">
+<a class="viewcode-back" href="../plots.html#plots.scores_array_plot_ocp_thrifty_vs_vanilla_c4">[docs]</a>
+<span class="k">def</span> <span class="nf">scores_array_plot_ocp_thrifty_vs_vanilla_c4</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: ocp_thrifty vs vanilla (Connect 4).&quot;&quot;&quot;</span>
+    <span class="n">experiments_hs_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[</span><span class="s2">&quot;3505711246_84404_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;2363630254_99540_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;2779060134_98220_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;2226899934_08164_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;1674136622_62772_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;0532055630_45204_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;2757986856_45550_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;2205826656_55494_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;2305954670_86804_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;1163873678_01940_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;2715840300_72914_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;2163680100_50154_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;3569590766_67572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;2427509774_50004_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;2631547188_62234_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;2079386988_72178_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">]</span>
+        <span class="p">])</span>
+    <span class="n">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;$T$ (n_trees)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="s2">&quot;OCP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">)</span>    </div>
+
+
+<div class="viewcode-block" id="scores_array_plot_ocp_prodigal_vs_vanilla_c4">
+<a class="viewcode-back" href="../plots.html#plots.scores_array_plot_ocp_prodigal_vs_vanilla_c4">[docs]</a>
+<span class="k">def</span> <span class="nf">scores_array_plot_ocp_prodigal_vs_vanilla_c4</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: ocp_prodigal vs vanilla (Connect 4).&quot;&quot;&quot;</span>    
+    <span class="n">experiments_hs_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[</span><span class="s2">&quot;3195982906_82784_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;0037595196_43010_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;0224716614_77068_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;3595406278_71788_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;3174909628_30114_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;0016521918_90340_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;1969956518_67564_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;1045678886_62284_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;3132763072_24774_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>         
+         <span class="s2">&quot;4269342658_85000_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;1165469030_15852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;3048469960_46798_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;4185049546_07024_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;3851461350_45132_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;2927183718_39852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">]</span>
+        <span class="p">])</span>
+    <span class="n">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;$T$ (n_trees)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="s2">&quot;OCP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="scores_array_plot_acp_thrifty_vs_vanilla_c4">
+<a class="viewcode-back" href="../plots.html#plots.scores_array_plot_acp_thrifty_vs_vanilla_c4">[docs]</a>
+<span class="k">def</span> <span class="nf">scores_array_plot_acp_thrifty_vs_vanilla_c4</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: acp_thrifty vs vanilla (Connect 4).&quot;&quot;&quot;</span>
+    <span class="n">experiments_hs_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[</span><span class="s2">&quot;0225178830_78932_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;3378065134_94068_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;1096823050_67120_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>         
+         <span class="s2">&quot;0544662850_44360_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;2688571502_57300_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;1546490510_39732_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;1075749772_14450_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;0523589572_91690_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;3320389550_81332_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>         
+         <span class="s2">&quot;2178308558_96468_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;1033603216_09110_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;0481443016_19054_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;0289058350_62100_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;3441944654_44532_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;0949310104_31134_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;0397149904_08374_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">]</span>
+        <span class="p">])</span>
+    <span class="n">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;$T$ (n_trees)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="s2">&quot;ACP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="scores_array_plot_acp_prodigal_vs_vanilla">
+<a class="viewcode-back" href="../plots.html#plots.scores_array_plot_acp_prodigal_vs_vanilla">[docs]</a>
+<span class="k">def</span> <span class="nf">scores_array_plot_acp_prodigal_vs_vanilla</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: acp_prodigal vs vanilla (Connect 4).&quot;&quot;&quot;</span>        
+    <span class="n">experiments_hs_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[</span><span class="s2">&quot;2586240854_62716_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;3722820440_90238_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;2273463942_77772_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_128_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;1349186310_72492_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_256_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;2565167576_10046_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_32_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;3701747162_70272_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_64_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;4018703846_35564_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_128_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;3094426214_62988_048_[mcts_5_inf_vanilla;mctsnc_1_inf_2_256_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;2523021020_04706_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_32_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>                  
+         <span class="s2">&quot;3659600606_64932_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_64_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;3214216358_16556_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_128_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;2289938726_11276_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;2438727908_26730_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_32_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;3575307494_54252_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_64_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;1605241382_13132_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;0680963750_07852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">]</span>
+        <span class="p">])</span>
+    <span class="n">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;$T$ (n_trees)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="s2">&quot;ACP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">)</span>    </div>
+
+
+<div class="viewcode-block" id="best_action_plot">
+<a class="viewcode-back" href="../plots.html#plots.best_action_plot">[docs]</a>
+<span class="k">def</span> <span class="nf">best_action_plot</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">,</span> <span class="n">qs_black</span><span class="p">,</span> <span class="n">ucbs_black</span><span class="p">,</span> <span class="n">moves_rounds_white</span><span class="p">,</span> <span class="n">qs_white</span><span class="p">,</span> <span class="n">ucbs_white</span><span class="p">,</span> 
+                     <span class="n">label_qs_black</span><span class="p">,</span> <span class="n">label_ucbs_black</span><span class="p">,</span> <span class="n">label_qs_white</span><span class="p">,</span> <span class="n">label_ucbs_white</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">title_1</span><span class="p">,</span> <span class="n">title_2</span><span class="p">,</span>
+                     <span class="n">ucbs_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ucbs_black_color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ucbs_white_color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Displays plot of estimates on best actions&#39; values (and their UCBs) along a given game.&quot;&quot;&quot;</span>    
+    <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">)</span>        
+    <span class="n">fontsize_suptitle</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">fontsize_title</span> <span class="o">=</span> <span class="mi">21</span>
+    <span class="n">fontsize_ticks</span> <span class="o">=</span> <span class="mf">8.5</span>
+    <span class="n">fontsize_labels</span> <span class="o">=</span> <span class="mi">18</span>
+    <span class="n">fontsize_legend</span> <span class="o">=</span> <span class="mi">11</span>
+    <span class="n">grid_color</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span> 
+    <span class="n">grid_dashes</span> <span class="o">=</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">)</span>
+    <span class="n">legend_loc</span> <span class="o">=</span> <span class="s2">&quot;best&quot;</span> <span class="c1"># &quot;upper left&quot;</span>
+    <span class="n">legend_handlelength</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">legend_labelspacing</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">alpha_ucb</span><span class="o">=</span><span class="mf">0.25</span>
+    <span class="n">markersize</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">title_1</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title_1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_suptitle</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">title_2</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title_2</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_title</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ucbs_black_color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ucbs_black_color</span> <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+    <span class="k">if</span> <span class="n">ucbs_white_color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ucbs_white_color</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>                
+    <span class="n">markers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;marker&quot;</span><span class="p">:</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;markersize&quot;</span><span class="p">:</span> <span class="n">markersize</span><span class="p">}</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">,</span> <span class="n">qs_black</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label_qs_black</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">markers</span><span class="p">)</span>    
+    <span class="n">ucbs_black</span> <span class="o">=</span> <span class="n">ucbs_factor</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ucbs_black</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">qs_black</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">qs_black</span><span class="p">)</span>     
+    <span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">,</span> <span class="n">qs_black</span><span class="p">,</span> <span class="n">ucbs_black</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">ucbs_black_color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha_ucb</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label_ucbs_black</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">moves_rounds_white</span><span class="p">,</span> <span class="n">qs_white</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label_qs_white</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">markers</span><span class="p">)</span>
+    <span class="n">ucbs_white</span> <span class="o">=</span> <span class="n">ucbs_factor</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ucbs_white</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">qs_white</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">qs_white</span><span class="p">)</span>    
+    <span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">moves_rounds_white</span><span class="p">,</span> <span class="n">qs_white</span><span class="p">,</span> <span class="n">ucbs_white</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">ucbs_white_color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label_ucbs_white</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">label_x</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_labels</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">label_y</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_labels</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">legend_loc</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">fontsize_legend</span><span class="p">},</span> <span class="n">handlelength</span><span class="o">=</span><span class="n">legend_handlelength</span><span class="p">,</span> <span class="n">labelspacing</span><span class="o">=</span><span class="n">legend_labelspacing</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">FixedLocator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.125</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">)))</span>
+    <span class="n">ticks_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">moves_rounds_white</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">ticks_x</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_ticks</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_ticks</span><span class="p">)</span>    
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">grid_color</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dashes</span><span class="o">=</span><span class="n">grid_dashes</span><span class="p">)</span>  
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span> 
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+    
+<div class="viewcode-block" id="best_action_plot_generator">
+<a class="viewcode-back" href="../plots.html#plots.best_action_plot_generator">[docs]</a>
+<span class="k">def</span> <span class="nf">best_action_plot_generator</span><span class="p">(</span><span class="n">experiments_hs</span><span class="p">,</span> <span class="n">game_index</span><span class="p">,</span> 
+                               <span class="n">label_qs_black</span><span class="p">,</span> <span class="n">label_ucbs_black</span><span class="p">,</span> <span class="n">label_qs_white</span><span class="p">,</span> <span class="n">label_ucbs_white</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">title_1</span><span class="p">,</span> <span class="n">title_2</span><span class="p">,</span>
+                               <span class="n">ucbs_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ucbs_black_color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ucbs_white_color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads data from an experiment and generates a &#39;best action plot&#39; by calling ``best_action_plot`` function.&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;BEST-ACTION-PLOT GENERATOR...&quot;</span><span class="p">)</span> 
+    <span class="n">experiment_info</span> <span class="o">=</span> <span class="n">unzip_and_load_experiment</span><span class="p">(</span><span class="n">experiments_hs</span><span class="p">,</span> <span class="n">FOLDER_EXPERIMENTS</span><span class="p">)</span>
+    <span class="n">moves_rounds</span> <span class="o">=</span> <span class="n">experiment_info</span><span class="p">[</span><span class="s2">&quot;games_infos&quot;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">game_index</span><span class="p">)][</span><span class="s2">&quot;moves_rounds&quot;</span><span class="p">]</span>
+    <span class="n">n_rounds</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">moves_rounds</span><span class="p">)</span>
+    <span class="n">moves_rounds_black</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">qs_black</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ucbs_black</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">moves_rounds_white</span> <span class="o">=</span> <span class="p">[]</span> 
+    <span class="n">qs_white</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ucbs_white</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rounds</span><span class="p">):</span>
+        <span class="n">mr</span> <span class="o">=</span> <span class="n">moves_rounds</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">moves_rounds_black</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">qs_black</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mr</span><span class="p">[</span><span class="s2">&quot;black_best_action_info&quot;</span><span class="p">][</span><span class="s2">&quot;q&quot;</span><span class="p">])</span>
+        <span class="n">ucbs_black</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mr</span><span class="p">[</span><span class="s2">&quot;black_best_action_info&quot;</span><span class="p">][</span><span class="s2">&quot;ucb&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;white_best_action_info&quot;</span> <span class="ow">in</span> <span class="n">mr</span><span class="p">:</span>
+            <span class="n">moves_rounds_white</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mf">1.5</span><span class="p">)</span>
+            <span class="n">qs_white</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mr</span><span class="p">[</span><span class="s2">&quot;white_best_action_info&quot;</span><span class="p">][</span><span class="s2">&quot;q&quot;</span><span class="p">])</span>
+            <span class="n">ucbs_white</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">mr</span><span class="p">[</span><span class="s2">&quot;white_best_action_info&quot;</span><span class="p">][</span><span class="s2">&quot;ucb&quot;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;BEST-ACTION-PLOT GENERATOR DONE&quot;</span><span class="p">)</span>
+    <span class="n">best_action_plot</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">,</span> <span class="n">qs_black</span><span class="p">,</span> <span class="n">ucbs_black</span><span class="p">,</span> <span class="n">moves_rounds_white</span><span class="p">,</span> <span class="n">qs_white</span><span class="p">,</span> <span class="n">ucbs_white</span><span class="p">,</span> 
+                     <span class="n">label_qs_black</span><span class="p">,</span> <span class="n">label_ucbs_black</span><span class="p">,</span> <span class="n">label_qs_white</span><span class="p">,</span> <span class="n">label_ucbs_white</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">title_1</span><span class="p">,</span> <span class="n">title_2</span><span class="p">,</span> <span class="n">ucbs_factor</span><span class="p">,</span> <span class="n">ucbs_black_color</span><span class="p">,</span> <span class="n">ucbs_white_color</span><span class="p">)</span>    </div>
+
+
+<div class="viewcode-block" id="depths_plot">
+<a class="viewcode-back" href="../plots.html#plots.depths_plot">[docs]</a>
+<span class="k">def</span> <span class="nf">depths_plot</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">,</span> <span class="n">mean_depths_black</span><span class="p">,</span> <span class="n">max_depths_black</span><span class="p">,</span> <span class="n">moves_rounds_white</span><span class="p">,</span> <span class="n">mean_depths_white</span><span class="p">,</span> <span class="n">max_depths_white</span><span class="p">,</span> 
+                <span class="n">label_mean_depths_black</span><span class="p">,</span> <span class="n">label_max_depths_black</span><span class="p">,</span> <span class="n">label_mean_depths_white</span><span class="p">,</span> <span class="n">label_max_depths_white</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">title_1</span><span class="p">,</span> <span class="n">title_2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Displays plot of averages of reached depths (mean and maximum) along a given game.&quot;&quot;&quot;</span>    
+    <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">)</span>        
+    <span class="n">fontsize_suptitle</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">fontsize_title</span> <span class="o">=</span> <span class="mi">21</span>
+    <span class="n">fontsize_ticks</span> <span class="o">=</span> <span class="mf">8.5</span>
+    <span class="n">fontsize_labels</span> <span class="o">=</span> <span class="mi">18</span>
+    <span class="n">fontsize_legend</span> <span class="o">=</span> <span class="mi">11</span>
+    <span class="n">grid_color</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span> 
+    <span class="n">grid_dashes</span> <span class="o">=</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">)</span>
+    <span class="n">legend_loc</span> <span class="o">=</span> <span class="s2">&quot;best&quot;</span> <span class="c1"># &quot;lower left&quot;</span>
+    <span class="n">legend_handlelength</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">legend_labelspacing</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">alpha_ucb</span><span class="o">=</span><span class="mf">0.25</span>
+    <span class="n">markersize</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">title_1</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title_1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_suptitle</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">title_2</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title_2</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_title</span><span class="p">)</span>
+    <span class="n">markers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;marker&quot;</span><span class="p">:</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;markersize&quot;</span><span class="p">:</span> <span class="n">markersize</span><span class="p">}</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">,</span> <span class="n">mean_depths_black</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label_mean_depths_black</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">markers</span><span class="p">)</span>    
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">,</span> <span class="n">max_depths_black</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label_max_depths_black</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">markers</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>    
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">moves_rounds_white</span><span class="p">,</span> <span class="n">mean_depths_white</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label_mean_depths_white</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">markers</span><span class="p">)</span>    
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">moves_rounds_white</span><span class="p">,</span> <span class="n">max_depths_white</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label_max_depths_white</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">markers</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">label_x</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_labels</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">label_y</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_labels</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">legend_loc</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">fontsize_legend</span><span class="p">},</span> <span class="n">handlelength</span><span class="o">=</span><span class="n">legend_handlelength</span><span class="p">,</span> <span class="n">labelspacing</span><span class="o">=</span><span class="n">legend_labelspacing</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>    
+    <span class="n">ticks_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">moves_rounds_white</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">ticks_x</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_ticks</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_ticks</span><span class="p">)</span>        
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">grid_color</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dashes</span><span class="o">=</span><span class="n">grid_dashes</span><span class="p">)</span>  
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="depths_plot_generator">
+<a class="viewcode-back" href="../plots.html#plots.depths_plot_generator">[docs]</a>
+<span class="k">def</span> <span class="nf">depths_plot_generator</span><span class="p">(</span><span class="n">experiments_hs</span><span class="p">,</span> <span class="n">game_index</span><span class="p">,</span> 
+                          <span class="n">label_mean_depths_black</span><span class="p">,</span> <span class="n">label_max_depths_black</span><span class="p">,</span> <span class="n">label_mean_depths_white</span><span class="p">,</span> <span class="n">label_max_depths_white</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">title_1</span><span class="p">,</span> <span class="n">title_2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads data from an experiment and generates a &#39;depths plot&#39; by calling ``best_action_plot`` function.&quot;&quot;&quot;</span>    
+    <span class="n">experiment_info</span> <span class="o">=</span> <span class="n">unzip_and_load_experiment</span><span class="p">(</span><span class="n">experiments_hs</span><span class="p">,</span> <span class="n">FOLDER_EXPERIMENTS</span><span class="p">)</span>
+    <span class="n">moves_rounds</span> <span class="o">=</span> <span class="n">experiment_info</span><span class="p">[</span><span class="s2">&quot;games_infos&quot;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">game_index</span><span class="p">)][</span><span class="s2">&quot;moves_rounds&quot;</span><span class="p">]</span>
+    <span class="n">n_rounds</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">moves_rounds</span><span class="p">)</span>
+    <span class="n">moves_rounds_black</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">mean_depths_black</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">max_depths_black</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">moves_rounds_white</span> <span class="o">=</span> <span class="p">[]</span>     
+    <span class="n">mean_depths_white</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">max_depths_white</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rounds</span><span class="p">):</span>
+        <span class="n">mr</span> <span class="o">=</span> <span class="n">moves_rounds</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">moves_rounds_black</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">trees_key</span> <span class="o">=</span> <span class="s2">&quot;trees&quot;</span> <span class="k">if</span> <span class="s2">&quot;trees&quot;</span> <span class="ow">in</span> <span class="n">mr</span><span class="p">[</span><span class="s2">&quot;black_performance_info&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;tree&quot;</span>        
+        <span class="n">mean_depths_black</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mr</span><span class="p">[</span><span class="s2">&quot;black_performance_info&quot;</span><span class="p">][</span><span class="n">trees_key</span><span class="p">][</span><span class="s2">&quot;mean_depth&quot;</span><span class="p">])</span>
+        <span class="n">max_depths_black</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mr</span><span class="p">[</span><span class="s2">&quot;black_performance_info&quot;</span><span class="p">][</span><span class="n">trees_key</span><span class="p">][</span><span class="s2">&quot;max_depth&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;white_best_action_info&quot;</span> <span class="ow">in</span> <span class="n">mr</span><span class="p">:</span>
+            <span class="n">moves_rounds_white</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mf">1.5</span><span class="p">)</span>
+            <span class="n">trees_key</span> <span class="o">=</span> <span class="s2">&quot;trees&quot;</span> <span class="k">if</span> <span class="s2">&quot;trees&quot;</span> <span class="ow">in</span> <span class="n">mr</span><span class="p">[</span><span class="s2">&quot;white_performance_info&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;tree&quot;</span>        
+            <span class="n">mean_depths_white</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mr</span><span class="p">[</span><span class="s2">&quot;white_performance_info&quot;</span><span class="p">][</span><span class="n">trees_key</span><span class="p">][</span><span class="s2">&quot;mean_depth&quot;</span><span class="p">])</span>
+            <span class="n">max_depths_white</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mr</span><span class="p">[</span><span class="s2">&quot;white_performance_info&quot;</span><span class="p">][</span><span class="n">trees_key</span><span class="p">][</span><span class="s2">&quot;max_depth&quot;</span><span class="p">])</span>
+    <span class="n">depths_plot</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">,</span> <span class="n">mean_depths_black</span><span class="p">,</span> <span class="n">max_depths_black</span><span class="p">,</span> <span class="n">moves_rounds_white</span><span class="p">,</span> <span class="n">mean_depths_white</span><span class="p">,</span> <span class="n">max_depths_white</span><span class="p">,</span> 
+                <span class="n">label_mean_depths_black</span><span class="p">,</span> <span class="n">label_max_depths_black</span><span class="p">,</span> <span class="n">label_mean_depths_white</span><span class="p">,</span> <span class="n">label_max_depths_white</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">title_1</span><span class="p">,</span> <span class="n">title_2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="averages_printout_generator">
+<a class="viewcode-back" href="../plots.html#plots.averages_printout_generator">[docs]</a>
+<span class="k">def</span> <span class="nf">averages_printout_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="n">ai_instance_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for a given series of experiments.&quot;&quot;&quot;</span> 
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MEANS PRINTOUT...&quot;</span><span class="p">)</span>
+    <span class="n">playouts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="p">[]</span>            
+    <span class="n">mean_depths</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">max_depths</span> <span class="o">=</span> <span class="p">[]</span>            
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">experiment_info</span> <span class="o">=</span> <span class="n">unzip_and_load_experiment</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">FOLDER_EXPERIMENTS</span><span class="p">)</span>
+        <span class="n">n_games</span> <span class="o">=</span> <span class="n">experiment_info</span><span class="p">[</span><span class="s2">&quot;matchup_info&quot;</span><span class="p">][</span><span class="s2">&quot;n_games&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_games</span><span class="p">):</span>            
+            <span class="n">main_player_prefix</span> <span class="o">=</span> <span class="s2">&quot;white_&quot;</span> <span class="k">if</span> <span class="n">experiment_info</span><span class="p">[</span><span class="s2">&quot;games_infos&quot;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">g</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="s2">&quot;white&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">ai_instance_name</span> <span class="k">else</span> <span class="s2">&quot;black_&quot;</span>            
+            <span class="n">moves_rounds</span> <span class="o">=</span> <span class="n">experiment_info</span><span class="p">[</span><span class="s2">&quot;games_infos&quot;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">g</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="s2">&quot;moves_rounds&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">moves_rounds</span><span class="p">)):</span>
+                <span class="n">moves_round</span> <span class="o">=</span> <span class="n">moves_rounds</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+                <span class="n">mppi</span> <span class="o">=</span> <span class="n">main_player_prefix</span> <span class="o">+</span> <span class="s2">&quot;performance_info&quot;</span>
+                <span class="k">if</span> <span class="n">mppi</span> <span class="ow">in</span> <span class="n">moves_round</span><span class="p">:</span>
+                    <span class="n">playouts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moves_round</span><span class="p">[</span><span class="n">mppi</span><span class="p">][</span><span class="s2">&quot;playouts&quot;</span><span class="p">])</span>
+                    <span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moves_round</span><span class="p">[</span><span class="n">mppi</span><span class="p">][</span><span class="s2">&quot;steps&quot;</span><span class="p">])</span>
+                    <span class="n">trees_key</span> <span class="o">=</span> <span class="s2">&quot;trees&quot;</span> <span class="k">if</span> <span class="s2">&quot;trees&quot;</span> <span class="ow">in</span> <span class="n">moves_round</span><span class="p">[</span><span class="n">mppi</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;tree&quot;</span>
+                    <span class="n">mean_depths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moves_round</span><span class="p">[</span><span class="n">mppi</span><span class="p">][</span><span class="n">trees_key</span><span class="p">][</span><span class="s2">&quot;mean_depth&quot;</span><span class="p">])</span>
+                    <span class="n">max_depths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moves_round</span><span class="p">[</span><span class="n">mppi</span><span class="p">][</span><span class="n">trees_key</span><span class="p">][</span><span class="s2">&quot;max_depth&quot;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;THE AVERAGES -&gt; PLAYOUTS/STEPS: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">playouts</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span><span class="si">}</span><span class="s2">, MEAN DEPTH/MAX DEPTH: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">mean_depths</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">max_depths</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;AVERAGES PRINTOUT GENERATOR DONE.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="averages_printout_5s_vanilla_c4">
+<a class="viewcode-back" href="../plots.html#plots.averages_printout_5s_vanilla_c4">[docs]</a>
+<span class="k">def</span> <span class="nf">averages_printout_5s_vanilla_c4</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s vanilla (Connect 4).&quot;&quot;&quot;</span>    
+    <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="s2">&quot;2959981740_01490_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_128_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;2749967598_89204_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;0725584456_47630_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;0503747630_89908_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]&quot;</span>
+        <span class="p">]),</span> 
+        <span class="s2">&quot;MCTS(search_time_limit=5.0, search_steps_limit=inf, vanilla=True, ucb_c=2.0, seed: 0)&quot;</span><span class="p">)</span>    </div>
+
+    
+<div class="viewcode-block" id="averages_printout_5s_ocp_thrifty_c4">
+<a class="viewcode-back" href="../plots.html#plots.averages_printout_5s_ocp_thrifty_c4">[docs]</a>
+<span class="k">def</span> <span class="nf">averages_printout_5s_ocp_thrifty_c4</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s ocp_thrifty (Connect 4).&quot;&quot;&quot;</span>    
+    <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="s2">&quot;2959981740_01490_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_128_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;1311471072_93670_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3070453690_29088_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3360218400_94374_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]&quot;</span>
+        <span class="p">]),</span> 
+        <span class="s2">&quot;MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=128, variant=&#39;ocp_thrifty&#39;, device_memory=2.0, ucb_c=2.0, seed: 0)&quot;</span><span class="p">)</span>  </div>
+
+
+<div class="viewcode-block" id="averages_printout_5s_ocp_prodigal_c4">
+<a class="viewcode-back" href="../plots.html#plots.averages_printout_5s_ocp_prodigal_c4">[docs]</a>
+<span class="k">def</span> <span class="nf">averages_printout_5s_ocp_prodigal_c4</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s ocp_prodigal (Connect 4).&quot;&quot;&quot;</span>    
+    <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="s2">&quot;2749967598_89204_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;1311471072_93670_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;0995822742_91740_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]&quot;</span>
+        <span class="p">]),</span> 
+        <span class="s2">&quot;MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant=&#39;ocp_prodigal&#39;, device_memory=2.0, ucb_c=2.0, seed: 0)&quot;</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="averages_printout_5s_acp_thrifty_c4">
+<a class="viewcode-back" href="../plots.html#plots.averages_printout_5s_acp_thrifty_c4">[docs]</a>
+<span class="k">def</span> <span class="nf">averages_printout_5s_acp_thrifty_c4</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s acp_thrifty (Connect 4).&quot;&quot;&quot;</span>    
+    <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>        
+        <span class="s2">&quot;0725584456_47630_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3070453690_29088_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;0995822742_91740_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3763533572_41898_048_[mctsnc_5_inf_4_256_acp_thrifty;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]&quot;</span>
+        <span class="p">]),</span> 
+        <span class="s2">&quot;MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant=&#39;acp_thrifty&#39;, device_memory=2.0, ucb_c=2.0, seed: 0)&quot;</span><span class="p">)</span>    </div>
+
+
+<div class="viewcode-block" id="averages_printout_5s_acp_prodigal_c4">
+<a class="viewcode-back" href="../plots.html#plots.averages_printout_5s_acp_prodigal_c4">[docs]</a>
+<span class="k">def</span> <span class="nf">averages_printout_5s_acp_prodigal_c4</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s acp_prodigal (Connect 4).&quot;&quot;&quot;</span>    
+    <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="s2">&quot;0503747630_89908_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3360218400_94374_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3763533572_41898_048_[mctsnc_5_inf_4_256_acp_thrifty;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]&quot;</span>
+        <span class="p">]),</span> 
+        <span class="s2">&quot;MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant=&#39;acp_prodigal&#39;, device_memory=2.0, ucb_c=2.0, seed: 0)&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="averages_printout_30s_vanilla_gomoku">
+<a class="viewcode-back" href="../plots.html#plots.averages_printout_30s_vanilla_gomoku">[docs]</a>
+<span class="k">def</span> <span class="nf">averages_printout_30s_vanilla_gomoku</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s vanilla (Gomoku).&quot;&quot;&quot;</span>
+    <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="s2">&quot;3014955156_02650_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_128_ocp_thrifty_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;1681612016_34230_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_ocp_prodigal_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;4070724948_30746_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3240654036_09850_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]&quot;</span>
+        <span class="p">]),</span> 
+        <span class="s2">&quot;MCTS(search_time_limit=30.0, search_steps_limit=inf, vanilla=True, ucb_c=2.0, seed: 0)&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="averages_printout_30s_ocp_thrifty_gomoku">
+<a class="viewcode-back" href="../plots.html#plots.averages_printout_30s_ocp_thrifty_gomoku">[docs]</a>
+<span class="k">def</span> <span class="nf">averages_printout_30s_ocp_thrifty_gomoku</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s ocp_thrifty (Gomoku).&quot;&quot;&quot;</span>
+    <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="s2">&quot;3014955156_02650_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_128_ocp_thrifty_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;4039933000_53870_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_ocp_prodigal_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;2602789548_96434_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;1304007724_29490_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]&quot;</span>
+        <span class="p">]),</span> 
+        <span class="s2">&quot;MCTSNC(search_time_limit=30.0, search_steps_limit=inf, n_trees=4, n_playouts=128, variant=&#39;ocp_thrifty&#39;, device_memory=16.0, ucb_c=2.0, seed: 0)&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="averages_printout_30s_ocp_prodigal_gomoku">
+<a class="viewcode-back" href="../plots.html#plots.averages_printout_30s_ocp_prodigal_gomoku">[docs]</a>
+<span class="k">def</span> <span class="nf">averages_printout_30s_ocp_prodigal_gomoku</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s ocp_prodigal (Gomoku).&quot;&quot;&quot;</span>
+    <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="s2">&quot;1681612016_34230_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_ocp_prodigal_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;4039933000_53870_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_ocp_prodigal_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;1988707178_17328_048_[mctsnc_30_inf_4_256_ocp_prodigal_16g;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3876337002_15280_048_[mctsnc_30_inf_4_256_ocp_prodigal_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]&quot;</span>
+        <span class="p">]),</span> 
+        <span class="s2">&quot;MCTSNC(search_time_limit=30.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant=&#39;ocp_prodigal&#39;, device_memory=16.0, ucb_c=2.0, seed: 0)&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="averages_printout_30s_acp_thrifty_gomoku">
+<a class="viewcode-back" href="../plots.html#plots.averages_printout_30s_acp_thrifty_gomoku">[docs]</a>
+<span class="k">def</span> <span class="nf">averages_printout_30s_acp_thrifty_gomoku</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s acp_thrifty (Gomoku).&quot;&quot;&quot;</span>
+    <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="s2">&quot;4070724948_30746_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;2602789548_96434_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;1988707178_17328_048_[mctsnc_30_inf_4_256_ocp_prodigal_16g;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]&quot;</span>
+        <span class="p">]),</span> 
+        <span class="s2">&quot;MCTSNC(search_time_limit=30.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant=&#39;acp_thrifty&#39;, device_memory=16.0, ucb_c=2.0, seed: 0)&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="averages_printout_30s_acp_prodigal_gomoku">
+<a class="viewcode-back" href="../plots.html#plots.averages_printout_30s_acp_prodigal_gomoku">[docs]</a>
+<span class="k">def</span> <span class="nf">averages_printout_30s_acp_prodigal_gomoku</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s acp_prodigal (Gomoku).&quot;&quot;&quot;</span>
+    <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="s2">&quot;3240654036_09850_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;1304007724_29490_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3876337002_15280_048_[mctsnc_30_inf_4_256_ocp_prodigal_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]&quot;</span>
+        <span class="p">]),</span> 
+        <span class="s2">&quot;MCTSNC(search_time_limit=30.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant=&#39;acp_prodigal&#39;, device_memory=16.0, ucb_c=2.0, seed: 0)&quot;</span><span class="p">)</span></div>
+
+    
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PLOTS FOR MCTS-NC EXPERIMENTS...&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># scores_array_plot_ocp_thrifty_vs_vanilla_c4()</span>
+    
+    <span class="c1"># scores_array_plot_ocp_prodigal_vs_vanilla_c4()</span>
+    
+    <span class="c1"># scores_array_plot_acp_thrifty_vs_vanilla_c4()</span>
+    
+    <span class="c1"># scores_array_plot_acp_prodigal_vs_vanilla_c4()</span>
+
+    <span class="c1"># best_action_plot_generator(&quot;0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]&quot;, 9,</span>
+    <span class="c1">#                            &quot;BEST $\widehat{q}$ - MCTS_5_INF_VANILLA&quot;, &quot;UCB - MCTS_5_INF_VANILLA&quot;,      </span>
+    <span class="c1">#                            &quot;BEST $\widehat{q}$ - MCTS-NC_1_INF_4_256_OCP_PRODIGAL&quot;, &quot;UCB - MCTS-NC_1_INF_4_256_OCP_PRODIGAL&quot;,     </span>
+    <span class="c1">#                            &quot;MOVES ROUND&quot;, &quot;BEST ACTIONS&#39;: $\widehat{q}$, UCB&quot;, None, &quot;SAMPLE GAME OF CONNECT 4 (NO. 9/100)&quot;)    </span>
+    <span class="c1"># depths_plot_generator(&quot;0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]&quot;, 9,  </span>
+    <span class="c1">#                       &quot;MEAN DEPTHS - MCTS_5_INF_VANILLA&quot;, &quot;MAX DEPTHS - MCTS_5_INF_VANILLA&quot;,</span>
+    <span class="c1">#                       &quot;MEAN DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL&quot;, &quot;MAX DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL&quot;,                                  </span>
+    <span class="c1">#                       &quot;MOVES ROUND&quot;, &quot;MEAN, MAXIMUM DEPTHS&quot;, None, &quot;SAMPLE GAME OF CONNECT 4 (NO. 9/100)&quot;)</span>
+    
+    <span class="n">best_action_plot_generator</span><span class="p">(</span><span class="s2">&quot;2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span>
+                               <span class="s2">&quot;BEST $\widehat</span><span class="si">{q}</span><span class="s2">$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL&quot;</span><span class="p">,</span> <span class="s2">&quot;10 x UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL&quot;</span><span class="p">,</span>      
+                               <span class="s2">&quot;BEST $\widehat</span><span class="si">{q}</span><span class="s2">$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL&quot;</span><span class="p">,</span> <span class="s2">&quot;10 x UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL&quot;</span><span class="p">,</span>     
+                               <span class="s2">&quot;MOVES ROUND&quot;</span><span class="p">,</span> <span class="s2">&quot;BEST ACTIONS&#39;: $\widehat</span><span class="si">{q}</span><span class="s2">$, UCB&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;SAMPLE GAME OF CONNECT 4 (NO. 57/100)&quot;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>    
+    <span class="n">depths_plot_generator</span><span class="p">(</span><span class="s2">&quot;2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span>  
+                          <span class="s2">&quot;BEST $\widehat</span><span class="si">{q}</span><span class="s2">$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL&quot;</span><span class="p">,</span> <span class="s2">&quot;UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL&quot;</span><span class="p">,</span>      
+                          <span class="s2">&quot;BEST $\widehat</span><span class="si">{q}</span><span class="s2">$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL&quot;</span><span class="p">,</span> <span class="s2">&quot;UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL&quot;</span><span class="p">,</span>                                  
+                          <span class="s2">&quot;MOVES ROUND&quot;</span><span class="p">,</span> <span class="s2">&quot;MEAN, MAXIMUM DEPTHS&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;SAMPLE GAME OF CONNECT 4 (NO. 57/100)&quot;</span><span class="p">)</span>    
+    
+    <span class="c1"># best_action_plot_generator(&quot;2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]&quot;, 11,</span>
+    <span class="c1">#                            &quot;BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_THRIFTY&quot;, &quot;25 x UCB - MCTS-NC_30_INF_4_256_ACP_THRIFTY&quot;,</span>
+    <span class="c1">#                            &quot;BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_PRODIGAL&quot;, &quot;25 x UCB - MCTS-NC_30_INF_4_256_ACP_PRODIGAL&quot;,                                  </span>
+    <span class="c1">#                            &quot;MOVES ROUND&quot;, &quot;BEST ACTIONS&#39;: $\widehat{q}$, UCB&quot;, None, &quot;SAMPLE GAME OF GOMOKU (NO. 11/100)&quot;, 25.0)    </span>
+    <span class="c1"># depths_plot_generator(&quot;2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]&quot;, 11,  </span>
+    <span class="c1">#                       &quot;MEAN DEPTHS - MCTS-NC_30_INF_4_256_ACP_THRIFTY&quot;, &quot;MAX DEPTHS - MCTS-NC_30_INF_4_256_ACP_THRIFTY&quot;,</span>
+    <span class="c1">#                       &quot;MEAN DEPTHS - MCTS-NC_30_INF_4_256_ACP_PRODIGAL&quot;, &quot;MAX DEPTHS - MCTS-NC_30_INF_4_256_ACP_PRODIGAL&quot;,                                  </span>
+    <span class="c1">#                       &quot;MOVES ROUND&quot;, &quot;MEAN, MAXIMUM DEPTHS&quot;, None, &quot;SAMPLE GAME OF GOMOKU (NO. 11/100)&quot;)</span>
+        
+    <span class="c1"># averages_printout_5s_vanilla_c4()</span>
+    
+    <span class="c1"># averages_printout_5s_ocp_thrifty_c4()</span>
+    
+    <span class="c1"># averages_printout_5s_ocp_prodigal_c4()</span>
+    
+    <span class="c1"># averages_printout_5s_acp_thrifty_c4()</span>
+    
+    <span class="c1"># averages_printout_5s_acp_prodigal_c4()</span>
+    
+    <span class="c1"># averages_printout_30s_vanilla_gomoku()</span>
+    
+    <span class="c1"># averages_printout_30s_ocp_thrifty_gomoku()</span>
+    
+    <span class="c1"># averages_printout_30s_ocp_prodigal_gomoku()</span>
+    
+    <span class="c1"># averages_printout_30s_acp_thrifty_gomoku()</span>
+    
+    <span class="c1"># averages_printout_30s_acp_prodigal_gomoku()</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PLOTS FOR MCTS-NC EXPERIMENTS DONE.&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Przemysław Klęsk.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
