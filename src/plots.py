@@ -17,7 +17,8 @@ __email__ = "pklesk@zut.edu.pl"
 FOLDER_EXPERIMENTS = "../experiments/"
 FOLDER_EXTRAS = "../extras/"
 
-def scores_array_plot(data, details, label_x, label_y, ticks_x, ticks_y, title):    
+def scores_array_plot(data, details, label_x, label_y, ticks_x, ticks_y, title):
+    """Displays an array-like plot - a color map with averages of: scores, steps and depths - based on data from several experiments."""     
     figsize = (6, 6)
     fontsize_title = 21
     fontsize_ticks = 16
@@ -46,6 +47,7 @@ def scores_array_plot(data, details, label_x, label_y, ticks_x, ticks_y, title):
     plt.show()
 
 def scores_array_plot_generator(experiments_hs_array, label_x, label_y, ticks_x, ticks_y, title):
+    """Reads data from several experiments computes averages of scores, steps and depths and generates an array-like plot by calling ``scores_array_plot`` function."""
     print("SCORES-ARRAY-PLOT GENERATOR...")    
     data = np.zeros(experiments_hs_array.shape)
     details_playouts_steps = np.empty(experiments_hs_array.shape, dtype=object)
@@ -90,7 +92,8 @@ def scores_array_plot_generator(experiments_hs_array, label_x, label_y, ticks_x,
     print("SCORES-ARRAY-PLOT GENERATOR DONE.")        
     scores_array_plot(data, details, label_x, label_y, ticks_x, ticks_y, title)
 
-def scores_array_plot_ocp_thrifty_vs_vanilla():
+def scores_array_plot_ocp_thrifty_vs_vanilla_c4():
+    """Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: ocp_thrifty vs vanilla (Connect 4)."""
     experiments_hs_array = np.array([
         ["3505711246_84404_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_ocp_thrifty;C4_6x7;100]",
          "2363630254_99540_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_ocp_thrifty;C4_6x7;100]",
@@ -111,7 +114,8 @@ def scores_array_plot_ocp_thrifty_vs_vanilla():
         ])
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "OCP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)")    
 
-def scores_array_plot_ocp_prodigal_vs_vanilla():    
+def scores_array_plot_ocp_prodigal_vs_vanilla_c4():
+    """Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: ocp_prodigal vs vanilla (Connect 4)."""    
     experiments_hs_array = np.array([
         ["3195982906_82784_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_ocp_prodigal;C4_6x7;100]",
          "0037595196_43010_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_ocp_prodigal;C4_6x7;100]",
@@ -132,8 +136,8 @@ def scores_array_plot_ocp_prodigal_vs_vanilla():
         ])
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "OCP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)")
 
-def scores_array_plot_acp_thrifty_vs_vanilla():
-    
+def scores_array_plot_acp_thrifty_vs_vanilla_c4():
+    """Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: acp_thrifty vs vanilla (Connect 4)."""
     experiments_hs_array = np.array([
         ["0225178830_78932_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_acp_thrifty;C4_6x7;100]",
          "3378065134_94068_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_acp_thrifty;C4_6x7;100]",
@@ -154,7 +158,8 @@ def scores_array_plot_acp_thrifty_vs_vanilla():
         ])
     scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "ACP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)")
 
-def scores_array_plot_acp_prodigal_vs_vanilla():        
+def scores_array_plot_acp_prodigal_vs_vanilla():
+    """Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: acp_prodigal vs vanilla (Connect 4)."""        
     experiments_hs_array = np.array([
         ["2586240854_62716_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_acp_prodigal;C4_6x7;100]",
          "3722820440_90238_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_64_acp_prodigal;C4_6x7;100]",
@@ -178,6 +183,7 @@ def scores_array_plot_acp_prodigal_vs_vanilla():
 def best_action_plot(moves_rounds_black, qs_black, ucbs_black, moves_rounds_white, qs_white, ucbs_white, 
                      label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2,
                      ucbs_factor=1.0, ucbs_black_color=None, ucbs_white_color=None):
+    """Displays plot of estimates on best actions' values (and their UCBs) along a given game."""    
     figsize = (10.0, 5.0)        
     fontsize_suptitle = 20
     fontsize_title = 21
@@ -222,6 +228,7 @@ def best_action_plot(moves_rounds_black, qs_black, ucbs_black, moves_rounds_whit
 def best_action_plot_generator(experiments_hs, game_index, 
                                label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2,
                                ucbs_factor=1.0, ucbs_black_color=None, ucbs_white_color=None):
+    """Reads data from an experiment and generates a 'best action plot' by calling ``best_action_plot`` function."""
     print("BEST-ACTION-PLOT GENERATOR...") 
     experiment_info = unzip_and_load_experiment(experiments_hs, FOLDER_EXPERIMENTS)
     moves_rounds = experiment_info["games_infos"][str(game_index)]["moves_rounds"]
@@ -247,6 +254,7 @@ def best_action_plot_generator(experiments_hs, game_index,
 
 def depths_plot(moves_rounds_black, mean_depths_black, max_depths_black, moves_rounds_white, mean_depths_white, max_depths_white, 
                 label_mean_depths_black, label_max_depths_black, label_mean_depths_white, label_max_depths_white, label_x, label_y, title_1, title_2):
+    """Displays plot of averages of reached depths (mean and maximum) along a given game."""    
     figsize = (10, 5.0)        
     fontsize_suptitle = 20
     fontsize_title = 21
@@ -283,6 +291,7 @@ def depths_plot(moves_rounds_black, mean_depths_black, max_depths_black, moves_r
 
 def depths_plot_generator(experiments_hs, game_index, 
                           label_mean_depths_black, label_max_depths_black, label_mean_depths_white, label_max_depths_white, label_x, label_y, title_1, title_2):
+    """Reads data from an experiment and generates a 'depths plot' by calling ``best_action_plot`` function."""    
     experiment_info = unzip_and_load_experiment(experiments_hs, FOLDER_EXPERIMENTS)
     moves_rounds = experiment_info["games_infos"][str(game_index)]["moves_rounds"]
     n_rounds = len(moves_rounds)
@@ -307,6 +316,7 @@ def depths_plot_generator(experiments_hs, game_index,
                 label_mean_depths_black, label_max_depths_black, label_mean_depths_white, label_max_depths_white, label_x, label_y, title_1, title_2)
 
 def averages_printout_generator(experiments_hs_array, ai_instance_name):
+    """Prints out averages of: playouts / steps and mean / maximum depths for a given series of experiments.""" 
     print("MEANS PRINTOUT...")
     playouts = []
     steps = []            
@@ -330,7 +340,8 @@ def averages_printout_generator(experiments_hs_array, ai_instance_name):
     print(f"THE AVERAGES -> PLAYOUTS/STEPS: {np.mean(playouts)}/{np.mean(steps)}, MEAN DEPTH/MAX DEPTH: {np.mean(mean_depths)}/{np.mean(max_depths)}]")
     print("AVERAGES PRINTOUT GENERATOR DONE.")
 
-def averages_printout_c4_5s_vanilla():    
+def averages_printout_5s_vanilla_c4():
+    """Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s vanilla (Connect 4)."""    
     averages_printout_generator(np.array([
         "2959981740_01490_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_128_ocp_thrifty;C4_6x7;100]",
         "2749967598_89204_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
@@ -339,7 +350,8 @@ def averages_printout_c4_5s_vanilla():
         ]), 
         "MCTS(search_time_limit=5.0, search_steps_limit=inf, vanilla=True, ucb_c=2.0, seed: 0)")    
     
-def averages_printout_c4_5s_ocp_thrifty():    
+def averages_printout_5s_ocp_thrifty_c4():
+    """Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s ocp_thrifty (Connect 4)."""    
     averages_printout_generator(np.array([
         "2959981740_01490_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_128_ocp_thrifty;C4_6x7;100]",
         "1311471072_93670_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
@@ -348,7 +360,8 @@ def averages_printout_c4_5s_ocp_thrifty():
         ]), 
         "MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=128, variant='ocp_thrifty', device_memory=2.0, ucb_c=2.0, seed: 0)")  
 
-def averages_printout_c4_5s_ocp_prodigal():    
+def averages_printout_5s_ocp_prodigal_c4():
+    """Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s ocp_prodigal (Connect 4)."""    
     averages_printout_generator(np.array([
         "2749967598_89204_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
         "1311471072_93670_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]",
@@ -357,8 +370,9 @@ def averages_printout_c4_5s_ocp_prodigal():
         ]), 
         "MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='ocp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)")
     
-def averages_printout_c4_5s_acp_thrifty():    
-    averages_printout_generator(np.array([
+def averages_printout_5s_acp_thrifty_c4():
+    """Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s acp_thrifty (Connect 4)."""    
+    averages_printout_generator(np.array([        
         "0725584456_47630_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]",
         "3070453690_29088_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]",
         "0995822742_91740_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]",
@@ -366,7 +380,8 @@ def averages_printout_c4_5s_acp_thrifty():
         ]), 
         "MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='acp_thrifty', device_memory=2.0, ucb_c=2.0, seed: 0)")    
 
-def averages_printout_c4_5s_acp_prodigal():    
+def averages_printout_5s_acp_prodigal_c4():
+    """Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s acp_prodigal (Connect 4)."""    
     averages_printout_generator(np.array([
         "0503747630_89908_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]",
         "3360218400_94374_048_[mctsnc_5_inf_4_128_ocp_thrifty;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]",
@@ -375,7 +390,8 @@ def averages_printout_c4_5s_acp_prodigal():
         ]), 
         "MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='acp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)")
 
-def averages_printout_gomoku_30s_vanilla():
+def averages_printout_30s_vanilla_gomoku():
+    """Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s vanilla (Gomoku)."""
     averages_printout_generator(np.array([
         "3014955156_02650_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_128_ocp_thrifty_16g;Gomoku_15x15;100]",
         "1681612016_34230_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_ocp_prodigal_16g;Gomoku_15x15;100]",
@@ -385,7 +401,8 @@ def averages_printout_gomoku_30s_vanilla():
         "MCTS(search_time_limit=30.0, search_steps_limit=inf, vanilla=True, ucb_c=2.0, seed: 0)")
 
 
-def averages_printout_gomoku_30s_ocp_thrifty():
+def averages_printout_30s_ocp_thrifty_gomoku():
+    """Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s ocp_thrifty (Gomoku)."""
     averages_printout_generator(np.array([
         "3014955156_02650_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_128_ocp_thrifty_16g;Gomoku_15x15;100]",
         "4039933000_53870_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_ocp_prodigal_16g;Gomoku_15x15;100]",
@@ -394,7 +411,8 @@ def averages_printout_gomoku_30s_ocp_thrifty():
         ]), 
         "MCTSNC(search_time_limit=30.0, search_steps_limit=inf, n_trees=4, n_playouts=128, variant='ocp_thrifty', device_memory=16.0, ucb_c=2.0, seed: 0)")
 
-def averages_printout_gomoku_30s_ocp_prodigal():
+def averages_printout_30s_ocp_prodigal_gomoku():
+    """Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s ocp_prodigal (Gomoku)."""
     averages_printout_generator(np.array([
         "1681612016_34230_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_ocp_prodigal_16g;Gomoku_15x15;100]",
         "4039933000_53870_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_ocp_prodigal_16g;Gomoku_15x15;100]",
@@ -404,7 +422,8 @@ def averages_printout_gomoku_30s_ocp_prodigal():
         "MCTSNC(search_time_limit=30.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='ocp_prodigal', device_memory=16.0, ucb_c=2.0, seed: 0)")
 
 
-def averages_printout_gomoku_30s_acp_thrifty():
+def averages_printout_30s_acp_thrifty_gomoku():
+    """Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s acp_thrifty (Gomoku)."""
     averages_printout_generator(np.array([
         "4070724948_30746_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]",
         "2602789548_96434_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]",
@@ -413,7 +432,8 @@ def averages_printout_gomoku_30s_acp_thrifty():
         ]), 
         "MCTSNC(search_time_limit=30.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='acp_thrifty', device_memory=16.0, ucb_c=2.0, seed: 0)")
 
-def averages_printout_gomoku_30s_acp_prodigal():
+def averages_printout_30s_acp_prodigal_gomoku():
+    """Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s acp_prodigal (Gomoku)."""
     averages_printout_generator(np.array([
         "3240654036_09850_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]",
         "1304007724_29490_048_[mctsnc_30_inf_4_128_ocp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]",
@@ -425,31 +445,31 @@ def averages_printout_gomoku_30s_acp_prodigal():
 if __name__ == "__main__":
     print("PLOTS FOR MCTS-NC EXPERIMENTS...")
     
-    # scores_array_plot_ocp_thrifty_vs_vanilla()
+    # scores_array_plot_ocp_thrifty_vs_vanilla_c4()
     
-    # scores_array_plot_ocp_prodigal_vs_vanilla()
+    # scores_array_plot_ocp_prodigal_vs_vanilla_c4()
     
-    # scores_array_plot_acp_thrifty_vs_vanilla()
+    # scores_array_plot_acp_thrifty_vs_vanilla_c4()
     
-    # scores_array_plot_acp_prodigal_vs_vanilla()
+    # scores_array_plot_acp_prodigal_vs_vanilla_c4()
 
-    best_action_plot_generator("0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 9,
-                               "BEST $\widehat{q}$ - MCTS_5_INF_VANILLA", "UCB - MCTS_5_INF_VANILLA",      
-                               "BEST $\widehat{q}$ - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "UCB - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",     
-                               "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 9/100)")    
-    depths_plot_generator("0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 9,  
-                          "MEAN DEPTHS - MCTS_5_INF_VANILLA", "MAX DEPTHS - MCTS_5_INF_VANILLA",
-                          "MEAN DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "MAX DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",                                  
-                          "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 9/100)")
+    # best_action_plot_generator("0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 9,
+    #                            "BEST $\widehat{q}$ - MCTS_5_INF_VANILLA", "UCB - MCTS_5_INF_VANILLA",      
+    #                            "BEST $\widehat{q}$ - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "UCB - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",     
+    #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 9/100)")    
+    # depths_plot_generator("0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 9,  
+    #                       "MEAN DEPTHS - MCTS_5_INF_VANILLA", "MAX DEPTHS - MCTS_5_INF_VANILLA",
+    #                       "MEAN DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "MAX DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",                                  
+    #                       "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 9/100)")
     
-    # best_action_plot_generator("2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]", 57,
-    #                            "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL", "10 x UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL",      
-    #                            "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL", "10 x UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL",     
-    #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 57/100)", 10.0)    
-    # depths_plot_generator("2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]", 57,  
-    #                       "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL", "UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL",      
-    #                       "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL", "UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL",                                  
-    #                       "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 57/100)")    
+    best_action_plot_generator("2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]", 57,
+                               "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL", "10 x UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL",      
+                               "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL", "10 x UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL",     
+                               "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 57/100)", 10.0)    
+    depths_plot_generator("2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]", 57,  
+                          "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL", "UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL",      
+                          "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL", "UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL",                                  
+                          "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 57/100)")    
     
     # best_action_plot_generator("2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]", 11,
     #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_THRIFTY", "25 x UCB - MCTS-NC_30_INF_4_256_ACP_THRIFTY",
@@ -460,24 +480,24 @@ if __name__ == "__main__":
     #                       "MEAN DEPTHS - MCTS-NC_30_INF_4_256_ACP_PRODIGAL", "MAX DEPTHS - MCTS-NC_30_INF_4_256_ACP_PRODIGAL",                                  
     #                       "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF GOMOKU (NO. 11/100)")
         
-    # averages_printout_c4_5s_vanilla()
+    # averages_printout_5s_vanilla_c4()
     
-    # averages_printout_c4_5s_ocp_thrifty()
+    # averages_printout_5s_ocp_thrifty_c4()
     
-    # averages_printout_c4_5s_ocp_prodigal()
+    # averages_printout_5s_ocp_prodigal_c4()
     
-    # averages_printout_c4_5s_acp_thrifty()
+    # averages_printout_5s_acp_thrifty_c4()
     
-    # averages_printout_c4_5s_acp_prodigal()
+    # averages_printout_5s_acp_prodigal_c4()
     
-    # averages_printout_gomoku_30s_vanilla()
+    # averages_printout_30s_vanilla_gomoku()
     
-    # averages_printout_gomoku_30s_ocp_thrifty()
+    # averages_printout_30s_ocp_thrifty_gomoku()
     
-    # averages_printout_gomoku_30s_ocp_prodigal()
+    # averages_printout_30s_ocp_prodigal_gomoku()
     
-    # averages_printout_gomoku_30s_acp_thrifty()
+    # averages_printout_30s_acp_thrifty_gomoku()
     
-    # averages_printout_gomoku_30s_acp_prodigal()
+    # averages_printout_30s_acp_prodigal_gomoku()
     
     print("PLOTS FOR MCTS-NC EXPERIMENTS DONE.")

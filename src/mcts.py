@@ -222,7 +222,7 @@ class State:
         
         Returns:
             extra_info (ndarray[np.int8, ndim=1] or ``None``):
-                one-dimensional array with additional information associated with this state.        
+                one-dimensional array with any additional information associated with this state.        
         """        
         return None
             
