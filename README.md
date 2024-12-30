@@ -183,7 +183,7 @@ BEST ACTION: 115
 | `search_time_limit (float)`               | time limit in seconds (computational budget), `np.inf` if no limit, defaults to `5.0`                                                                  |
 | `search_steps_limit (float)`              | steps limit (computational budget), `np.inf` if no limit, defaults to `np.inf`                                                                         |
 | `n_trees (int)`                           | number of independent trees, defaults to `8`                                                                                                           |
-| `n_playouts (int)`                        | number of independent playouts from an expanded child (corresponds to m), must be a power of 2, defaults to `128`                                      |
+| `n_playouts (int)`                        | number of independent playouts from an expanded child, must be a power of 2, defaults to `128`                                      |
 | `variant (str)`                           | choice of algorithmic variant from {`"ocp_thrifty"`, `"ocp_prodigal"`, `"acp_thrifty`, `"acp_prodigal`}, defaults to `"acp_prodigal"`                  |
 | `device_memory (float)`                   | GPU memory in GiBs (gibibytes) to be available for this instance, defaults to `2.0`                                                                    |
 | `ucb_c (float)`                           | value of C constant, influencing exploration tendency, appearing in UCT formula (upper confidence bounds for trees), defaults to `2.0`                 |
@@ -196,21 +196,21 @@ Hardware environment: Ubuntu Server 20.4.03, 4 CPUs: AMD EPYC 7H12 64-Core (2.6 
 #### Connect 4 tournament of AIs (MCTS-based)
 |     |                                        |      A |      B |      C |      D |      E |     avg. score |      avgs of: playouts / steps | avgs of: mean depth / max depth|
 |-----|:---------------------------------------|-------:|-------:|-------:|-------:|-------:|---------------:|-------------------------------:|-------------------------------:|
-|**A**| VANILLA (5s)                           |      - |  04.0% |  04.5% |  02.0% |  01.0% |        02.875% |                  17.1k / 17.1k |                    5.97 / 7.98 |
-|**B**| OCP-THRIFTY (5s, T=4, m=128)           |  96.0% |      - |  16.0% |  35.0% |  28.5% |        43.875% |                    2.3M / 4.5k |                   6.63 / 11.85 |
-|**C**| OCP-PRODIGAL (5s, T=4, m=256)          |  95.5% |  84.0% |      - |  77.5% |  43.5% |        75.125% |                    6.4M / 6.2k |                   7.34 / 14.03 |
-|**D**| ACP-THRIFTY (5s, T=4, m=256)           |  98.0% |  65.0% |  22.5% |      - |  33.5% |        55.125% |                   15.7M / 3.9k |                   8.07 / 16.25 |
-|**E**| ACP-PRODIGAL (5s, T=4, m=256)          |  99.0% |  71.5% |  56.5% |  66.5% |      - |        73.375% |                   20.3M / 5.4k |                   8.62 / 17.54 |
+|**A**| `"mcts_5_inf_vanilla"`                 |      - |  04.0% |  04.5% |  02.0% |  01.0% |        02.875% |                  17.1k / 17.1k |                    5.97 / 7.98 |
+|**B**| `"mctsnc_5_inf_4_128_ocp_thrifty"`     |  96.0% |      - |  16.0% |  35.0% |  28.5% |        43.875% |                    2.3M / 4.5k |                   6.63 / 11.85 |
+|**C**| `"mctsnc_5_inf_4_256_ocp_prodigal"`    |  95.5% |  84.0% |      - |  77.5% |  43.5% |        75.125% |                    6.4M / 6.2k |                   7.34 / 14.03 |
+|**D**| `"mctsnc_5_inf_4_256_acp_thrifty"`     |  98.0% |  65.0% |  22.5% |      - |  33.5% |        55.125% |                   15.7M / 3.9k |                   8.07 / 16.25 |
+|**E**| `"mctsnc_5_inf_4_256_acp_prodigal"`    |  99.0% |  71.5% |  56.5% |  66.5% |      - |        73.375% |                   20.3M / 5.4k |                   8.62 / 17.54 |
 
 
 #### Gomoku 4 tournament (MCTS-based)
-|     |                                        |      A |      B |      C |      D |      E |     avg. score |      avgs of: playouts / steps | avgs of: mean depth / max depth|
-|-----|:---------------------------------------|-------:|-------:|-------:|-------:|-------:|---------------:|-------------------------------:|-------------------------------:|
-|**A**| VANILLA (30s)                          |      - |  00.0% |  00.0% |  00.0% |  00.0% |         00.00% |                    4.7k / 4.7k |                     2.95 / 3.0 |
-|**B**| OCP-THRIFTY (30s, T=4, m=128)          | 100.0% |      - |  51.0% |  26.0% |  28.0% |         51.25% |                   6.6M / 10.0k |                    3.04 / 3.50 |
-|**C**| OCP-PRODIGAL (30s, T=4, m=256)         | 100.0% |  49.0% |      - |  32.0% |  27.0% |         52.00% |                  14.2M / 13.9k |                    3.09 / 3.69 |
-|**D**| ACP-THRIFTY (30s, T=4, m=256)          | 100.0% |  74.0% |  68.0% |      - |  49.0% |         72.75% |                  411.8M / 5.6k |                    3.47 / 4.91 |
-|**E**| ACP-PRODIGAL (30s, T=4, m=256)         | 100.0% |  72.0% |  73.0% |  51.0% |      - |         74.00% |                  422.1M / 5.6k |                    3.49 / 4.93|
+|     |                                          |      A |      B |      C |      D |      E |     avg. score |      avgs of: playouts / steps | avgs of: mean depth / max depth|
+|-----|:-----------------------------------------|-------:|-------:|-------:|-------:|-------:|---------------:|-------------------------------:|-------------------------------:|
+|**A**| `"mcts_30_inf_vanilla"`                  |      - |  00.0% |  00.0% |  00.0% |  00.0% |         00.00% |                    4.7k / 4.7k |                     2.95 / 3.0 |
+|**B**| `"mctsnc_30_inf_4_128_ocp_thrifty_16g"`  | 100.0% |      - |  51.0% |  26.0% |  28.0% |         51.25% |                   6.6M / 10.0k |                    3.04 / 3.50 |
+|**C**| `"mctsnc_30_inf_4_256_ocp_prodigal_16g"` | 100.0% |  49.0% |      - |  32.0% |  27.0% |         52.00% |                  14.2M / 13.9k |                    3.09 / 3.69 |
+|**D**| `"mctsnc_30_inf_4_256_acp_thrifty_16g"`  | 100.0% |  74.0% |  68.0% |      - |  49.0% |         72.75% |                  411.8M / 5.6k |                    3.47 / 4.91 |
+|**E**| `"mctsnc_30_inf_4_256_acp_prodigal_16g"` | 100.0% |  72.0% |  73.0% |  51.0% |      - |         74.00% |                  422.1M / 5.6k |                    3.49 / 4.93|
 
 ## Documentation
 Complete developer documentation of the project is accessible at: [https://pklesk.github.io/mcts_numba_cuda](https://pklesk.github.io/mcts_numba_cuda). <br/>
