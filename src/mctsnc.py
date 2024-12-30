@@ -217,7 +217,7 @@ class MCTSNC:
             n_trees (int): 
                 number of independent trees, defaults to ``8``.                                    
             n_playouts (int):
-                number of independent playouts from an expanded child (corresponds to m), must be a power of 2, defaults to ``128``.            
+                number of independent playouts from an expanded child, must be a power of 2, defaults to ``128``.            
             variant (str):
                 choice of algorithmic variant from {``"ocp_thrifty"``, ``"ocp_prodigal"``, ``"acp_thrifty``, ``"acp_prodigal``}, defaults to ``"acp_prodigal"``.        
             device_memory (float): 
