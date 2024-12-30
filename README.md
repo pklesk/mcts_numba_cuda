@@ -42,7 +42,7 @@ AI_B_SHORTNAME = "mctsnc_5_inf_4_256_acp_prodigal"
 REPRODUCE_EXPERIMENT = False
 ```
 
-String names of other predefined AI instances can be found in dictionary name ``AIS``.
+String names of other predefined AI instances can be found in dictionary named ``AIS``.
 
 ## Example usage 1 (Connect 4)
 
