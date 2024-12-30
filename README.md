@@ -43,7 +43,7 @@ the statistics at ancestor nodes. For shortness, Q stands for an action-value es
 |-|-|
 |<img src="https://github.com/user-attachments/assets/bbfd8cab-d7aa-46cd-8256-994b6b12394c"/>|<img src="https://github.com/user-attachments/assets/4bcea756-d66f-4a1c-b670-acb441561808"/>|
 
-## Example usage via `main.py`
+## Example usage 0 (via `main.py`)
 By executing `python main.py` one can play via console 10 games of Connect 4 against the default AI instance `MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='acp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)`.
 
 The default settings accessible within `main.py` are:
@@ -177,17 +177,20 @@ MCTSNC RUN DONE. [time: 5.008184909820557 s; best action: 115 (K8), best win_fla
 BEST ACTION: 115
 ```
 ## Constructor parameters
-| parameter                      | description                                                                                                                                       |
-|:-------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------|
-| `T (int)`                      | number of boosting rounds (equivalently, number of weak estimators), defaults to `256`                                                            |
-| `B (int)`                      | number of bins, defaults to `8`                                                                                                                   |
-| `outliers_ratio (float)`       | fraction of outliers to skip (on each end) when establishing features’ variability ranges, defaults to `0.05`                                     |
-| `logit_max (np.float32)`       | maximum absolute value of logit transform, outcomes clipped to interval [−`logit_max`, `logit_max`], defaults to `np.float32(2.0)`                |
-| `fit_mode (str)`               | choice of fit method from {`"numpy"`, `"numba_jit"`, `"numba_cuda"`}, defaults to `"numba_cuda"`                                                  |
-| `decision_function_mode (str)` | choice of decision function method from {`"numpy"`, `"numba_jit"`, `"numba_cuda"`} (called e.g. within `predict`), defaults to `"numba_cuda"`     |
-| `verbose (bool)`               | verbosity flag, if `True` then fit progress and auxiliary information are printed to console, defaults to `False`                                 |
-| `debug_verbose (bool)`         | detailed verbosity (only for `"numba_cuda"` fit), defaults to `False`                                                                             |
-
+| parameter                                 | description                                                                                                                                            |
+|:------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `state_board_shape (tuple(int, int))`     | shape of board for states in a given game, at most ``32, 32)`                                                                                          |
+| `state_extra_info_memory (int)`           | number of bytes for extra information on states, at most `4096`                                                                                        |
+| `state_max_actions (int)`                 | maximum branching factor, at most `512`                                                                                                                |
+| `search_time_limit (float)`               | time limit in seconds (computational budget), `np.inf` if no limit, defaults to `5.0`                                                                  |
+| `search_steps_limit (float)`              | steps limit (computational budget), `np.inf` if no limit, defaults to `np.inf`                                                                         |
+| `n_trees (int)`                           | number of independent trees, defaults to `8`                                                                                                           |
+| `n_playouts (int)`                        | number of independent playouts from an expanded child (corresponds to m), must be a power of 2, defaults to `128`                                      |
+| `variant (str)`                           | choice of algorithmic variant from {`"ocp_thrifty"`, `"ocp_prodigal"`, `"acp_thrifty`, `"acp_prodigal`}, defaults to `"acp_prodigal"`                  |
+| `device_memory (float)`                   | GPU memory in GiBs (gibibytes) to be available for this instance, defaults to `2.0`                                                                    |
+| `ucb_c (float)`                           | value of C constant, influencing exploration tendency, appearing in UCT formula (upper confidence bounds for trees), defaults to `2.0`                 |
+| `verbose_debug (bool)`                    | debug verbosity flag, if `True` then detailed information about each kernel invocation are printed to console (in each iteration), defaults to `False` |
+| `verbose_info (bool)`                     | verbosity flag, if `True` then standard information on actions and performance are printed to console (after a full run), defaults to `True`           |
 
 ## Selected experimental results
 Hardware environment: Ubuntu Server 20.4.03, 4 CPUs: AMD EPYC 7H12 64-Core (2.6 GHz), 62.8 GB RAM; NVIDIA GRID A100-7-40C vGPU. Software: nvcc 11.4 (V11.4.48), Python 3.8.10, numpy 1.23.5, numba 0.58.1.
