@@ -274,6 +274,12 @@ and that <code class="docutils literal notranslate"><span class="pre">g</span></
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">math</span></code>: required for mathematical computations.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">numba</span></code>: required for just-in-time compilation of CUDA kernels (decorated by <code class="docutils literal notranslate"><span class="pre">&#64;cuda.jit</span></code>).</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">mctsnc_game_mechanics</span></code>: required to define the mechanics of a wanted game or search problem via a set of five device-side functions: </dt><dd><p><code class="docutils literal notranslate"><span class="pre">is_action_legal</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action</span></code>, <code class="docutils literal notranslate"><span class="pre">legal_actions_playout</span></code>, <code class="docutils literal notranslate"><span class="pre">take_action_playout</span></code>, <code class="docutils literal notranslate"><span class="pre">compute_outcome</span></code> callable by kernel functions of <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code>
+(see <a class="reference internal" href="mctsnc_game_mechanics.html"><span class="doc">mctsnc_game_mechanics module</span></a>).</p>
+</dd>
+</dl>
+</li>
 <li><p>For usage of <code class="docutils literal notranslate"><span class="pre">MCTSNC</span></code> class, NVIDIA CUDA drivers must be present in the operating system.</p></li>
 </ul>
 </section>
