@@ -24,7 +24,7 @@ In both OCP and ACP, multiple independent trees are grown concurrently (for read
 Wavy arrows distinguished by different colors represent CUDA threads working for different stages of MCTS algorithm:
 orange for selection, green for expansion, black for playouts, purple for backup. In MCTS-NC, threads are grouped in 
 CUDA blocks that are indexed either by tree indexes alone, or tree-action pairs, depending on the stage and variant / subvariant. 
-In the OCP variant, exactly one random child of each expanded leaf node (accross different trees) becomes played out. 
+In the OCP variant, exactly one random child of each expanded leaf node (across different trees) becomes played out. 
 In ACP, all such children become played out. In the figure, terminal rewards from playouts are colored
 in: blue (losses of the first "red" player), gray (draws) or red (wins of the first player). Their counts suitably update
 the statistics at ancestor nodes. For shortness, Q stands for an action-value estimate and U for its upper confidence bound.
