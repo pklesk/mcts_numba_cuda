@@ -141,9 +141,10 @@ BEST ACTION: 115
 ### 'Connect 4: MCTS_5_INF_VANILLA (5s per move) vs MCTS-NC_1_INF_4_256_OCP_PRODIGAL (1s per move)' 
 |estimates on best actions' values and UCBs|
 |-|
-|<img src="/extras/c4_sample_game_best_actions.png"/>|
+|<img src="/extras/c4_sample_game_best_actions.pdf"/>|
+|-|
 |averages of: mean and maximum depths of tree nodes|
-|<img src="/extras/c4_sample_game_depths.png"/>|
+|<img src="/extras/c4_sample_game_depths.pdf"/>|
 
 ## Documentation
 
