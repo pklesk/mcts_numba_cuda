@@ -156,6 +156,8 @@ BEST ACTION: 115
 
 ## Selected experimental results
 
+Hardware environment: Ubuntu Server 20.4.03, 4 CPUs: AMD EPYC 7H12 64-Core (2.6 GHz), 62.8 GB RAM; NVIDIA GRID A100-7-40C vGPU. Software: nvcc 11.4 (V11.4.48), Python 3.8.10, numpy 1.23.5, numba 0.58.1.
+
 #### Connect 4 tournament of AIs (MCTS-based)
    
 |     |                                        |      A |      B |      C |      D |      E |     avg. score |      avgs of: playouts / steps | avgs of: mean depth / max depth|
