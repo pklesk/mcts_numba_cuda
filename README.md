@@ -145,6 +145,7 @@ BEST ACTION: 115
 |-|
 |averages of: mean and maximum depths of tree nodes|
 |<img src="/extras/c4_sample_game_depths.pdf"/>|
+[c4_sample_game_best_actions.pdf](https://github.com/user-attachments/files/18272989/c4_sample_game_best_actions.pdf)
 
 ## Documentation
 
