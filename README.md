@@ -176,7 +176,7 @@ MCTSNC RUN... [MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, 
 MCTSNC RUN DONE. [time: 5.008184909820557 s; best action: 115 (K8), best win_flag: False, best n: 1093632, best n_wins: 452284, best q: 0.41356141736891383]
 BEST ACTION: 115
 ```
-## Constructor parameters
+## Constructor parameters for class `MCTSNC`
 | parameter                                 | description                                                                                                                                            |
 |:------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `state_board_shape (tuple(int, int))`     | shape of board for states in a given game, at most `(32, 32)`                                                                                          |
