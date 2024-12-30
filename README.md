@@ -138,10 +138,20 @@ BEST ACTION: 115
 ```
 ## Plots for sample games 
 
-### 'Connect 4: MCTS_5_INF_VANILLA (5s per move) vs MCTS-NC_1_INF_4_256_OCP_PRODIGAL (1s per move)' 
+#### 'Connect 4: MCTS_5_INF_VANILLA (5s per move) vs MCTS-NC_1_INF_4_256_OCP_PRODIGAL (1s per move)' 
 |estimates on best actions' values and UCBs|averages of: mean and maximum depths of tree nodes|
 |-|-|
 |<img src="/extras/c4_sample_game_best_actions.png"/>|<img src="/extras/c4_sample_game_depths.png"/>|
+
+#### 'Connect 4: MCTS-NC_5_INF_4_256_OCP_PRODIGAL vs MCTS-NC_5_INF_4_256_ACP_PRODIGAL (5s per move each side)' 
+|estimates on best actions' values and UCBs|averages of: mean and maximum depths of tree nodes|
+|-|-|
+|<img src="/extras/c4_sample_game_best_actions_2.png"/>|<img src="/extras/c4_sample_game_depths_2.png"/>|
+
+#### 'Gomoku: MCTS-NC_30_INF_4_256_ACP_THRIFTY vs MCTS-NC_30_INF_4_256_ACP_PRODIGAL (30s per move each side)' 
+|estimates on best actions' values and UCBs|averages of: mean and maximum depths of tree nodes|
+|-|-|
+|<img src="/extras/gomoku_sample_game_best_actions.png"/>|<img src="/extras/gomoku_sample_game_depths.png"/>|
 
 ## Documentation
 
