@@ -1,7 +1,6 @@
 UNDER CONSTRUCTION.
 
 # MCTS-NC: A thorough GPU parallelization of Monte Carlo Tree Search implemented in Python via numba.cuda
-
 With CUDA computational model in mind, we propose and implement four, fast operating and thoroughly parallel, variants of Monte Carlo Tree Search algorithm. 
 The provided implementation takes advantage of [Numba](https://numba.pydata.org/), a just-in-time Python compiler, and its `numba.cuda` package (hence the "-NC" suffix in the project name). 
 By *thoroughly parallel* we understand an algorithmic design that applies to both: (1) the structural elements of trees - leaf-/root-/tree-level parallelization 
@@ -10,7 +9,6 @@ We apply suitable *reduction* patterns to carry out summations or max / argmax o
 The implementation uses: no atomic operations, no mutexes (lock-free), and very few device-host memory transfers. 
 
 ## High-level intuition 
-
 <table>
    <tr><td><img src="https://github.com/user-attachments/assets/df115f08-a5a4-409d-8b93-de84be6133f2"/></td></tr>
 </table>
@@ -29,8 +27,23 @@ In ACP, all such children become played out. In the figure, terminal rewards fro
 in: blue (losses of the first "red" player), gray (draws) or red (wins of the first player). Their counts suitably update
 the statistics at ancestor nodes. For shortness, Q stands for an action-value estimate and U for its upper confidence bound.
 
-## Example usage via `main.py`
+## Plots from selected sample games
+#### Connect 4: MCTS_5_INF_VANILLA (5s per move) vs MCTS-NC_1_INF_4_256_OCP_PRODIGAL (1s per move)
+|estimates on best actions' values and UCBs|avgs of: mean and maximum depths of tree nodes|
+|-|-|
+|<img src="https://github.com/user-attachments/assets/b66289f9-4fda-401f-ba41-004dd478e1c9"/>|<img src="https://github.com/user-attachments/assets/fc1c877b-77d9-4688-9071-6519f9df5fb4"/>|
 
+#### Connect 4: MCTS-NC_5_INF_4_256_OCP_PRODIGAL vs MCTS-NC_5_INF_4_256_ACP_PRODIGAL (5s per move each side)
+|estimates on best actions' values and UCBs|avgs of: mean and maximum depths of tree nodes|
+|-|-|
+|<img src="https://github.com/user-attachments/assets/662ef5a3-4007-41ff-8f8c-dc8a8a31b895"/>|<img src="https://github.com/user-attachments/assets/ff9aac3c-eda8-4534-9d96-9ba1862cbc81"/>|
+
+#### Gomoku: MCTS-NC_30_INF_4_256_ACP_THRIFTY vs MCTS-NC_30_INF_4_256_ACP_PRODIGAL (30s per move each side)
+|estimates on best actions' values and UCBs|avgs of: mean and maximum depths of tree nodes|
+|-|-|
+|<img src="https://github.com/user-attachments/assets/bbfd8cab-d7aa-46cd-8256-994b6b12394c"/>|<img src="https://github.com/user-attachments/assets/4bcea756-d66f-4a1c-b670-acb441561808"/>|
+
+## Example usage via `main.py`
 By executing `python main.py` one can play via console 10 games of Connect 4 against the default AI instance `MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=4, n_playouts=256, variant='acp_prodigal', device_memory=2.0, ucb_c=2.0, seed: 0)`.
 
 The default settings accessible within `main.py` are:
@@ -59,7 +72,6 @@ AIS = {
 ```
 
 ## Example usage 1 (Connect 4)
-
 Assume the mechanics of the Connect 4 game have been defined to MCTS-NC in `mctsnc_game_mechanics.py` (via device functions `is_action_legal`, `take_action`, etc.), 
 and that `c4` - instance of `C4(State)` - represents a state of an ongoing Connect 4 game shown below.
 ```bash
@@ -106,7 +118,6 @@ BEST ACTION: 4
 ```
 
 ## Example usage 2 (Gomoku)
-
 Assume the mechanics of the Gomoku game have been defined to MCTS-NC in `mctsnc_game_mechanics.py` (via device functions `is_action_legal`, `take_action`, etc.), 
 and that `g` - instance of `Gomoku(State)` - represents a state of an ongoing Gomoku game shown below.
 ```bash
@@ -165,30 +176,23 @@ MCTSNC RUN... [MCTSNC(search_time_limit=5.0, search_steps_limit=inf, n_trees=8, 
 MCTSNC RUN DONE. [time: 5.008184909820557 s; best action: 115 (K8), best win_flag: False, best n: 1093632, best n_wins: 452284, best q: 0.41356141736891383]
 BEST ACTION: 115
 ```
+## Constructor parameters
+| parameter                      | description                                                                                                                                       |
+|:-------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------|
+| `T (int)`                      | number of boosting rounds (equivalently, number of weak estimators), defaults to `256`                                                            |
+| `B (int)`                      | number of bins, defaults to `8`                                                                                                                   |
+| `outliers_ratio (float)`       | fraction of outliers to skip (on each end) when establishing features’ variability ranges, defaults to `0.05`                                     |
+| `logit_max (np.float32)`       | maximum absolute value of logit transform, outcomes clipped to interval [−`logit_max`, `logit_max`], defaults to `np.float32(2.0)`                |
+| `fit_mode (str)`               | choice of fit method from {`"numpy"`, `"numba_jit"`, `"numba_cuda"`}, defaults to `"numba_cuda"`                                                  |
+| `decision_function_mode (str)` | choice of decision function method from {`"numpy"`, `"numba_jit"`, `"numba_cuda"`} (called e.g. within `predict`), defaults to `"numba_cuda"`     |
+| `verbose (bool)`               | verbosity flag, if `True` then fit progress and auxiliary information are printed to console, defaults to `False`                                 |
+| `debug_verbose (bool)`         | detailed verbosity (only for `"numba_cuda"` fit), defaults to `False`                                                                             |
 
-## Selected sample games
-
-#### Connect 4: MCTS_5_INF_VANILLA (5s per move) vs MCTS-NC_1_INF_4_256_OCP_PRODIGAL (1s per move)
-|estimates on best actions' values and UCBs|avgs of: mean and maximum depths of tree nodes|
-|-|-|
-|<img src="https://github.com/user-attachments/assets/b66289f9-4fda-401f-ba41-004dd478e1c9"/>|<img src="https://github.com/user-attachments/assets/fc1c877b-77d9-4688-9071-6519f9df5fb4"/>|
-
-#### Connect 4: MCTS-NC_5_INF_4_256_OCP_PRODIGAL vs MCTS-NC_5_INF_4_256_ACP_PRODIGAL (5s per move each side)
-|estimates on best actions' values and UCBs|avgs of: mean and maximum depths of tree nodes|
-|-|-|
-|<img src="https://github.com/user-attachments/assets/662ef5a3-4007-41ff-8f8c-dc8a8a31b895"/>|<img src="https://github.com/user-attachments/assets/ff9aac3c-eda8-4534-9d96-9ba1862cbc81"/>|
-
-#### Gomoku: MCTS-NC_30_INF_4_256_ACP_THRIFTY vs MCTS-NC_30_INF_4_256_ACP_PRODIGAL (30s per move each side)
-|estimates on best actions' values and UCBs|avgs of: mean and maximum depths of tree nodes|
-|-|-|
-|<img src="https://github.com/user-attachments/assets/bbfd8cab-d7aa-46cd-8256-994b6b12394c"/>|<img src="https://github.com/user-attachments/assets/4bcea756-d66f-4a1c-b670-acb441561808"/>|
 
 ## Selected experimental results
-
 Hardware environment: Ubuntu Server 20.4.03, 4 CPUs: AMD EPYC 7H12 64-Core (2.6 GHz), 62.8 GB RAM; NVIDIA GRID A100-7-40C vGPU. Software: nvcc 11.4 (V11.4.48), Python 3.8.10, numpy 1.23.5, numba 0.58.1.
 
 #### Connect 4 tournament of AIs (MCTS-based)
-   
 |     |                                        |      A |      B |      C |      D |      E |     avg. score |      avgs of: playouts / steps | avgs of: mean depth / max depth|
 |-----|:---------------------------------------|-------:|-------:|-------:|-------:|-------:|---------------:|-------------------------------:|-------------------------------:|
 |**A**| VANILLA (5s)                           |      - |  04.0% |  04.5% |  02.0% |  01.0% |        02.875% |                  17.1k / 17.1k |                    5.97 / 7.98 |
@@ -199,7 +203,6 @@ Hardware environment: Ubuntu Server 20.4.03, 4 CPUs: AMD EPYC 7H12 64-Core (2.6 
 
 
 #### Gomoku 4 tournament (MCTS-based)
-   
 |     |                                        |      A |      B |      C |      D |      E |     avg. score |      avgs of: playouts / steps | avgs of: mean depth / max depth|
 |-----|:---------------------------------------|-------:|-------:|-------:|-------:|-------:|---------------:|-------------------------------:|-------------------------------:|
 |**A**| VANILLA (30s)                          |      - |  00.0% |  00.0% |  00.0% |  00.0% |         00.00% |                    4.7k / 4.7k |                     2.95 / 3.0 |
@@ -209,10 +212,8 @@ Hardware environment: Ubuntu Server 20.4.03, 4 CPUs: AMD EPYC 7H12 64-Core (2.6 
 |**E**| ACP-PRODIGAL (30s, T=4, m=256)         | 100.0% |  72.0% |  73.0% |  51.0% |      - |         74.00% |                  422.1M / 5.6k |                    3.49 / 4.93|
 
 ## Documentation
-
 Complete developer documentation of the project is accessible at: [https://pklesk.github.io/mcts_numba_cuda](https://pklesk.github.io/mcts_numba_cuda). <br/>
 Documentation for the `MCTSNC` class alone is at: [https://pklesk.github.io/mcts_numba_cuda/mctsnc.html](https://pklesk.github.io/mcts_numba_cuda/mctsnc.html).
 
 ## Acknowledgments and credits
-
 - [Numba](https://numba.pydata.org): a high-performance just-in-time Python compiler.
