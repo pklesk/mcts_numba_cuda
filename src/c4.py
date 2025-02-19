@@ -3,7 +3,7 @@ from mcts import State
 from numba import jit
 from numba import int8
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Przemysław Klęsk"
 __email__ = "pklesk@zut.edu.pl" 
 

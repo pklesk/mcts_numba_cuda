@@ -162,7 +162,7 @@ from mctsnc_game_mechanics import is_action_legal, take_action, legal_actions_pl
 from utils import dict_to_str
 import json
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Przemysław Klęsk"
 __email__ = "pklesk@zut.edu.pl" 
 
