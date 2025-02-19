@@ -22,8 +22,8 @@ copyright = '2024, Przemysław Klęsk'
 author = 'Przemysław Klęsk'
 
 # The full version, including alpha/beta/rc tags
-version = '1.0.0'
-release = '1.0.0'
+version = '1.0.1'
+release = '1.0.1'
 
 
 # -- General configuration ---------------------------------------------------
