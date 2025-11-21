@@ -19,8 +19,8 @@ class C4(State):
         SYMBOLS (List):
             list of strings representing disc symbols (black, white) or ``"."`` for empty cell. 
     """        
-    M = 6 
-    N = 7 
+    M = 6 # 6 
+    N = 7 # 7 
     SYMBOLS = ["\u25CB", ".", "\u25CF"] # or: ["O", ".", "X"]    
     
     def __init__(self, parent=None):
