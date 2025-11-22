@@ -38,8 +38,8 @@ __email__ = "pklesk@zut.edu.pl"
 # main settings
 STATE_CLASS = C4 # C4 or Gomoku
 N_GAMES = 10
-AI_A_SHORTNAME = "mctsnc_10_inf_4_512_acp_thrifty" # None for human
-AI_B_SHORTNAME = "mctsnc_10_inf_4_512_acp_prodigal" # None for human
+AI_A_SHORTNAME = "mctsnc_10_inf_4_512_acp_prodigal" # None for human
+AI_B_SHORTNAME = "mcts_10_inf_vanilla" # None for human
 REPRODUCE_EXPERIMENT = False
 
 # folders
@@ -63,6 +63,7 @@ if _HUMAN_PARTICIPANT:
 AIS = {
     "mcts_1_inf_vanilla": MCTS(search_time_limit=1.0, search_steps_limit=np.inf, vanilla=True),
     "mcts_5_inf_vanilla": MCTS(search_time_limit=5.0, search_steps_limit=np.inf, vanilla=True),
+    "mcts_10_inf_vanilla": MCTS(search_time_limit=10.0, search_steps_limit=np.inf, vanilla=True),
     "mcts_30_inf_vanilla": MCTS(search_time_limit=30.0, search_steps_limit=np.inf, vanilla=True),        
     "mctsnc_1_inf_1_32_ocp_thrifty": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=1.0, search_steps_limit=np.inf, n_trees=1, n_playouts=32, variant="ocp_thrifty", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
     "mctsnc_1_inf_1_64_ocp_thrifty": MCTSNC(_BOARD_SHAPE, _EXTRA_INFO_MEMORY, _MAX_ACTIONS, search_time_limit=1.0, search_steps_limit=np.inf, n_trees=1, n_playouts=64, variant="ocp_thrifty", action_index_to_name_function=_ACTION_INDEX_TO_NAME_FUNCTION),
