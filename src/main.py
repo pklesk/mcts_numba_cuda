@@ -22,9 +22,6 @@ Link to project repository
 `https://github.com/pklesk/mcts_numba_cuda <https://github.com/pklesk/mcts_numba_cuda>`_
 """
 
-import warnings
-from numba.core.errors import NumbaPerformanceWarning
-warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
 import numpy as np
 from mcts import MCTS
 from mctsnc import MCTSNC

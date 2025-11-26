@@ -149,11 +149,14 @@ For public methods full docstrings are provided (with arguments and returns desc
 
 """
 
-import numpy as np
-from numpy import inf
 import warnings
 from numba.core.errors import NumbaPerformanceWarning
 warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
+import os
+os.environ["NUMBA_DISABLE_PERFORMANCE_WARNINGS"] = "1"
+
+import numpy as np
+from numpy import inf
 from numba import cuda
 from numba import void, int8, int16, int32, int64, float32, boolean
 from numba.cuda.random import create_xoroshiro128p_states, xoroshiro128p_uniform_float32, xoroshiro128p_type 
