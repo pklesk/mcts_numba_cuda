@@ -82,7 +82,8 @@ def gpu_props():
     """Returns a dictionary with properties of GPU device."""
     gpu = cuda.get_current_device()
     props = {}
-    props["name"] = gpu.name.decode("ASCII")
+    #props["name"] = gpu.name.decode("ASCII")
+    props["name"] = gpu.name
     props["max_threads_per_block"] = gpu.MAX_THREADS_PER_BLOCK
     props["max_block_dim_x"] = gpu.MAX_BLOCK_DIM_X
     props["max_block_dim_y"] = gpu.MAX_BLOCK_DIM_Y

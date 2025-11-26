@@ -151,13 +151,14 @@ For public methods full docstrings are provided (with arguments and returns desc
 
 import numpy as np
 from numpy import inf
+import warnings
+from numba.core.errors import NumbaPerformanceWarning
+warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
 from numba import cuda
 from numba import void, int8, int16, int32, int64, float32, boolean
 from numba.cuda.random import create_xoroshiro128p_states, xoroshiro128p_uniform_float32, xoroshiro128p_type 
 import time
 import math
-from numba.core.errors import NumbaPerformanceWarning
-import warnings
 from mctsnc_game_mechanics import is_action_legal, take_action, legal_actions_playout, take_action_playout, compute_outcome
 from utils import dict_to_str
 import json
@@ -165,8 +166,6 @@ import json
 __version__ = "1.0.1"
 __author__ = "Przemysław Klęsk"
 __email__ = "pklesk@zut.edu.pl" 
-
-warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
 
 # the class
 class MCTSNC:
