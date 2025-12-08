@@ -49,7 +49,7 @@ Link to project repository
 
 from numba import cuda
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __author__ = "Przemysław Klęsk"
 __email__ = "pklesk@zut.edu.pl" 
 

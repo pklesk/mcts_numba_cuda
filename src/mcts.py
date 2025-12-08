@@ -22,7 +22,7 @@ import numpy as np
 import time
 from utils import dict_to_str
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __author__ = "Przemysław Klęsk"
 __email__ = "pklesk@zut.edu.pl" 
 
