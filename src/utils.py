@@ -118,7 +118,7 @@ def gpu_props():
         (9, 0): 128,
         (10, 0): 128,
         (12, 0): 128,
-        (12, 2): 128 
+        (12, 1): 128 
         }
     cores_per_sm = CC_CORES_PER_SM_DICT.get(gpu.compute_capability)
     if cores_per_sm is None:
