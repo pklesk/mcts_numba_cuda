@@ -116,10 +116,15 @@ def gpu_props():
         (8, 7): 128,
         (8, 9): 128,
         (9, 0): 128,
-        (12, 0) : 128
+        (10, 0): 128,
+        (12, 0): 128,
+        (12, 2): 128 
         }
+    cores_per_sm = CC_CORES_PER_SM_DICT.get(gpu.compute_capability)
+    if cores_per_sm is None:
+        cores_per_sm = 128
     props["cores_per_SM"] = CC_CORES_PER_SM_DICT.get(gpu.compute_capability)
-    props["cores_total"] = props["cores_per_SM"] * gpu.MULTIPROCESSOR_COUNT
+    props["cores_total"] = cores_per_sm * gpu.MULTIPROCESSOR_COUNT
     return props
 
 def hash_function(s):
@@ -188,9 +193,9 @@ def unzip_and_load_experiment(experiment_hs, folder):
             zip_ref.extract(experiment_hs + ".json", path=os.path.dirname(fpath + ".json"))            
         with open(fpath + ".json", 'r', encoding="utf-8") as json_file:
             experiment_info = json.load(json_file) 
+            zip_ref.extract(experiment_hs + ".json", path=os.path.dirname(fpath + ".json"))            
+        with open(fpath + ".json", 'r', encoding="utf-8") as json_file:
+            experiment_info = json.load(json_file) 
         os.remove(fpath + ".json") # TODO uncomment this back, to have extracted file removed once used
     except IOError:
         sys.exit(f"[error occurred when trying to unzip and load experiment info: {experiment_hs}]")            
-    t2 = time.time()
-    print(f"UNZIP AND LOAD EXPERIMENT DONE. [time: {t2 - t1} s]")
-    return experiment_info
