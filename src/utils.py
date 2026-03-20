@@ -123,7 +123,7 @@ def gpu_props():
     cores_per_sm = CC_CORES_PER_SM_DICT.get(gpu.compute_capability)
     if cores_per_sm is None:
         cores_per_sm = 128
-        print(f"[cores per sm not found in dictionary for detected compute capability: {gpu.compute_capability} -> defaulting to 128]")
+        print(f"[cores per sm not found in dictionary for detected compute capability: {gpu.compute_capability} -> thus, defaulting to 128]")
     props["cores_per_SM"] = CC_CORES_PER_SM_DICT.get(gpu.compute_capability)
     props["cores_total"] = cores_per_sm * gpu.MULTIPROCESSOR_COUNT
     return props
