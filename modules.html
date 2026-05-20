@@ -4,8 +4,8 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src &mdash; MCTS-NC 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+  <title>src &mdash; MCTS-NC 1.0.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
   
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=8d563738"></script>
+        <script src="_static/documentation_options.js?v=71272d9f"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
             MCTS-NC
           </a>
               <div class="version">
-                1.0.0
+                1.0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -143,6 +143,7 @@
 <li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.action_index_to_name"><code class="docutils literal notranslate"><span class="pre">Gomoku.action_index_to_name()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.get_board_shape"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_board_shape()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.get_extra_info_memory"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_extra_info_memory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.__annotations__"><code class="docutils literal notranslate"><span class="pre">Gomoku.__annotations__</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.__module__"><code class="docutils literal notranslate"><span class="pre">Gomoku.__module__</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="gomoku.html#gomoku.Gomoku.get_max_actions"><code class="docutils literal notranslate"><span class="pre">Gomoku.get_max_actions()</span></code></a></li>
 </ul>
@@ -177,6 +178,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.get_board_shape"><code class="docutils literal notranslate"><span class="pre">State.get_board_shape()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.get_extra_info_memory"><code class="docutils literal notranslate"><span class="pre">State.get_extra_info_memory()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.get_max_actions"><code class="docutils literal notranslate"><span class="pre">State.get_max_actions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.__annotations__"><code class="docutils literal notranslate"><span class="pre">State.__annotations__</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcts.html#mcts.State.__module__"><code class="docutils literal notranslate"><span class="pre">State.__module__</span></code></a></li>
 </ul>
 </li>
@@ -298,7 +300,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plots.html#plots.scores_array_plot_ocp_thrifty_vs_vanilla_c4"><code class="docutils literal notranslate"><span class="pre">scores_array_plot_ocp_thrifty_vs_vanilla_c4()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plots.html#plots.scores_array_plot_ocp_prodigal_vs_vanilla_c4"><code class="docutils literal notranslate"><span class="pre">scores_array_plot_ocp_prodigal_vs_vanilla_c4()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plots.html#plots.scores_array_plot_acp_thrifty_vs_vanilla_c4"><code class="docutils literal notranslate"><span class="pre">scores_array_plot_acp_thrifty_vs_vanilla_c4()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.scores_array_plot_acp_prodigal_vs_vanilla"><code class="docutils literal notranslate"><span class="pre">scores_array_plot_acp_prodigal_vs_vanilla()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.scores_array_plot_acp_prodigal_vs_vanilla_c4"><code class="docutils literal notranslate"><span class="pre">scores_array_plot_acp_prodigal_vs_vanilla_c4()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plots.html#plots.best_action_plot"><code class="docutils literal notranslate"><span class="pre">best_action_plot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plots.html#plots.best_action_plot_generator"><code class="docutils literal notranslate"><span class="pre">best_action_plot_generator()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plots.html#plots.depths_plot"><code class="docutils literal notranslate"><span class="pre">depths_plot()</span></code></a></li>
@@ -314,6 +316,11 @@
 <li class="toctree-l2"><a class="reference internal" href="plots.html#plots.averages_printout_30s_ocp_prodigal_gomoku"><code class="docutils literal notranslate"><span class="pre">averages_printout_30s_ocp_prodigal_gomoku()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plots.html#plots.averages_printout_30s_acp_thrifty_gomoku"><code class="docutils literal notranslate"><span class="pre">averages_printout_30s_acp_thrifty_gomoku()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plots.html#plots.averages_printout_30s_acp_prodigal_gomoku"><code class="docutils literal notranslate"><span class="pre">averages_printout_30s_acp_prodigal_gomoku()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.playouts_per_second_plot"><code class="docutils literal notranslate"><span class="pre">playouts_per_second_plot()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.playouts_per_second_plot_generator"><code class="docutils literal notranslate"><span class="pre">playouts_per_second_plot_generator()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.playouts_per_second_plot_acp_prodigal_vs_vanilla_c4"><code class="docutils literal notranslate"><span class="pre">playouts_per_second_plot_acp_prodigal_vs_vanilla_c4()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.playouts_per_second_plot_ocp_prodigal_vs_vanilla_c4"><code class="docutils literal notranslate"><span class="pre">playouts_per_second_plot_ocp_prodigal_vs_vanilla_c4()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.stats_detailed_printout"><code class="docutils literal notranslate"><span class="pre">stats_detailed_printout()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">utils module</a><ul>
