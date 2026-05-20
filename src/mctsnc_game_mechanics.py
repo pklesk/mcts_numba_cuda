@@ -279,3 +279,4 @@ def compute_outcome_gomoku(m, n, board, extra_info, turn, last_action):
     if draw:
         return 0
     return 2 # anything other than {-1, 0, 1} implies 'game ongoing'
+

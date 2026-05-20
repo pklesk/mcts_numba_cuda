@@ -305,3 +305,4 @@ class Gomoku(State):
                 maximum number of actions (the largest branching factor) equal to the product: ``Gomoku.M * Gomoku.N``.
         """                        
         return Gomoku.M * Gomoku.N
+

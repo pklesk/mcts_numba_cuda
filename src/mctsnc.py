@@ -165,6 +165,7 @@ import math
 from mctsnc_game_mechanics import is_action_legal, take_action, legal_actions_playout, take_action_playout, compute_outcome
 from utils import dict_to_str
 import json
+import sys
 
 __version__ = "1.0.2"
 __author__ = "Przemysław Klęsk"
