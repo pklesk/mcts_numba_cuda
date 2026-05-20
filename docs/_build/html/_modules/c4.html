@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>c4 &mdash; MCTS-NC 1.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+  <title>c4 &mdash; MCTS-NC 1.0.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
   
@@ -14,7 +14,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=292eb321"></script>
+        <script src="../_static/documentation_options.js?v=71272d9f"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -34,7 +34,7 @@
             MCTS-NC
           </a>
               <div class="version">
-                1.0.1
+                1.0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -74,18 +74,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for c4</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mcts</span> <span class="kn">import</span> <span class="n">State</span>
-<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span>
-<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">int8</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mcts</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">int8</span>
 
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;1.0.1&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;1.0.4&quot;</span>
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Przemysław Klęsk&quot;</span>
 <span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;pklesk@zut.edu.pl&quot;</span> 
 
 <div class="viewcode-block" id="C4">
 <a class="viewcode-back" href="../c4.html#c4.C4">[docs]</a>
-<span class="k">class</span> <span class="nc">C4</span><span class="p">(</span><span class="n">State</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">C4</span><span class="p">(</span><span class="n">State</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for states of Connect 4 game.</span>
 <span class="sd">    </span>
@@ -97,13 +97,13 @@
 <span class="sd">        SYMBOLS (List):</span>
 <span class="sd">            list of strings representing disc symbols (black, white) or ``&quot;.&quot;`` for empty cell. </span>
 <span class="sd">    &quot;&quot;&quot;</span>        
-    <span class="n">M</span> <span class="o">=</span> <span class="mi">6</span> 
-    <span class="n">N</span> <span class="o">=</span> <span class="mi">7</span> 
+    <span class="n">M</span> <span class="o">=</span> <span class="mi">6</span> <span class="c1"># 6 </span>
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">7</span> <span class="c1"># 7 </span>
     <span class="n">SYMBOLS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="se">\u25CB</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\u25CF</span><span class="s2">&quot;</span><span class="p">]</span> <span class="c1"># or: [&quot;O&quot;, &quot;.&quot;, &quot;X&quot;]    </span>
     
 <div class="viewcode-block" id="C4.__init__">
 <a class="viewcode-back" href="../c4.html#c4.C4.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor (ordinary or copying) of ``C4`` instances - states of Connect 4 game.</span>
 <span class="sd">         </span>
@@ -123,7 +123,7 @@
 <div class="viewcode-block" id="C4.class_repr">
 <a class="viewcode-back" href="../c4.html#c4.C4.class_repr">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">class_repr</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">class_repr</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;        </span>
 <span class="sd">        Returns a string representation of class ``C4`` (meant to instantiate states of Connect 4 game), informing about the size of board.</span>
 <span class="sd">        </span>
@@ -135,7 +135,7 @@
             
 <div class="viewcode-block" id="C4.__str__">
 <a class="viewcode-back" href="../c4.html#c4.C4.__str__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;        </span>
 <span class="sd">        Returns a string representation of this ``C4`` state - the contents of its game board.</span>
 <span class="sd">        </span>
@@ -157,7 +157,7 @@
     
 <div class="viewcode-block" id="C4.take_action_job">
 <a class="viewcode-back" href="../c4.html#c4.C4.take_action_job">[docs]</a>
-    <span class="k">def</span> <span class="nf">take_action_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_index</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">take_action_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_index</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Drops a disc into column indicated by the action_index and returns ``True`` if the action is legal (column not full yet).</span>
 <span class="sd">        Otherwise, does no changes and returns ``False``.</span>
@@ -182,7 +182,7 @@
     
 <div class="viewcode-block" id="C4.compute_outcome_job">
 <a class="viewcode-back" href="../c4.html#c4.C4.compute_outcome_job">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute_outcome_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_outcome_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;        </span>
 <span class="sd">        Computes and returns the game outcome for this state in compliance with rules of Connect 4 game: </span>
 <span class="sd">        {-1, 1} denoting a win for the minimizing or maximizing player, respectively, if he connected at least 4 his discs; </span>
@@ -258,7 +258,7 @@
 <a class="viewcode-back" href="../c4.html#c4.C4.compute_outcome_job_numba_jit">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="nd">@jit</span><span class="p">(</span><span class="n">int8</span><span class="p">(</span><span class="n">int8</span><span class="p">,</span> <span class="n">int8</span><span class="p">,</span> <span class="n">int8</span><span class="p">,</span> <span class="n">int8</span><span class="p">,</span> <span class="n">int8</span><span class="p">,</span> <span class="n">int8</span><span class="p">[:,</span> <span class="p">:]),</span> <span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
-    <span class="k">def</span> <span class="nf">compute_outcome_job_numba_jit</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">last_i</span><span class="p">,</span> <span class="n">last_j</span><span class="p">,</span> <span class="n">board</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_outcome_job_numba_jit</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">last_i</span><span class="p">,</span> <span class="n">last_j</span><span class="p">,</span> <span class="n">board</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called by ``compute_outcome_job`` for faster outcomes.&quot;&quot;&quot;</span>
         <span class="n">last_token</span> <span class="o">=</span> <span class="o">-</span><span class="n">turn</span>        
         <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">last_i</span><span class="p">,</span> <span class="n">last_j</span>
@@ -315,7 +315,7 @@
                         
 <div class="viewcode-block" id="C4.take_random_action_playout">
 <a class="viewcode-back" href="../c4.html#c4.C4.take_random_action_playout">[docs]</a>
-    <span class="k">def</span> <span class="nf">take_random_action_playout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">take_random_action_playout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;        </span>
 <span class="sd">        Picks a uniformly random action from actions available in this state and returns the result of calling ``take_action`` with the action index as argument.</span>
 <span class="sd">        </span>
@@ -331,7 +331,7 @@
     
 <div class="viewcode-block" id="C4.get_board">
 <a class="viewcode-back" href="../c4.html#c4.C4.get_board">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_board</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_board</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;                </span>
 <span class="sd">        Returns the board of this state (a two-dimensional array of bytes).</span>
 <span class="sd">        </span>
@@ -344,7 +344,7 @@
     
 <div class="viewcode-block" id="C4.get_extra_info">
 <a class="viewcode-back" href="../c4.html#c4.C4.get_extra_info">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns additional information associated with this state, as one-dimensional array of bytes,</span>
 <span class="sd">        informing about fills of columns (how many discs have been dropped in each column). </span>
@@ -359,7 +359,7 @@
 <div class="viewcode-block" id="C4.action_name_to_index">
 <a class="viewcode-back" href="../c4.html#c4.C4.action_name_to_index">[docs]</a>
     <span class="nd">@staticmethod</span>    
-    <span class="k">def</span> <span class="nf">action_name_to_index</span><span class="p">(</span><span class="n">action_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">action_name_to_index</span><span class="p">(</span><span class="n">action_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an action&#39;s index (numbering from 0) based on its name. E.g., name ``&quot;0&quot;``, denoting a drop into the leftmost column, maps to index ``0``.</span>
 <span class="sd">        </span>
@@ -376,7 +376,7 @@
 <div class="viewcode-block" id="C4.action_index_to_name">
 <a class="viewcode-back" href="../c4.html#c4.C4.action_index_to_name">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">action_index_to_name</span><span class="p">(</span><span class="n">action_index</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">action_index_to_name</span><span class="p">(</span><span class="n">action_index</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;        </span>
 <span class="sd">        Returns an action&#39;s name based on its index (numbering from 0). E.g., index ``0`` maps to name ``&quot;0&quot;``, denoting a drop into the leftmost column.</span>
 <span class="sd">        </span>
@@ -393,7 +393,7 @@
 <div class="viewcode-block" id="C4.get_board_shape">
 <a class="viewcode-back" href="../c4.html#c4.C4.get_board_shape">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_board_shape</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_board_shape</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a tuple with shape of boards for Connect 4 game.</span>
 <span class="sd">        </span>
@@ -407,7 +407,7 @@
 <div class="viewcode-block" id="C4.get_extra_info_memory">
 <a class="viewcode-back" href="../c4.html#c4.C4.get_extra_info_memory">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_extra_info_memory</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_extra_info_memory</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;        </span>
 <span class="sd">        Returns amount of memory (in bytes) needed to memorize additional information associated with Connect 4 states, i.e., the memory for fills of columns.</span>
 <span class="sd">        That number is equal to the number of columns.</span>
@@ -422,7 +422,7 @@
 <div class="viewcode-block" id="C4.get_max_actions">
 <a class="viewcode-back" href="../c4.html#c4.C4.get_max_actions">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_max_actions</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_max_actions</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the maximum number of actions (the largest branching factor) equal to the number of columns.</span>
 <span class="sd">        </span>

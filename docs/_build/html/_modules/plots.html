@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>plots &mdash; MCTS-NC 1.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+  <title>plots &mdash; MCTS-NC 1.0.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
   
@@ -14,7 +14,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=292eb321"></script>
+        <script src="../_static/documentation_options.js?v=71272d9f"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -34,7 +34,7 @@
             MCTS-NC
           </a>
               <div class="version">
-                1.0.1
+                1.0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -82,11 +82,12 @@
 <span class="sd">`https://github.com/pklesk/mcts_numba_cuda &lt;https://github.com/pklesk/mcts_numba_cuda&gt;`_ </span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">MultipleLocator</span><span class="p">,</span> <span class="n">FixedLocator</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">unzip_and_load_experiment</span><span class="p">,</span> <span class="n">dict_to_str</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.ticker</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipleLocator</span><span class="p">,</span> <span class="n">FixedLocator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">unzip_and_load_experiment</span><span class="p">,</span> <span class="n">dict_to_str</span>
 
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;1.0.4&quot;</span>
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Przemysław Klęsk&quot;</span>
 <span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;pklesk@zut.edu.pl&quot;</span>
 
@@ -95,7 +96,7 @@
 
 <div class="viewcode-block" id="scores_array_plot">
 <a class="viewcode-back" href="../plots.html#plots.scores_array_plot">[docs]</a>
-<span class="k">def</span> <span class="nf">scores_array_plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">ticks_x</span><span class="p">,</span> <span class="n">ticks_y</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scores_array_plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">ticks_x</span><span class="p">,</span> <span class="n">ticks_y</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Displays an array-like plot - a color map with averages of: scores, steps and depths - based on data from several experiments.&quot;&quot;&quot;</span>     
     <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
     <span class="n">fontsize_title</span> <span class="o">=</span> <span class="mi">21</span>
@@ -127,7 +128,7 @@
 
 <div class="viewcode-block" id="scores_array_plot_generator">
 <a class="viewcode-back" href="../plots.html#plots.scores_array_plot_generator">[docs]</a>
-<span class="k">def</span> <span class="nf">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">ticks_x</span><span class="p">,</span> <span class="n">ticks_y</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">initial_player_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">ticks_x</span><span class="p">,</span> <span class="n">ticks_y</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">initial_player_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads data from several experiments computes averages of scores, steps and depths and generates an array-like plot by calling ``scores_array_plot`` function.&quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SCORES-ARRAY-PLOT GENERATOR...&quot;</span><span class="p">)</span>    
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
@@ -186,7 +187,7 @@
     
 <div class="viewcode-block" id="scores_array_plot_ocp_thrifty_vs_vanilla_c4">
 <a class="viewcode-back" href="../plots.html#plots.scores_array_plot_ocp_thrifty_vs_vanilla_c4">[docs]</a>
-<span class="k">def</span> <span class="nf">scores_array_plot_ocp_thrifty_vs_vanilla_c4</span><span class="p">(</span><span class="n">initial_player_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scores_array_plot_ocp_thrifty_vs_vanilla_c4</span><span class="p">(</span><span class="n">initial_player_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: ocp_thrifty vs vanilla (Connect 4).&quot;&quot;&quot;</span>
     <span class="n">experiments_hs_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="p">[</span><span class="s2">&quot;3505711246_84404_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
@@ -206,12 +207,13 @@
          <span class="s2">&quot;2631547188_62234_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
          <span class="s2">&quot;2079386988_72178_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">]</span>
         <span class="p">])</span>
-    <span class="n">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;$T$ (n_trees)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="s2">&quot;OCP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">,</span> <span class="n">initial_player_flag</span><span class="p">)</span>    </div>
+    <span class="n">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;$T$ (n_trees)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="sa">r</span><span class="s2">&quot;OCP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">,</span> <span class="n">initial_player_flag</span><span class="p">)</span></div>
 
+    
 
 <div class="viewcode-block" id="scores_array_plot_ocp_prodigal_vs_vanilla_c4">
 <a class="viewcode-back" href="../plots.html#plots.scores_array_plot_ocp_prodigal_vs_vanilla_c4">[docs]</a>
-<span class="k">def</span> <span class="nf">scores_array_plot_ocp_prodigal_vs_vanilla_c4</span><span class="p">(</span><span class="n">initial_player_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scores_array_plot_ocp_prodigal_vs_vanilla_c4</span><span class="p">(</span><span class="n">initial_player_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: ocp_prodigal vs vanilla (Connect 4).&quot;&quot;&quot;</span>    
     <span class="n">experiments_hs_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="p">[</span><span class="s2">&quot;3195982906_82784_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
@@ -231,12 +233,12 @@
          <span class="s2">&quot;3851461350_45132_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
          <span class="s2">&quot;2927183718_39852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">]</span>
         <span class="p">])</span>
-    <span class="n">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;$T$ (n_trees)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="s2">&quot;OCP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">,</span> <span class="n">initial_player_flag</span><span class="p">)</span></div>
+    <span class="n">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;$T$ (n_trees)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="sa">r</span><span class="s2">&quot;OCP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">,</span> <span class="n">initial_player_flag</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="scores_array_plot_acp_thrifty_vs_vanilla_c4">
 <a class="viewcode-back" href="../plots.html#plots.scores_array_plot_acp_thrifty_vs_vanilla_c4">[docs]</a>
-<span class="k">def</span> <span class="nf">scores_array_plot_acp_thrifty_vs_vanilla_c4</span><span class="p">(</span><span class="n">initial_player_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scores_array_plot_acp_thrifty_vs_vanilla_c4</span><span class="p">(</span><span class="n">initial_player_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: acp_thrifty vs vanilla (Connect 4).&quot;&quot;&quot;</span>
     <span class="n">experiments_hs_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="p">[</span><span class="s2">&quot;0225178830_78932_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
@@ -256,12 +258,12 @@
          <span class="s2">&quot;0949310104_31134_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
          <span class="s2">&quot;0397149904_08374_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">]</span>
         <span class="p">])</span>
-    <span class="n">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;$T$ (n_trees)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="s2">&quot;ACP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">,</span> <span class="n">initial_player_flag</span><span class="p">)</span></div>
+    <span class="n">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;$T$ (n_trees)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="sa">r</span><span class="s2">&quot;ACP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">,</span> <span class="n">initial_player_flag</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="scores_array_plot_acp_prodigal_vs_vanilla_c4">
 <a class="viewcode-back" href="../plots.html#plots.scores_array_plot_acp_prodigal_vs_vanilla_c4">[docs]</a>
-<span class="k">def</span> <span class="nf">scores_array_plot_acp_prodigal_vs_vanilla_c4</span><span class="p">(</span><span class="n">initial_player_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scores_array_plot_acp_prodigal_vs_vanilla_c4</span><span class="p">(</span><span class="n">initial_player_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: acp_prodigal vs vanilla (Connect 4).&quot;&quot;&quot;</span>        
     <span class="n">experiments_hs_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="p">[</span><span class="s2">&quot;2586240854_62716_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
@@ -281,12 +283,12 @@
          <span class="s2">&quot;1605241382_13132_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
          <span class="s2">&quot;0680963750_07852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">]</span>
         <span class="p">])</span>
-    <span class="n">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;$T$ (n_trees)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="s2">&quot;ACP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">,</span> <span class="n">initial_player_flag</span><span class="p">)</span>    </div>
+    <span class="n">scores_array_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;$T$ (n_trees)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="sa">r</span><span class="s2">&quot;ACP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">,</span> <span class="n">initial_player_flag</span><span class="p">)</span>    </div>
 
 
 <div class="viewcode-block" id="best_action_plot">
 <a class="viewcode-back" href="../plots.html#plots.best_action_plot">[docs]</a>
-<span class="k">def</span> <span class="nf">best_action_plot</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">,</span> <span class="n">qs_black</span><span class="p">,</span> <span class="n">ucbs_black</span><span class="p">,</span> <span class="n">moves_rounds_white</span><span class="p">,</span> <span class="n">qs_white</span><span class="p">,</span> <span class="n">ucbs_white</span><span class="p">,</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">best_action_plot</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">,</span> <span class="n">qs_black</span><span class="p">,</span> <span class="n">ucbs_black</span><span class="p">,</span> <span class="n">moves_rounds_white</span><span class="p">,</span> <span class="n">qs_white</span><span class="p">,</span> <span class="n">ucbs_white</span><span class="p">,</span> 
                      <span class="n">label_qs_black</span><span class="p">,</span> <span class="n">label_ucbs_black</span><span class="p">,</span> <span class="n">label_qs_white</span><span class="p">,</span> <span class="n">label_ucbs_white</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">title_1</span><span class="p">,</span> <span class="n">title_2</span><span class="p">,</span>
                      <span class="n">ucbs_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ucbs_black_color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ucbs_white_color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Displays plot of estimates on best actions&#39; values (and their UCBs) along a given game.&quot;&quot;&quot;</span>    
@@ -334,7 +336,7 @@
     
 <div class="viewcode-block" id="best_action_plot_generator">
 <a class="viewcode-back" href="../plots.html#plots.best_action_plot_generator">[docs]</a>
-<span class="k">def</span> <span class="nf">best_action_plot_generator</span><span class="p">(</span><span class="n">experiments_hs</span><span class="p">,</span> <span class="n">game_index</span><span class="p">,</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">best_action_plot_generator</span><span class="p">(</span><span class="n">experiments_hs</span><span class="p">,</span> <span class="n">game_index</span><span class="p">,</span> 
                                <span class="n">label_qs_black</span><span class="p">,</span> <span class="n">label_ucbs_black</span><span class="p">,</span> <span class="n">label_qs_white</span><span class="p">,</span> <span class="n">label_ucbs_white</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">title_1</span><span class="p">,</span> <span class="n">title_2</span><span class="p">,</span>
                                <span class="n">ucbs_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ucbs_black_color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ucbs_white_color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads data from an experiment and generates a &#39;best action plot&#39; by calling ``best_action_plot`` function.&quot;&quot;&quot;</span>
@@ -364,7 +366,7 @@
 
 <div class="viewcode-block" id="depths_plot">
 <a class="viewcode-back" href="../plots.html#plots.depths_plot">[docs]</a>
-<span class="k">def</span> <span class="nf">depths_plot</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">,</span> <span class="n">mean_depths_black</span><span class="p">,</span> <span class="n">max_depths_black</span><span class="p">,</span> <span class="n">moves_rounds_white</span><span class="p">,</span> <span class="n">mean_depths_white</span><span class="p">,</span> <span class="n">max_depths_white</span><span class="p">,</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">depths_plot</span><span class="p">(</span><span class="n">moves_rounds_black</span><span class="p">,</span> <span class="n">mean_depths_black</span><span class="p">,</span> <span class="n">max_depths_black</span><span class="p">,</span> <span class="n">moves_rounds_white</span><span class="p">,</span> <span class="n">mean_depths_white</span><span class="p">,</span> <span class="n">max_depths_white</span><span class="p">,</span> 
                 <span class="n">label_mean_depths_black</span><span class="p">,</span> <span class="n">label_max_depths_black</span><span class="p">,</span> <span class="n">label_mean_depths_white</span><span class="p">,</span> <span class="n">label_max_depths_white</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">title_1</span><span class="p">,</span> <span class="n">title_2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Displays plot of averages of reached depths (mean and maximum) along a given game.&quot;&quot;&quot;</span>    
     <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">)</span>        
@@ -378,7 +380,6 @@
     <span class="n">legend_loc</span> <span class="o">=</span> <span class="s2">&quot;best&quot;</span> <span class="c1"># &quot;lower left&quot;</span>
     <span class="n">legend_handlelength</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="n">legend_labelspacing</span> <span class="o">=</span> <span class="mf">0.1</span>
-    <span class="n">alpha_ucb</span><span class="o">=</span><span class="mf">0.25</span>
     <span class="n">markersize</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">title_1</span><span class="p">:</span>
@@ -404,7 +405,7 @@
 
 <div class="viewcode-block" id="depths_plot_generator">
 <a class="viewcode-back" href="../plots.html#plots.depths_plot_generator">[docs]</a>
-<span class="k">def</span> <span class="nf">depths_plot_generator</span><span class="p">(</span><span class="n">experiments_hs</span><span class="p">,</span> <span class="n">game_index</span><span class="p">,</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">depths_plot_generator</span><span class="p">(</span><span class="n">experiments_hs</span><span class="p">,</span> <span class="n">game_index</span><span class="p">,</span> 
                           <span class="n">label_mean_depths_black</span><span class="p">,</span> <span class="n">label_max_depths_black</span><span class="p">,</span> <span class="n">label_mean_depths_white</span><span class="p">,</span> <span class="n">label_max_depths_white</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">title_1</span><span class="p">,</span> <span class="n">title_2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads data from an experiment and generates a &#39;depths plot&#39; by calling ``best_action_plot`` function.&quot;&quot;&quot;</span>    
     <span class="n">experiment_info</span> <span class="o">=</span> <span class="n">unzip_and_load_experiment</span><span class="p">(</span><span class="n">experiments_hs</span><span class="p">,</span> <span class="n">FOLDER_EXPERIMENTS</span><span class="p">)</span>
@@ -433,7 +434,7 @@
 
 <div class="viewcode-block" id="averages_printout_generator">
 <a class="viewcode-back" href="../plots.html#plots.averages_printout_generator">[docs]</a>
-<span class="k">def</span> <span class="nf">averages_printout_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="n">ai_instance_name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">averages_printout_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="n">ai_instance_name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for a given series of experiments.&quot;&quot;&quot;</span> 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;AVERAGES PRINTOUT...&quot;</span><span class="p">)</span>
     <span class="n">playouts</span> <span class="o">=</span> <span class="p">[]</span>
@@ -461,7 +462,7 @@
 
 <div class="viewcode-block" id="averages_printout_5s_vanilla_c4">
 <a class="viewcode-back" href="../plots.html#plots.averages_printout_5s_vanilla_c4">[docs]</a>
-<span class="k">def</span> <span class="nf">averages_printout_5s_vanilla_c4</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">averages_printout_5s_vanilla_c4</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s vanilla (Connect 4).&quot;&quot;&quot;</span>    
     <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="s2">&quot;2959981740_01490_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_128_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
@@ -474,7 +475,7 @@
     
 <div class="viewcode-block" id="averages_printout_5s_ocp_thrifty_c4">
 <a class="viewcode-back" href="../plots.html#plots.averages_printout_5s_ocp_thrifty_c4">[docs]</a>
-<span class="k">def</span> <span class="nf">averages_printout_5s_ocp_thrifty_c4</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">averages_printout_5s_ocp_thrifty_c4</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s ocp_thrifty (Connect 4).&quot;&quot;&quot;</span>    
     <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="s2">&quot;2959981740_01490_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_128_ocp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
@@ -487,7 +488,7 @@
 
 <div class="viewcode-block" id="averages_printout_5s_ocp_prodigal_c4">
 <a class="viewcode-back" href="../plots.html#plots.averages_printout_5s_ocp_prodigal_c4">[docs]</a>
-<span class="k">def</span> <span class="nf">averages_printout_5s_ocp_prodigal_c4</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">averages_printout_5s_ocp_prodigal_c4</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s ocp_prodigal (Connect 4).&quot;&quot;&quot;</span>    
     <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="s2">&quot;2749967598_89204_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
@@ -500,7 +501,7 @@
     
 <div class="viewcode-block" id="averages_printout_5s_acp_thrifty_c4">
 <a class="viewcode-back" href="../plots.html#plots.averages_printout_5s_acp_thrifty_c4">[docs]</a>
-<span class="k">def</span> <span class="nf">averages_printout_5s_acp_thrifty_c4</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">averages_printout_5s_acp_thrifty_c4</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s acp_thrifty (Connect 4).&quot;&quot;&quot;</span>    
     <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>        
         <span class="s2">&quot;0725584456_47630_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_thrifty;C4_6x7;100]&quot;</span><span class="p">,</span>
@@ -513,7 +514,7 @@
 
 <div class="viewcode-block" id="averages_printout_5s_acp_prodigal_c4">
 <a class="viewcode-back" href="../plots.html#plots.averages_printout_5s_acp_prodigal_c4">[docs]</a>
-<span class="k">def</span> <span class="nf">averages_printout_5s_acp_prodigal_c4</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">averages_printout_5s_acp_prodigal_c4</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 5s acp_prodigal (Connect 4).&quot;&quot;&quot;</span>    
     <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="s2">&quot;0503747630_89908_048_[mcts_5_inf_vanilla;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
@@ -526,7 +527,7 @@
 
 <div class="viewcode-block" id="averages_printout_30s_vanilla_gomoku">
 <a class="viewcode-back" href="../plots.html#plots.averages_printout_30s_vanilla_gomoku">[docs]</a>
-<span class="k">def</span> <span class="nf">averages_printout_30s_vanilla_gomoku</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">averages_printout_30s_vanilla_gomoku</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s vanilla (Gomoku).&quot;&quot;&quot;</span>
     <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="s2">&quot;3014955156_02650_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_128_ocp_thrifty_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
@@ -539,7 +540,7 @@
 
 <div class="viewcode-block" id="averages_printout_30s_ocp_thrifty_gomoku">
 <a class="viewcode-back" href="../plots.html#plots.averages_printout_30s_ocp_thrifty_gomoku">[docs]</a>
-<span class="k">def</span> <span class="nf">averages_printout_30s_ocp_thrifty_gomoku</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">averages_printout_30s_ocp_thrifty_gomoku</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s ocp_thrifty (Gomoku).&quot;&quot;&quot;</span>
     <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="s2">&quot;3014955156_02650_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_128_ocp_thrifty_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
@@ -552,7 +553,7 @@
 
 <div class="viewcode-block" id="averages_printout_30s_ocp_prodigal_gomoku">
 <a class="viewcode-back" href="../plots.html#plots.averages_printout_30s_ocp_prodigal_gomoku">[docs]</a>
-<span class="k">def</span> <span class="nf">averages_printout_30s_ocp_prodigal_gomoku</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">averages_printout_30s_ocp_prodigal_gomoku</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s ocp_prodigal (Gomoku).&quot;&quot;&quot;</span>
     <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="s2">&quot;1681612016_34230_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_ocp_prodigal_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
@@ -565,7 +566,7 @@
 
 <div class="viewcode-block" id="averages_printout_30s_acp_thrifty_gomoku">
 <a class="viewcode-back" href="../plots.html#plots.averages_printout_30s_acp_thrifty_gomoku">[docs]</a>
-<span class="k">def</span> <span class="nf">averages_printout_30s_acp_thrifty_gomoku</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">averages_printout_30s_acp_thrifty_gomoku</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s acp_thrifty (Gomoku).&quot;&quot;&quot;</span>
     <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="s2">&quot;4070724948_30746_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_acp_thrifty_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
@@ -578,7 +579,7 @@
 
 <div class="viewcode-block" id="averages_printout_30s_acp_prodigal_gomoku">
 <a class="viewcode-back" href="../plots.html#plots.averages_printout_30s_acp_prodigal_gomoku">[docs]</a>
-<span class="k">def</span> <span class="nf">averages_printout_30s_acp_prodigal_gomoku</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">averages_printout_30s_acp_prodigal_gomoku</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out averages of: playouts / steps and mean / maximum depths for experiments involving: 30s acp_prodigal (Gomoku).&quot;&quot;&quot;</span>
     <span class="n">averages_printout_generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="s2">&quot;3240654036_09850_048_[mcts_30_inf_vanilla;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]&quot;</span><span class="p">,</span>
@@ -591,7 +592,7 @@
     
 <div class="viewcode-block" id="playouts_per_second_plot">
 <a class="viewcode-back" href="../plots.html#plots.playouts_per_second_plot">[docs]</a>
-<span class="k">def</span> <span class="nf">playouts_per_second_plot</span><span class="p">(</span><span class="n">n_plots</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">ticks_x</span><span class="p">,</span> <span class="n">n_trees_values</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">label_prefix</span><span class="p">,</span> <span class="n">label_suffix</span><span class="p">,</span> <span class="n">data_pps</span><span class="p">,</span> <span class="n">ref_label</span><span class="p">,</span> <span class="n">ref_pps_avg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">playouts_per_second_plot</span><span class="p">(</span><span class="n">n_plots</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">ticks_x</span><span class="p">,</span> <span class="n">n_trees_values</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">label_prefix</span><span class="p">,</span> <span class="n">label_suffix</span><span class="p">,</span> <span class="n">data_pps</span><span class="p">,</span> <span class="n">ref_label</span><span class="p">,</span> <span class="n">ref_pps_avg</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Displays multiple plots of &#39;playouts per second&#39; quantity, averaged over multiple Connect 4 games.&quot;&quot;&quot;</span>
     <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">)</span>        
     <span class="n">fontsize_title</span> <span class="o">=</span> <span class="mi">21</span>
@@ -600,10 +601,8 @@
     <span class="n">fontsize_legend</span> <span class="o">=</span> <span class="mi">11</span>
     <span class="n">grid_color</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span> 
     <span class="n">grid_dashes</span> <span class="o">=</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">)</span>
-    <span class="n">legend_loc</span> <span class="o">=</span> <span class="s2">&quot;best&quot;</span> <span class="c1"># &quot;upper left&quot;</span>
     <span class="n">legend_handlelength</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="n">legend_labelspacing</span> <span class="o">=</span> <span class="mf">0.1</span>
-    <span class="n">alpha_ucb</span><span class="o">=</span><span class="mf">0.25</span>
     <span class="n">markersize</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
@@ -628,7 +627,7 @@
 
 <div class="viewcode-block" id="playouts_per_second_plot_generator">
 <a class="viewcode-back" href="../plots.html#plots.playouts_per_second_plot_generator">[docs]</a>
-<span class="k">def</span> <span class="nf">playouts_per_second_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">ticks_x</span><span class="p">,</span> <span class="n">n_trees_values</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">label_prefix</span><span class="p">,</span> <span class="n">label_suffix</span><span class="p">,</span> <span class="n">ref_label</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">playouts_per_second_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">label_y</span><span class="p">,</span> <span class="n">ticks_x</span><span class="p">,</span> <span class="n">n_trees_values</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">label_prefix</span><span class="p">,</span> <span class="n">label_suffix</span><span class="p">,</span> <span class="n">ref_label</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads data from several experiments, computes averages of &#39;playouts per second&#39; quantity, and generates a plot by calling ``playouts_per_second_plot`` function.&quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PLAYOUTS-PER-SECOND-PLOT GENERATOR...&quot;</span><span class="p">)</span>    
     <span class="n">data_pps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>     
@@ -659,7 +658,7 @@
 
 <div class="viewcode-block" id="playouts_per_second_plot_acp_prodigal_vs_vanilla_c4">
 <a class="viewcode-back" href="../plots.html#plots.playouts_per_second_plot_acp_prodigal_vs_vanilla_c4">[docs]</a>
-<span class="k">def</span> <span class="nf">playouts_per_second_plot_acp_prodigal_vs_vanilla_c4</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">playouts_per_second_plot_acp_prodigal_vs_vanilla_c4</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates a series of plots with &#39;playouts per second&#39; quantity (in logarithmic scale) based on data from experiments: acp_prodigal vs vanilla (Connect 4).&quot;&quot;&quot;</span>        
     <span class="n">experiments_hs_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="p">[</span><span class="s2">&quot;2586240854_62716_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
@@ -680,12 +679,12 @@
          <span class="s2">&quot;0680963750_07852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_prodigal;C4_6x7;100]&quot;</span><span class="p">]</span>
         <span class="p">])</span>
     <span class="n">playouts_per_second_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;AVGS. OF PLAYOUTS PER SECOND&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> 
-                                       <span class="s2">&quot;CONNECT 4: ACP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">,</span> <span class="s2">&quot;MCTS-NC_1_INF&quot;</span><span class="p">,</span> <span class="s2">&quot;ACP_PRODIGAL&quot;</span><span class="p">,</span> <span class="s2">&quot;MCTS_5_INF_VANILLA (REFERENCE)&quot;</span><span class="p">)</span>    </div>
+                                       <span class="sa">r</span><span class="s2">&quot;CONNECT 4: ACP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">,</span> <span class="s2">&quot;MCTS-NC_1_INF&quot;</span><span class="p">,</span> <span class="s2">&quot;ACP_PRODIGAL&quot;</span><span class="p">,</span> <span class="s2">&quot;MCTS_5_INF_VANILLA (REFERENCE)&quot;</span><span class="p">)</span>    </div>
 
 
 <div class="viewcode-block" id="playouts_per_second_plot_ocp_prodigal_vs_vanilla_c4">
 <a class="viewcode-back" href="../plots.html#plots.playouts_per_second_plot_ocp_prodigal_vs_vanilla_c4">[docs]</a>
-<span class="k">def</span> <span class="nf">playouts_per_second_plot_ocp_prodigal_vs_vanilla_c4</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">playouts_per_second_plot_ocp_prodigal_vs_vanilla_c4</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates a series of plots with &#39;playouts per second&#39; quantity (in logarithmic scale) based on data from experiments: ocp_prodigal vs vanilla (Connect 4).&quot;&quot;&quot;</span>    
     <span class="n">experiments_hs_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="p">[</span><span class="s2">&quot;3195982906_82784_048_[mcts_5_inf_vanilla;mctsnc_1_inf_1_32_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span>
@@ -706,12 +705,12 @@
          <span class="s2">&quot;2927183718_39852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">]</span>
         <span class="p">])</span>
     <span class="n">playouts_per_second_plot_generator</span><span class="p">(</span><span class="n">experiments_hs_array</span><span class="p">,</span> <span class="s2">&quot;$m$ (n_playouts)&quot;</span><span class="p">,</span> <span class="s2">&quot;AVGS. OF PLAYOUTS PER SECOND&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> 
-                                       <span class="s2">&quot;CONNECT 4: OCP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">,</span> <span class="s2">&quot;MCTS-NC_1_INF&quot;</span><span class="p">,</span> <span class="s2">&quot;OCP_PRODIGAL&quot;</span><span class="p">,</span> <span class="s2">&quot;MCTS_5_INF_VANILLA (REFERENCE)&quot;</span><span class="p">)</span></div>
+                                       <span class="sa">r</span><span class="s2">&quot;CONNECT 4: OCP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)&quot;</span><span class="p">,</span> <span class="s2">&quot;MCTS-NC_1_INF&quot;</span><span class="p">,</span> <span class="s2">&quot;OCP_PRODIGAL&quot;</span><span class="p">,</span> <span class="s2">&quot;MCTS_5_INF_VANILLA (REFERENCE)&quot;</span><span class="p">)</span></div>
 
     
 <div class="viewcode-block" id="stats_detailed_printout">
 <a class="viewcode-back" href="../plots.html#plots.stats_detailed_printout">[docs]</a>
-<span class="k">def</span> <span class="nf">stats_detailed_printout</span><span class="p">(</span><span class="n">experiment_hs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">stats_detailed_printout</span><span class="p">(</span><span class="n">experiment_hs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints out stats (with side-dependency distinction) for a given experiment.&quot;&quot;&quot;</span> 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;STATS DETAILED PRINTOUT...&quot;</span><span class="p">)</span>
     <span class="n">a_first_outcomes</span> <span class="o">=</span> <span class="p">[]</span>
@@ -747,27 +746,27 @@
     <span class="c1"># scores_array_plot_acp_prodigal_vs_vanilla_c4()</span>
 
     <span class="n">best_action_plot_generator</span><span class="p">(</span><span class="s2">&quot;0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span>
-                               <span class="s2">&quot;BEST $\widehat</span><span class="si">{q}</span><span class="s2">$ - MCTS_5_INF_VANILLA&quot;</span><span class="p">,</span> <span class="s2">&quot;UCB - MCTS_5_INF_VANILLA&quot;</span><span class="p">,</span>      
-                               <span class="s2">&quot;BEST $\widehat</span><span class="si">{q}</span><span class="s2">$ - MCTS-NC_1_INF_4_256_OCP_PRODIGAL&quot;</span><span class="p">,</span> <span class="s2">&quot;UCB - MCTS-NC_1_INF_4_256_OCP_PRODIGAL&quot;</span><span class="p">,</span>     
-                               <span class="s2">&quot;MOVES ROUND&quot;</span><span class="p">,</span> <span class="s2">&quot;BEST ACTIONS&#39;: $\widehat</span><span class="si">{q}</span><span class="s2">$, UCB&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;SAMPLE GAME OF CONNECT 4 (NO. 9/100)&quot;</span><span class="p">)</span>    
+                               <span class="sa">r</span><span class="s2">&quot;BEST $\widehat</span><span class="si">{q}</span><span class="s2">$ - MCTS_5_INF_VANILLA&quot;</span><span class="p">,</span> <span class="s2">&quot;UCB - MCTS_5_INF_VANILLA&quot;</span><span class="p">,</span>      
+                               <span class="sa">r</span><span class="s2">&quot;BEST $\widehat</span><span class="si">{q}</span><span class="s2">$ - MCTS-NC_1_INF_4_256_OCP_PRODIGAL&quot;</span><span class="p">,</span> <span class="s2">&quot;UCB - MCTS-NC_1_INF_4_256_OCP_PRODIGAL&quot;</span><span class="p">,</span>     
+                               <span class="s2">&quot;MOVES ROUND&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;BEST ACTIONS&#39;: $\widehat</span><span class="si">{q}</span><span class="s2">$, UCB&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;SAMPLE GAME OF CONNECT 4 (NO. 9/100)&quot;</span><span class="p">)</span>    
     <span class="n">depths_plot_generator</span><span class="p">(</span><span class="s2">&quot;0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span>  
                           <span class="s2">&quot;MEAN DEPTHS - MCTS_5_INF_VANILLA&quot;</span><span class="p">,</span> <span class="s2">&quot;MAX DEPTHS - MCTS_5_INF_VANILLA&quot;</span><span class="p">,</span>
                           <span class="s2">&quot;MEAN DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL&quot;</span><span class="p">,</span> <span class="s2">&quot;MAX DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL&quot;</span><span class="p">,</span>                                  
                           <span class="s2">&quot;MOVES ROUND&quot;</span><span class="p">,</span> <span class="s2">&quot;MEAN, MAXIMUM DEPTHS&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;SAMPLE GAME OF CONNECT 4 (NO. 9/100)&quot;</span><span class="p">)</span>
     
     <span class="c1"># best_action_plot_generator(&quot;2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]&quot;, 57,</span>
-    <span class="c1">#                            &quot;BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL&quot;, &quot;10 x UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL&quot;,      </span>
-    <span class="c1">#                            &quot;BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL&quot;, &quot;10 x UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL&quot;,     </span>
-    <span class="c1">#                            &quot;MOVES ROUND&quot;, &quot;BEST ACTIONS&#39;: $\widehat{q}$, UCB&quot;, None, &quot;SAMPLE GAME OF CONNECT 4 (NO. 57/100)&quot;, 10.0)    </span>
+    <span class="c1">#                            r&quot;BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL&quot;, &quot;10 x UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL&quot;,      </span>
+    <span class="c1">#                            r&quot;BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL&quot;, &quot;10 x UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL&quot;,     </span>
+    <span class="c1">#                            &quot;MOVES ROUND&quot;, r&quot;BEST ACTIONS&#39;: $\widehat{q}$, UCB&quot;, None, &quot;SAMPLE GAME OF CONNECT 4 (NO. 57/100)&quot;, 10.0)    </span>
     <span class="c1"># depths_plot_generator(&quot;2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]&quot;, 57,  </span>
-    <span class="c1">#                       &quot;BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL&quot;, &quot;UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL&quot;,      </span>
-    <span class="c1">#                       &quot;BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL&quot;, &quot;UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL&quot;,                                  </span>
+    <span class="c1">#                       &quot;MEAN DEPTHS - MCTS-NC_5_INF_4_256_OCP_PRODIGAL&quot;, &quot;MAX DEPTHS - MCTS-NC_5_INF_4_256_OCP_PRODIGAL&quot;,      </span>
+    <span class="c1">#                       &quot;MEAN DEPTHS - MCTS-NC_5_INF_4_256_ACP_PRODIGAL&quot;, &quot;MAX DEPTHS - MCTS-NC_5_INF_4_256_ACP_PRODIGAL&quot;,                                  </span>
     <span class="c1">#                       &quot;MOVES ROUND&quot;, &quot;MEAN, MAXIMUM DEPTHS&quot;, None, &quot;SAMPLE GAME OF CONNECT 4 (NO. 57/100)&quot;)    </span>
-    
+    <span class="c1">#</span>
     <span class="c1"># best_action_plot_generator(&quot;2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]&quot;, 11,</span>
-    <span class="c1">#                            &quot;BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_THRIFTY&quot;, &quot;25 x UCB - MCTS-NC_30_INF_4_256_ACP_THRIFTY&quot;,</span>
-    <span class="c1">#                            &quot;BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_PRODIGAL&quot;, &quot;25 x UCB - MCTS-NC_30_INF_4_256_ACP_PRODIGAL&quot;,                                  </span>
-    <span class="c1">#                            &quot;MOVES ROUND&quot;, &quot;BEST ACTIONS&#39;: $\widehat{q}$, UCB&quot;, None, &quot;SAMPLE GAME OF GOMOKU (NO. 11/100)&quot;, 25.0)    </span>
+    <span class="c1">#                            r&quot;BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_THRIFTY&quot;, &quot;25 x UCB - MCTS-NC_30_INF_4_256_ACP_THRIFTY&quot;,</span>
+    <span class="c1">#                            r&quot;BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_PRODIGAL&quot;, &quot;25 x UCB - MCTS-NC_30_INF_4_256_ACP_PRODIGAL&quot;,                                  </span>
+    <span class="c1">#                            &quot;MOVES ROUND&quot;, r&quot;BEST ACTIONS&#39;: $\widehat{q}$, UCB&quot;, None, &quot;SAMPLE GAME OF GOMOKU (NO. 11/100)&quot;, 25.0)    </span>
     <span class="c1"># depths_plot_generator(&quot;2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]&quot;, 11,  </span>
     <span class="c1">#                       &quot;MEAN DEPTHS - MCTS-NC_30_INF_4_256_ACP_THRIFTY&quot;, &quot;MAX DEPTHS - MCTS-NC_30_INF_4_256_ACP_THRIFTY&quot;,</span>
     <span class="c1">#                       &quot;MEAN DEPTHS - MCTS-NC_30_INF_4_256_ACP_PRODIGAL&quot;, &quot;MAX DEPTHS - MCTS-NC_30_INF_4_256_ACP_PRODIGAL&quot;,                                  </span>
