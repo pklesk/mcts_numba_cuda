@@ -167,7 +167,7 @@ from utils import dict_to_str
 import json
 import sys
 
-__version__ = "1.0.2"
+__version__ = "1.0.4"
 __author__ = "Przemysław Klęsk"
 __email__ = "pklesk@zut.edu.pl" 
 

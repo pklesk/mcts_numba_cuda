@@ -32,6 +32,7 @@ import time
 from utils import cpu_and_system_props, gpu_props, dict_to_str, Logger, experiment_hash_str, save_and_zip_experiment, unzip_and_load_experiment
 import sys
 
+__version__ = "1.0.4"
 __author__ = "Przemysław Klęsk"
 __email__ = "pklesk@zut.edu.pl"
 

@@ -11,6 +11,7 @@ from matplotlib.ticker import MultipleLocator, FixedLocator
 import numpy as np
 from utils import unzip_and_load_experiment, dict_to_str
 
+__version__ = "1.0.4"
 __author__ = "Przemysław Klęsk"
 __email__ = "pklesk@zut.edu.pl"
 
@@ -122,7 +123,8 @@ def scores_array_plot_ocp_thrifty_vs_vanilla_c4(initial_player_flag=None):
          "2631547188_62234_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_ocp_thrifty;C4_6x7;100]",
          "2079386988_72178_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_thrifty;C4_6x7;100]"]
         ])
-    scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "OCP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)", initial_player_flag)    
+    scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], r"OCP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)", initial_player_flag)
+    
 
 def scores_array_plot_ocp_prodigal_vs_vanilla_c4(initial_player_flag=None):
     """Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: ocp_prodigal vs vanilla (Connect 4)."""    
@@ -144,7 +146,7 @@ def scores_array_plot_ocp_prodigal_vs_vanilla_c4(initial_player_flag=None):
          "3851461350_45132_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_ocp_prodigal;C4_6x7;100]",
          "2927183718_39852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_prodigal;C4_6x7;100]"]
         ])
-    scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "OCP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)", initial_player_flag)
+    scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], r"OCP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)", initial_player_flag)
 
 def scores_array_plot_acp_thrifty_vs_vanilla_c4(initial_player_flag=None):
     """Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: acp_thrifty vs vanilla (Connect 4)."""
@@ -166,7 +168,7 @@ def scores_array_plot_acp_thrifty_vs_vanilla_c4(initial_player_flag=None):
          "0949310104_31134_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_acp_thrifty;C4_6x7;100]",
          "0397149904_08374_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_thrifty;C4_6x7;100]"]
         ])
-    scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "ACP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)", initial_player_flag)
+    scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], r"ACP-THRIFTY (1$\,$s) vs VANILLA (5$\,$s)", initial_player_flag)
 
 def scores_array_plot_acp_prodigal_vs_vanilla_c4(initial_player_flag=None):
     """Generates an array-like plot - a color map with averages of: scores, steps and depths - based on data from experiments: acp_prodigal vs vanilla (Connect 4)."""        
@@ -188,7 +190,7 @@ def scores_array_plot_acp_prodigal_vs_vanilla_c4(initial_player_flag=None):
          "1605241382_13132_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_128_acp_prodigal;C4_6x7;100]",
          "0680963750_07852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_prodigal;C4_6x7;100]"]
         ])
-    scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], "ACP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)", initial_player_flag)    
+    scores_array_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "$T$ (n_trees)", [32, 64, 128, 256], [1, 2, 4, 8], r"ACP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)", initial_player_flag)    
 
 def best_action_plot(moves_rounds_black, qs_black, ucbs_black, moves_rounds_white, qs_white, ucbs_white, 
                      label_qs_black, label_ucbs_black, label_qs_white, label_ucbs_white, label_x, label_y, title_1, title_2,
@@ -276,7 +278,6 @@ def depths_plot(moves_rounds_black, mean_depths_black, max_depths_black, moves_r
     legend_loc = "best" # "lower left"
     legend_handlelength = 4
     legend_labelspacing = 0.1
-    alpha_ucb=0.25
     markersize = 3
     plt.figure(figsize=figsize)
     if title_1:
@@ -459,10 +460,8 @@ def playouts_per_second_plot(n_plots, label_x, label_y, ticks_x, n_trees_values,
     fontsize_legend = 11
     grid_color = (0.4, 0.4, 0.4) 
     grid_dashes = (4.0, 4.0)
-    legend_loc = "best" # "upper left"
     legend_handlelength = 4
     legend_labelspacing = 0.1
-    alpha_ucb=0.25
     markersize = 3
     plt.figure(figsize=figsize)
     if title:
@@ -533,7 +532,7 @@ def playouts_per_second_plot_acp_prodigal_vs_vanilla_c4():
          "0680963750_07852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_acp_prodigal;C4_6x7;100]"]
         ])
     playouts_per_second_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "AVGS. OF PLAYOUTS PER SECOND", [32, 64, 128, 256], [1, 2, 4, 8], 
-                                       "CONNECT 4: ACP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)", "MCTS-NC_1_INF", "ACP_PRODIGAL", "MCTS_5_INF_VANILLA (REFERENCE)")    
+                                       r"CONNECT 4: ACP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)", "MCTS-NC_1_INF", "ACP_PRODIGAL", "MCTS_5_INF_VANILLA (REFERENCE)")    
 
 def playouts_per_second_plot_ocp_prodigal_vs_vanilla_c4():
     """Generates a series of plots with 'playouts per second' quantity (in logarithmic scale) based on data from experiments: ocp_prodigal vs vanilla (Connect 4)."""    
@@ -556,7 +555,7 @@ def playouts_per_second_plot_ocp_prodigal_vs_vanilla_c4():
          "2927183718_39852_048_[mcts_5_inf_vanilla;mctsnc_1_inf_8_256_ocp_prodigal;C4_6x7;100]"]
         ])
     playouts_per_second_plot_generator(experiments_hs_array, "$m$ (n_playouts)", "AVGS. OF PLAYOUTS PER SECOND", [32, 64, 128, 256], [1, 2, 4, 8], 
-                                       "CONNECT 4: OCP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)", "MCTS-NC_1_INF", "OCP_PRODIGAL", "MCTS_5_INF_VANILLA (REFERENCE)")
+                                       r"CONNECT 4: OCP-PRODIGAL (1$\,$s) vs VANILLA (5$\,$s)", "MCTS-NC_1_INF", "OCP_PRODIGAL", "MCTS_5_INF_VANILLA (REFERENCE)")
     
 def stats_detailed_printout(experiment_hs):
     """Prints out stats (with side-dependency distinction) for a given experiment.""" 
@@ -593,27 +592,27 @@ if __name__ == "__main__":
     # scores_array_plot_acp_prodigal_vs_vanilla_c4()
 
     best_action_plot_generator("0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 9,
-                               "BEST $\widehat{q}$ - MCTS_5_INF_VANILLA", "UCB - MCTS_5_INF_VANILLA",      
-                               "BEST $\widehat{q}$ - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "UCB - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",     
-                               "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 9/100)")    
+                               r"BEST $\widehat{q}$ - MCTS_5_INF_VANILLA", "UCB - MCTS_5_INF_VANILLA",      
+                               r"BEST $\widehat{q}$ - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "UCB - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",     
+                               "MOVES ROUND", r"BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 9/100)")    
     depths_plot_generator("0241191398_10572_048_[mcts_5_inf_vanilla;mctsnc_1_inf_4_256_ocp_prodigal;C4_6x7;100]", 9,  
                           "MEAN DEPTHS - MCTS_5_INF_VANILLA", "MAX DEPTHS - MCTS_5_INF_VANILLA",
                           "MEAN DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL", "MAX DEPTHS - MCTS-NC_1_INF_4_256_OCP_PRODIGAL",                                  
                           "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 9/100)")
     
     # best_action_plot_generator("2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]", 57,
-    #                            "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL", "10 x UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL",      
-    #                            "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL", "10 x UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL",     
-    #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 57/100)", 10.0)    
+    #                            r"BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL", "10 x UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL",      
+    #                            r"BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL", "10 x UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL",     
+    #                            "MOVES ROUND", r"BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF CONNECT 4 (NO. 57/100)", 10.0)    
     # depths_plot_generator("2504702716_35906_048_[mctsnc_5_inf_4_256_ocp_prodigal;mctsnc_5_inf_4_256_acp_prodigal;C4_6x7;100]", 57,  
-    #                       "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_OCP_PRODIGAL", "UCB - MCTS-NC_5_INF_4_256_OCP_PRODIGAL",      
-    #                       "BEST $\widehat{q}$ - MCTS-NC_5_INF_4_256_ACP_PRODIGAL", "UCB - MCTS-NC_5_INF_4_256_ACP_PRODIGAL",                                  
+    #                       "MEAN DEPTHS - MCTS-NC_5_INF_4_256_OCP_PRODIGAL", "MAX DEPTHS - MCTS-NC_5_INF_4_256_OCP_PRODIGAL",      
+    #                       "MEAN DEPTHS - MCTS-NC_5_INF_4_256_ACP_PRODIGAL", "MAX DEPTHS - MCTS-NC_5_INF_4_256_ACP_PRODIGAL",                                  
     #                       "MOVES ROUND", "MEAN, MAXIMUM DEPTHS", None, "SAMPLE GAME OF CONNECT 4 (NO. 57/100)")    
-    
+    #
     # best_action_plot_generator("2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]", 11,
-    #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_THRIFTY", "25 x UCB - MCTS-NC_30_INF_4_256_ACP_THRIFTY",
-    #                            "BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_PRODIGAL", "25 x UCB - MCTS-NC_30_INF_4_256_ACP_PRODIGAL",                                  
-    #                            "MOVES ROUND", "BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF GOMOKU (NO. 11/100)", 25.0)    
+    #                            r"BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_THRIFTY", "25 x UCB - MCTS-NC_30_INF_4_256_ACP_THRIFTY",
+    #                            r"BEST $\widehat{q}$ - MCTS-NC_30_INF_4_256_ACP_PRODIGAL", "25 x UCB - MCTS-NC_30_INF_4_256_ACP_PRODIGAL",                                  
+    #                            "MOVES ROUND", r"BEST ACTIONS': $\widehat{q}$, UCB", None, "SAMPLE GAME OF GOMOKU (NO. 11/100)", 25.0)    
     # depths_plot_generator("2094160108_21298_048_[mctsnc_30_inf_4_256_acp_thrifty_16g;mctsnc_30_inf_4_256_acp_prodigal_16g;Gomoku_15x15;100]", 11,  
     #                       "MEAN DEPTHS - MCTS-NC_30_INF_4_256_ACP_THRIFTY", "MAX DEPTHS - MCTS-NC_30_INF_4_256_ACP_THRIFTY",
     #                       "MEAN DEPTHS - MCTS-NC_30_INF_4_256_ACP_PRODIGAL", "MAX DEPTHS - MCTS-NC_30_INF_4_256_ACP_PRODIGAL",                                  

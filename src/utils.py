@@ -17,6 +17,7 @@ import os
 import json
 import sys
  
+__version__ = "1.0.4"
 __author__ = "Przemysław Klęsk"
 __email__ = "pklesk@zut.edu.pl"
 
@@ -170,7 +171,7 @@ def save_and_zip_experiment(experiment_hs, experiment_info, folder):
     print(f"SAVE AND ZIP EXPERIMENT... [hash string: {experiment_hs}]")
     t1 = time.time()
     fpath = folder + experiment_hs    
-    try:        
+    try:
         f = open(fpath + ".json", "w+")
         json.dump(experiment_info, f, indent=2)
         f.close()
@@ -180,7 +181,7 @@ def save_and_zip_experiment(experiment_hs, experiment_info, folder):
         os.remove(fpath + ".json")
         os.remove(fpath + ".log") 
     except IOError:
-        sys.exit(f"[error occurred when trying to save and zip experiment info: {fname}]")            
+        sys.exit(f"[error occurred when trying to save and zip experiment info: {fpath}]")            
     t2 = time.time()
     print(f"SAVE AND ZIP EXPERIMENT DONE. [time: {t2 - t1} s]")
 
@@ -192,11 +193,11 @@ def unzip_and_load_experiment(experiment_hs, folder):
     try:        
         with zf.ZipFile(fpath + ".zip", "r") as zip_ref:
             zip_ref.extract(experiment_hs + ".json", path=os.path.dirname(fpath + ".json"))            
-        with open(fpath + ".json", 'r', encoding="utf-8") as json_file:
-            experiment_info = json.load(json_file) 
-            zip_ref.extract(experiment_hs + ".json", path=os.path.dirname(fpath + ".json"))            
-        with open(fpath + ".json", 'r', encoding="utf-8") as json_file:
-            experiment_info = json.load(json_file) 
+            with open(fpath + ".json", 'r', encoding="utf-8") as json_file:
+                experiment_info = json.load(json_file) 
         os.remove(fpath + ".json") # TODO uncomment this back, to have extracted file removed once used
     except IOError:
-        sys.exit(f"[error occurred when trying to unzip and load experiment info: {experiment_hs}]")            
+        sys.exit(f"[error occurred when trying to unzip and load experiment info: {experiment_hs}]")
+    t2 = time.time()
+    print(f"UNZIP AND LOAD EXPERIMENT DONE. [time: {t2 - t1} s]")           
+    return experiment_info
